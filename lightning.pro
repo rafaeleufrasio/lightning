@@ -13,7 +13,8 @@ end
 
 function steps_stellar,filter_labels=filter_labels,steps_bounds=steps_bounds,$
                        z_shift=z_shift,dtime_SF=dtime_SF,nolines=nolines,$
-                       nonebular=nonebular,Zmet=Zmet,IMF=IMF,Filters=Filters
+                       nonebular=nonebular,Zmet=Zmet,IMF=IMF,Filters=Filters,$
+                       folder=folder
 
 ; this function generates the spectra, SEDs, and stellar parameters, given a set of filters and steps boundaries
 
@@ -27,16 +28,15 @@ if (n_elements(nolines) eq 0) then nolines = 0
 if (n_elements(nonebular) eq 0) then nebtag='nebular_' else nebtag=''
 if (n_elements(Zmet) eq 0) then Ztag='0.020' else Ztag=string(Zmet,form='(F5.3)')
 if (n_elements(IMF) eq 0) then IMFtag='Kroupa01' else IMFtag=IMF
+if (n_elements(folder) eq 0) then Lightning='~/Lightning/' else Lightning=folder
+;folder is the folder that contains both Filters/ and models/ subfolders
 
 Nsteps = N_elements(steps_bounds) - 1
 
-Dropbox = '~/Dropbox/'
-bursts_folder = Dropbox+'PEGASE2/PEGASE2/01-models/04-single_burst/'
+bursts_folder = Lightning+'models/04-single_burst/'
 filename = bursts_folder+IMFtag+'/'+IMFtag+'_Z'+Ztag+'_'+nebtag+'spec.idl'
 
 sObj = OBJ_NEW('IDL_Savefile',filename)
-;sObj = OBJ_NEW('IDL_Savefile',Dropbox+'PEGASE2/PEGASE2/01-models/04-single_burst/Kroupa01/Kroupa01_Z0.020_nebular_spec.idl')
-;sObj = OBJ_NEW('IDL_Savefile',Dropbox+'PEGASE2/PEGASE2/01-models/04-single_burst/Kroupa01/Kroupa01_Z0.020_spec.idl')
   sObj->RESTORE,'time'
   sObj->RESTORE,'wave'
   sObj->RESTORE,'nu'
@@ -79,7 +79,7 @@ Lbol_burst  = Lbol                & Lbol   = !null ; restframe bolometric lumino
 Q0_burst    = Nlyc                & Nlyc   = !null
 Mstar_burst = Mstars              & Mstars = !null
 GET_FILTERS,filter_labels,nu_obs,Filters,Lnu=[1.d0] # [0*(nu_obs) + 3631],$
-            filters_dir=Dropbox+'Filters/',mean_wave=mean_wave,$
+            filters_dir=Lightning+'Filters/',mean_wave=mean_wave,$
             /plot_filters;,mean_nu=mean_nu,mean_Lnu=mean_Lnu,mean_Lnu=mean_Lnu,sigma_wave=sigma_wave
 
 wave_filters = reform(mean_wave)
@@ -106,7 +106,7 @@ for st=0,(Nsteps-1) do begin
 endfor
 
 GET_FILTERS,filter_labels,nu_obs,Filters,Lnu=transpose(Lnu_steps),$
-            filters_dir=Dropbox+'Filters/',mean_Lnu=mean_Lnu;,$
+            filters_dir=Lightning+'Filters/',mean_Lnu=mean_Lnu;,$
             ;/plot_filters;,mean_wave=mean_wave,mean_nu=mean_nu,sigma_wave=sigma_wave
 
 mean_Lnu_steps = transpose(temporary(mean_Lnu))
