@@ -15,8 +15,10 @@ function steps_stellar,filter_labels=filter_labels,steps_bounds=steps_bounds,$
                        z_shift=z_shift,dtime_SF=dtime_SF,nolines=nolines,$
                        nonebular=nonebular,Zmet=Zmet,IMF=IMF,Filters=Filters,$
                        folder=folder
-
 ; this function generates the spectra, SEDs, and stellar parameters, given a set of filters and steps boundaries
+;
+;Modification History
+; Rafael Eufrasio - Corrected (1+z) factor - March 9th 2020
 
 if (n_elements(filter_labels) eq 0) then $
   filter_labels=['GALEX_FUV','UVOT_W2','UVOT_M2','GALEX_NUV','UVOT_W1','SDSS_u','SDSS_g','SDSS_r','SDSS_i','SDSS_z',$
@@ -71,13 +73,14 @@ nu_obs      = nu_rest/(1.d0+z_shift)   ; observed frequency
 wave_rest   = temporary(wave)          ; restframe wavelength
 wave_obs    = wave_rest*(1.d0+z_shift) ; observed wavelength
 Lnu_burst_rest = temporary(Lnu)                  ; restframe Lnu spectrum
-Lnu_burst      = Lnu_burst_rest / (1.d0+z_shift) ; observed Lnu spectrum, where Lnu = 4*!dpi*DL^2*Fnu
-;Lbol_burst = Lbol/(1.d0+z_shift) & Lbol   = !null
-;Q0_burst   = Nlyc/(1.d0+z_shift) & Nlyc   = !null
+Lnu_burst      = Lnu_burst_rest * (1.d0+z_shift) ; observed Lnu spectrum, where Lnu = 4*!dpi*DL^2*Fnu
+;Lbol_burst = Lbol/(1.d0+z_shift)  & Lbol   = !null
+;Q0_burst   = Nlyc/(1.d0+z_shift)  & Nlyc   = !null
 ;Lnu_burst   = Lnu                 & Lnu    = !null
-Lbol_burst  = Lbol                & Lbol   = !null ; restframe bolometric luminosity 
-Q0_burst    = Nlyc                & Nlyc   = !null
-Mstar_burst = Mstars              & Mstars = !null
+Lbol_burst  = Lbol                 & Lbol   = !null ; observed = restframe bolometric luminosity 
+Q0_burst    = Nlyc                 & Nlyc   = !null ; restframe ionizing flux rate
+;Q0_burst    = (1.d0+z_shift)*Nlyc & Nlyc   = !null ; observed ionizing flux rate
+Mstar_burst = Mstars               & Mstars = !null
 GET_FILTERS,filter_labels,nu_obs,Filters,Lnu=[1.d0] # [0*(nu_obs) + 3631],$
             filters_dir=Lightning+'Filters/',mean_wave=mean_wave,$
             /plot_filters;,mean_nu=mean_nu,mean_Lnu=mean_Lnu,mean_Lnu=mean_Lnu,sigma_wave=sigma_wave
@@ -656,6 +659,9 @@ end
 
 function lightning,Lnu_obs,Lnu_unc,LIR_obs,LIR_unc,Nsim=Nsim,steps=steps,grid=grid,models=models,$
                    float=float,regions=regions,Lnu_sim=Lnu_sim,LIR_sim=LIR_sim
+;Modification History
+; Keith Doore     - Created models function & added Tuffs extinction option - 2019
+; Rafael Eufrasio - Corrected (1+z) factor - March 9th 2020
 
 t0 = SYSTIME(/seconds)
 
@@ -754,8 +760,8 @@ if n_elements(models) eq 0 then begin
           ;integral will be positive because transmission is negative and nu is inverted 
           ;if steps_mean_Lnu_red_grid[k,st,k1,k2,k3] lt 0 then stop
         endfor
-        steps_mean_Lnu_red_grid[Nfilters,st,k1,k2,k3] = steps.Lbol[st] + $
-                                                        (1+z_shift)*trapez(steps_Lnu_red[*,k1,k2,k3],nu_rest)
+        steps_mean_Lnu_red_grid[Nfilters,st,k1,k2,k3] = $
+          steps.Lbol[st] + trapez(steps_Lnu_red[*,k1,k2,k3],nu_obs)
         ;integral is negative because nu is inverted, so negative sign becames positive
         ;if trapez(steps_Lnu_red[*,k1,k2,k3],nu) gt 0 then stop
         ;IR Luminosity is measured in restframe units
@@ -775,8 +781,8 @@ if n_elements(models) eq 0 then begin
           ;integral will be positive because transmission is negative and nu is inverted 
           ;if steps_mean_Lnu_red_grid[k,st,k1,k2] lt 0 then stop
         endfor  
-        steps_mean_Lnu_red_grid[Nfilters,st,k1,k2,*] = steps.Lbol[st] + $
-                                                       (1+z_shift)*trapez(steps_Lnu_red[*,k1,k2],nu_rest)
+        steps_mean_Lnu_red_grid[Nfilters,st,k1,k2,*] = $
+          steps.Lbol[st] + trapez(steps_Lnu_red[*,k1,k2],nu_obs)
         ;integral is negative because nu is inverted, so negative sign becames positive
         ;if trapez(steps_Lnu_red[*,k1,k2],nu) gt 0 then stop
       endfor

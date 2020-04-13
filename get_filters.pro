@@ -37,11 +37,11 @@ if read_filters then Filters=dblarr(Nfilters,Nwave) else Filters=double(Filters)
 wave = 1.d4*!cv.clight/nu
 
 if analysis then begin
+  Lwave = 1.d4*!cv.clight*Lnu/wave^2       ;Lwave in Lsun/micron
   Ntime = (size(Lnu))[1]
   mean_nu = dblarr(Ntime,Nfilters)
   mean_Lnu = dblarr(Ntime,Nfilters)
   mean_nu2 = dblarr(Ntime,Nfilters)
-  Lwave=dblarr(Ntime,Nwave)
   mean_Lwave=dblarr(Ntime,Nfilters)
   mean_wave = dblarr(Ntime,Nfilters)
   mean_wave2 = dblarr(Ntime,Nfilters)
@@ -59,6 +59,7 @@ for f=0,(Nfilters-1) do begin
       'UVOT_B':        trans_curve = filters_dir+'Swift/B.txt'
       'UVOT_V':        trans_curve = filters_dir+'Swift/V.txt'
       'ACS_F435W':     trans_curve = filters_dir+'HST/ACS/wfc_F435W.txt'
+      'ACS_F475W':     trans_curve = filters_dir+'HST/ACS/wfc_F475W.txt'
       'ACS_F555W':     trans_curve = filters_dir+'HST/ACS/wfc_F555W.txt'
       'ACS_F606W':     trans_curve = filters_dir+'HST/ACS/wfc_F606W.txt'
       'ACS_F658N':     trans_curve = filters_dir+'HST/ACS/wfc_F658N.txt'
@@ -118,6 +119,11 @@ for f=0,(Nfilters-1) do begin
       'SPITZER_M1':    trans_curve = filters_dir+'SPITZER/MIPS/MIPSfilt_ch1.txt'
       'SPITZER_M2':    trans_curve = filters_dir+'SPITZER/MIPS/MIPSfilt_ch2.txt'
       'SPITZER_M3':    trans_curve = filters_dir+'SPITZER/MIPS/MIPSfilt_ch3.txt'
+      'HAWC+A':        trans_curve = filters_dir+'SOFIA/HAWC+/bandA.txt'
+      'HAWC+B':        trans_curve = filters_dir+'SOFIA/HAWC+/bandB.txt'
+      'HAWC+C':        trans_curve = filters_dir+'SOFIA/HAWC+/bandC.txt'
+      'HAWC+D':        trans_curve = filters_dir+'SOFIA/HAWC+/bandD.txt'
+      'HAWC+E':        trans_curve = filters_dir+'SOFIA/HAWC+/bandE.txt'
       'HERSCHEL_P1':   trans_curve = filters_dir+'HERSCHEL/PACS/PACS1_EffectiveResponse_blue.txt'
       'HERSCHEL_P2':   trans_curve = filters_dir+'HERSCHEL/PACS/PACS2_EffectiveResponse_green.txt'
       'HERSCHEL_P3':   trans_curve = filters_dir+'HERSCHEL/PACS/PACS3_EffectiveResponse_red.txt'
@@ -131,38 +137,68 @@ for f=0,(Nfilters-1) do begin
      ;'HERSCHEL_S3':   trans_curve = filters_dir+'HERSCHEL/SPIRE/SVO_SPIRE500.txt'
      ;'HERSCHEL_S3':   trans_curve = filters_dir+'HERSCHEL/SPIRE/HCSS_SPIRE500.txt'
     endcase
-    readcol,trans_curve,w_raw,K_raw,form='D,D',/silent    ;read w_raw in microns and normalized trasmission
-    outside = where((wave lt min(w_raw)) or (wave gt max(w_raw)),comp=inside)
-    Filters[f,inside]=interpol(K_raw,w_raw,wave[inside])  ;Filters[j,*]=finterpol(K_raw,w_raw,wave,/quiet)
-    Filters[f,*]=Filters[f,*]/trap_int(wave,Filters[f,*]) ;normalizing filters in the common wavelength grid
-                                                          ;this normalization is just for plotting purposes.$
-                                                          ;Denominator cancels out in all later calculations
+    readcol,trans_curve,wraw,Kraw,form='D,D',/silent              ;read wraw in microns and normalized trasmission
+    wcomb = [wraw,wave]
+      wcomb = wcomb[sort(wcomb)]
+      wcomb = wcomb[unique(wcomb)]
+    nu_wcomb = 1.d4*!cv.clight/wcomb
+    offwraw       = where((wave  lt min(wraw)) or (wave  gt max(wraw)),/null,comp=inwraw)
+    wcomb_offwraw = where((wcomb lt min(wraw)) or (wcomb gt max(wraw)),/null,comp=wcomb_inwraw)
+    Kcomb = dblarr(wcomb.length)
+      Kcomb[wcomb_inwraw] = interpol(Kraw,wraw,wcomb[wcomb_inwraw])
+      Kcomb /= trap_int(wcomb,Kcomb)
+    possible = ((min(wraw) ge min(wave)) and (max(wraw) le max(wave))) ; convolution is only possible if wraw is fully included in wave
+    if possible then begin
+      if (n_elements(inwraw) ne 0) then begin
+        wcomb_inwave = []
+          for kk=0,(wave.length-1) do wcomb_inwave = [wcomb_inwave,where(wcomb eq wave[kk])]
+        Kwave = Kcomb[wcomb_inwave]
+        if max(Kwave) ne 0 then begin
+          Kwave /= trap_int(wave,Kwave)  ;normalizing filters in the common wavelength grid
+                                         ;this normalization is just for plotting purposes.
+                                         ;Denominator cancels out in all later calculations
+          Filters[f,*] = (Kwave) 
+        endif else begin
+          Filters[f,*] = !values.D_NaN ;if all elements of Filter are zero
+        endelse
+      endif else begin
+        ;if wave grid is too coarse, the full range of wraw may be between two consecutive points of wave.
+        ;this happens, for instance with PEGASE2 models convolved with FIR filters.
+        Filters[f,*] = !values.D_NaN
+      endelse
+    endif else begin
+      Filters[f,*] = !values.D_NaN
+    endelse
   endif
   
   if analysis then begin
     for t=0L,(Ntime-1) do begin
-      filter_Lnu = reverse(reform(Filters[f,*]*Lnu[t,*]))
-      nu_rev = reverse(nu)
-      mean_Lnu[t,f] = trap_int(nu_rev,filter_Lnu)/trap_int(nu_rev,reverse(reform(Filters[f,*])))
-;      mean_Lnu[t,f] = trap_int(nu_rev,filter_Lnu)/trap_int(nu_rev,reverse(reform(Filters[f,*])))
-      mean_nu[t,f]  = trap_int(nu_rev,nu_rev*filter_Lnu)/trap_int(nu_rev,filter_Lnu)
-      mean_nu2[t,f] = trap_int(nu_rev,nu_rev^2*filter_Lnu)/trap_int(nu_rev,filter_Lnu)
-      sigma_nu=sqrt(mean_nu2 - mean_nu^2)
-      Lwave[t,*] = 1.d4*!cv.clight*Lnu[t,*]/wave^2 ;Lwave in Lsun/micron
-      ;Lwave[t,*] = 1.d-4*nu^2*Lnu[t,*]/!cv.clight
-      mean_Lwave[t,f]  = trap_int(wave,Filters[f,*]*Lwave[t,*])/trap_int(wave,Filters[f,*])
-      mean_wave[t,f]   = trap_int(wave,wave*Filters[f,*]*Lwave[t,*])/trap_int(wave,Filters[f,*]*Lwave[t,*])
-      mean_wave2[t,f ] = trap_int(wave,wave^2*Filters[f,*]*Lwave[t,*])/trap_int(wave,Filters[f,*]*Lwave[t,*])
-      sigma_wave = sqrt(mean_wave2 - mean_wave^2)
+      Lnu_wcomb = interpol(reform(Lnu[t,*]),wave,wcomb)
+      filter_Lnu_wcomb = Kcomb*Lnu_wcomb
+      fnorm1 = trap_int(nu_wcomb,Kcomb)                                        ;fnorm1<0
+      mean_Lnu[t,f] = trap_int(nu_wcomb,filter_Lnu_wcomb)/temporary(fnorm1)    ;both denom and numerators are negative
+      fnorm2 = trap_int(nu_wcomb,filter_Lnu_wcomb)                             ;fnorm1<0
+      mean_nu[t,f]  = trap_int(nu_wcomb,nu_wcomb  *filter_Lnu_wcomb)/          fnorm2
+      mean_nu2[t,f] = trap_int(nu_wcomb,nu_wcomb^2*filter_Lnu_wcomb)/temporary(fnorm2)
+      Lwave_wcomb = 1.d4*!cv.clight*Lnu_wcomb/wcomb^2
+      filter_Lwave_wcomb = Kcomb*Lwave_wcomb
+      fnorm3 = trap_int(wcomb,Kcomb)
+      mean_Lwave[t,f]  = trap_int(wcomb,filter_Lwave_wcomb)/temporary(fnorm3)
+      fnorm4 = trap_int(wcomb,filter_Lwave_wcomb)
+      mean_wave [t,f] = trap_int(wcomb,wcomb  *filter_Lwave_wcomb)/          fnorm4
+      mean_wave2[t,f] = trap_int(wcomb,wcomb^2*filter_Lwave_wcomb)/temporary(fnorm4)
     endfor
   endif
 
 endfor
 
+sigma_nu   = sqrt(mean_nu2 - mean_nu^2)
+sigma_wave = sqrt(mean_wave2 - mean_wave^2)
+
 if plot_filters then begin
   !p.charsize=2
   ;Plotting normalized Filters
-  plot_oi,wave,wave*Filters[00,*],xr=[.1,30.],yr=[0,max((replicate(1.0,Nfilters)#wave)*Filters)]
+  plot_oi,wave,wave*Filters[00,*],xr=minmax(wave),yr=[0,max((replicate(1.0,Nfilters)#wave)*Filters)]
     for i=0,(Nfilters-1) do oplot,wave,wave*Filters[i,*],color=54+200*i/(Nfilters-1)
     oplot,wave,wave*Filters[00,*]*0
 endif
