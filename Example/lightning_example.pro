@@ -62,12 +62,12 @@ coeff_start_c=randomu(seed,5)*10
 ; Run lightning for the Tuffs model with image-based prior on inclination and the Calzetti model for comparison
 ; Each run is saved separately in the output folder as a .idl file
 lightning_MCMC_vector,data.Lnu_obs,data.Lnu_unc,0.d0,0.d0,data.galaxy_id+'_tuffs',strtrim(data.filter_labels,2),$
-         z_shift=data.redshift,Ntrials=5e3,lightning_folder=lightning_folder,$
+         z_shift=data.redshift,Ntrials=2e5,lightning_folder=lightning_folder,$
          /par5_constant,outfolder=outfolder,/adaptive,/dust_emission,$
          /Tuffs,L_star_abs_table=L_star_abs_table,/L_star_abs_model_table,parameter_start=parameter_start_t,coeff_start=coeff_start_t,$
          /par6_constant,/par8_constant,prior_dist=data,/use_priors
 
-lightning_MCMC_vector,data.Lnu_obs,data.Lnu_unc,0.d0,0.d0,data.galaxy_id+'_calz',strtrim(data.filter_labels,2),Ntrials=5e3,$
+lightning_MCMC_vector,data.Lnu_obs,data.Lnu_unc,0.d0,0.d0,data.galaxy_id+'_calz',strtrim(data.filter_labels,2),$
          z_shift=data.redshift,lightning_folder=lightning_folder,/par2_constant,/par3_constant,outfolder=outfolder,$
          /adaptive,/dust_emission,/calzetti,/par6_constant,/par8_constant,parameter_start=parameter_start_c,coeff_start=coeff_start_c
          
