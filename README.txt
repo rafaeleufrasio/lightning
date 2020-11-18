@@ -25,6 +25,10 @@ To install the Lightning package, enter the following:
 
     cd <install_dir>
     git clone https://github.com/rafaeleufrasio/lightning
+    
+This download is approximately 2.5 GB in size, mainly due to the pre-computed energy conservation models 
+for the Tuffs attenuation curves. In the future version, we intend to make these large models optional
+when downloading to decrease download times and memory.
 
 Lightning is pure IDL and requires the IDL Astronomy User's Library (https://idlastro.gsfc.nasa.gov).
 
@@ -46,11 +50,11 @@ Then the lightning startup file must be run:
 
     @ startup_lightning.pro
 
-To simplify this process, this line can be added to the users IDL_STARTUP file. If
-one does not have a startup file, startup_RTE.pro can be made the startup file and 
+To simplify this process, this line CAN be added to the users IDL_STARTUP file. If
+one does not have a startup file, startup_lightning.pro can be made the startup file and 
 added to the users preferences with:
 
-    PREF_SET, 'IDL_STARTUP', /PATH_TO_LIGHTNING_DIRECTORY/startup_RTE.pro, /commit
+    PREF_SET, 'IDL_STARTUP', /PATH_TO_LIGHTNING_DIRECTORY/startup_lightning.pro, /commit
 
 Lightning v2 must then be compiled before running using:
 
@@ -65,8 +69,8 @@ CALLING SEQUENCE:
   lightning_MCMC_vector, LNU_OBS, LNU_UNC, LTIR_OBS, LTIR_UNC, GALAXY_ID, FILTER_LABELS, /DUST_EMISSION,$
          [Z_SHIFT=Z_SHIFT, STEPS_BOUNDS=STEPS_BOUNDS, NPARALLEL=NPARALLEL, NTRIALS=NTRIALS, $
           OUTFOLDER=OUTFOLDER, LIGHTNING_FOLDER=LIGHTNING_FOLDER, ZMET=ZMET, IMF=IMF, $
-          COEFF_START=COEFF_START, COEFF_SIMGA=COEFF_SIMGA, PARAMETER_START=PARAMETER_START, $
-          PARAMETER_SIMGA=PARAMETER_SIGMA, BETA_EXPONENT=BETA_EXPONENT, PRIOR_DIST=PRIOR_DIST, $
+          COEFF_START=COEFF_START, COEFF_SIGMA=COEFF_SIGMA, PARAMETER_START=PARAMETER_START, $
+          PARAMETER_SIGMA=PARAMETER_SIGMA, BETA_EXPONENT=BETA_EXPONENT, PRIOR_DIST=PRIOR_DIST, $
           L_STAR_ABS_TABLE=L_STAR_ABS_TABLE, /PRINT_TIME, /NOLINES, /NONEBULAR, /PAR1_CONSTANT $
           /PAR2_CONSTANT, /PAR3_CONSTANT, /PAR4_CONSTANT, /PAR5_CONSTANT, /PAR6_CONSTANT, $
           /PAR7_CONSTANT, /PAR8_CONSTANT, /PAR9_CONSTANT, /PAR10_CONSTANT, /ADAPTIVE, $
@@ -79,7 +83,7 @@ REQUIRED INPUTS:
   LTIR_OBS  - The observed total infrared luminosity. With the usage of the dust model, 
                 this should be set to 0.d0
   LTIR_UNC  - The uncertainty on the total infrared luminosity. With the usage of the dust
-                model, this should be set to 0.d0
+                model, this MUST be set to 0.d0
   GALAXY_ID - The ID string label for the SED being fit (e.g., 'NGC224' or 'J004244.30+411609.00')
   FILTER_LABELS - The string labels for the filters corresponding to the observed photometry 
                     (LNU_OBS) in the same order. Filters' transmission functions must be stored 
@@ -99,7 +103,7 @@ OPTIONAL INPUTS:
     NPARALLEL        - Number of chains to run in one call of Lightning. This will only
                          fit the input SED multiple times, not multiple SEDs at once. Mainly
                          used to check for convergence of the MCMC chain.
-                         (Default is 1, which means fit the SED once)
+                         (Default is 1, which means the SED is fit once)
     NTRIALS          - Number of iterations to create the MCMC chain
                          (Default is 1e5)
     OUTFOLDER        - String containing the directory for the output files
@@ -159,7 +163,8 @@ OPTIONAL INPUTS:
                          (gamma, range:[0.0d,1.0d]), and the tenth is the PAH index (qPAH, range:[0.0047d,0.0458d]).
                         
                          (Default is [0.2,0.0,0.2,0,0,-2.d0,1.0,1.d4,0.1,0.020] for the Calzetti
-                         curve and [1.0,0.2,0.2,0.8,0.2,-2.d0,1.0,1.d4,0.1,0.020] for the Tuffs) 
+                         curve and [1.0,0.2,0.2,0.8,0.2,-2.d0,1.0,1.d4,0.1,0.020] for the Tuffs)
+                          
     PARAMETER_SIGMA  - A 10 element vector containing the starting standard deviations to use for 
                          the attenuation and dust emission parameters in the proposal covariance 
                          matrix. If NPARALLEL > 1, then PARAMETER_START can be an array 
@@ -276,11 +281,10 @@ OUTPUTS (NOTE: Output is a save file (.idl) in the OUTFOLDER directory with the 
                        from the prior for each chain iteration and each parallel chain. 
   
 NOTES:
-  Lightning does not save the output MCMC data into a well structured .fits file. It instead
-  saves it as the raw MCMC chain. To compute most parameters of interest, the chain will have
-  to be input into the MCMC_savefits_X.pro file, where X is the attenuation curve used. We do
-  not document this process here, but will document and streamline this in the upcoming version
-  of Lightning.
+  Lightning saves the output as the raw MCMC chain. To compute most parameters of interest, 
+  the chain will have to be input into the MCMC_savefits_X.pro file, where X is the attenuation 
+  curve used. We do not document this process here, but will document and streamline it in the 
+  upcoming version of Lightning.
   
 
 
@@ -290,9 +294,9 @@ An example code for fitting the SED of galaxy J123548.94+621144.7 can be found i
 subdirectory of the Lightning package.
 
 To run the example, enter the following into the IDL command line after changing the
-current directory to the Lightning directory (cd ./lightning/):
+current directory to the installation directory (cd /PATH_TO_LIGHTNING_DIRECTORY/):
 
-    @ ./Example/lightning_example.pro
+    @ ./lightning/Example/lightning_example.pro
 
 This example results in two output files. One that contains the fitting results to the SED of J123548.94+621144.7
 using the Calzetti et al. (2000) attenuation curve, and the other that contains the results using 

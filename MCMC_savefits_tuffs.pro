@@ -1,5 +1,5 @@
 pro MCMC_savefits_tuffs,galaxy,filter_labels,lnu_obs,lnu_unc,Chain_folder,outfolder,Nchain,Nsteps_max,file_name=file_name,$
-                      LTIR_table_loc=LTIR_table_loc,prior=prior,_REF_EXTRA=_extra_savefits
+                      L_star_abs_table_loc=L_star_abs_table_loc,prior=prior,_REF_EXTRA=_extra_savefits
 
 Nfilters = (size(lnu_obs))[1]
 
@@ -80,14 +80,14 @@ for i=0,(ngal-1) do begin
 	                      z_shift=0.d0,_EXTRA=_extra_savefits)
   dl07     = dl07_templates(filter_labels=filter_labels,z_shift=galaxy[i].redshift,_EXTRA=_extra_savefits)
 	                      
-  LTIR_table=mrdfits(LTIR_table_loc+'L_star_abs_model_table_z_'+string(galaxy[i].redshift,f='(f4.2)')+'.fits',1)
+  L_star_abs_table=mrdfits(L_star_abs_table_loc+'L_star_abs_model_table_z_'+string(galaxy[i].redshift,f='(f4.2)')+'.fits',1)
 
   exp_tau=!null
   vectors = {tauB_f_vectors: reform(chain[nsteps,-Nchain:-1]), rdisk_vectors: reform(chain[nsteps+1,-Nchain:-1]), F_vectors: reform(chain[nsteps+2,-Nchain:-1]), $
           cosi_vectors: reform(chain[nsteps+3,-Nchain:-1]), rbulge_vectors: reform(chain[nsteps+4,-Nchain:-1])}
-  models = lightning_models_vector(steps=steps,vectors=vectors,/tuffs,/LTIR_model_table,LTIR_table=LTIR_table,exp_tau=exp_tau,_EXTRA=_extra_savefits)
+  models = lightning_models_vector(steps=steps,vectors=vectors,/tuffs,/L_star_abs_model_table,L_star_abs_table=L_star_abs_table,exp_tau=exp_tau,_EXTRA=_extra_savefits)
   models[where(finite(models,/NaN),/null)] = 0.0
-  models_alambda = lightning_models_vector(steps=steps_alambda,vectors=vectors,/tuffs,/LTIR_model_table,LTIR_table=LTIR_table,_EXTRA=_extra_savefits)
+  models_alambda = lightning_models_vector(steps=steps_alambda,vectors=vectors,/tuffs,/L_star_abs_model_table,L_star_abs_table=L_star_abs_table,_EXTRA=_extra_savefits)
   models_alambda[where(finite(models_alambda,/NaN),/null)] = 0.0
   de_models = dl07_sed_vector(dl07,alpha=reform(chain[nsteps+5,-Nchain:-1]),umin=reform(chain[nsteps+6,-Nchain:-1]),umax=reform(chain[nsteps+7,-Nchain:-1]),$
                            gam=reform(chain[nsteps+8,-Nchain:-1]),qPAH=reform(chain[nsteps+9,-Nchain:-1]),filter_labels=filter_labels,Lbol=dust_LTIR)
