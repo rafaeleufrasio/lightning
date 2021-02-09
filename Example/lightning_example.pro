@@ -12,12 +12,11 @@
 .r MCMC_savefits_Calz.pro
 
 ; Define output folder and lightning folder
-lightning_folder='./lightning/'
+lightning_folder='./'
 outfolder=lightning_folder+'Example/'
 
 ; Read in the data to be fit
-; Luminosity data are in L_nu (L_sun Hz^-1) and have been recalibrated as stated in section 2.1 
-; of Doore et al. (2020, in prep).
+; Luminosity data are in L_nu (L_sun Hz^-1)
 data=mrdfits(lightning_folder+'Example/J123548.94+621144.7.fits',1)
 
 ; Read in precomputed file of L_star_abs for the energy balance assumption
@@ -37,9 +36,9 @@ rant[*,7] = [ 3.d5,  3.d5]     ;Umax
 rant[*,8] = [ 0.d0,  1.d0]     ;gamma_dust
 rant[*,9]= [ 0.0047,0.0458d0]  ;q_PAH
 
-; Randomly generate starting point for each parameter and SFH coefficient
-parameter_start_t=randomu(seed,10)*rebin(reform(rant[1,*]-rant[0,*]),10)+rebin(reform(rant[0,*]),10)
-coeff_start_t=randomu(seed,5)*10
+; Generate starting point for each parameter and SFH coefficient
+parameter_start_t=mean(rant,dim=1)
+coeff_start_t=replicate(1.d0,5)
 
 ; Limit parameters to set ranges or values for Calzetti Model
 ranc=dblarr(2,10)
@@ -54,29 +53,34 @@ ranc[*,7] = [ 3.d5,  3.d5]    ;Umax
 ranc[*,8] = [ 0.d0,  1.d0]    ;gamma_dust
 ranc[*,9]= [ 0.0047,0.0458d0] ;q_PAH
 
-; Randomly generate starting point for each parameter and SFH coefficient
-parameter_start_c=randomu(seed,10)*rebin(reform(ranc[1,*]-ranc[0,*]),10)+rebin(reform(ranc[0,*]),10)
-coeff_start_c=randomu(seed,5)*10
+; Generate starting point for each parameter and SFH coefficient
+parameter_start_c=mean(ranc,dim=1)
+coeff_start_c=replicate(1.d0,5)
 
 
-; Run lightning for the Tuffs model with image-based prior on inclination and the Calzetti model for comparison
-; Each run is saved separately in the output folder as a .idl file
-lightning_MCMC_vector,data.Lnu_obs,data.Lnu_unc,0.d0,0.d0,data.galaxy_id+'_tuffs',strtrim(data.filter_labels,2),$
-         z_shift=data.redshift,Ntrials=2e5,lightning_folder=lightning_folder,$
-         /par5_constant,outfolder=outfolder,/adaptive,/dust_emission,$
-         /Tuffs,L_star_abs_table=L_star_abs_table,/L_star_abs_model_table,parameter_start=parameter_start_t,coeff_start=coeff_start_t,$
-         /par6_constant,/par8_constant,prior_dist=data,/use_priors
-
-lightning_MCMC_vector,data.Lnu_obs,data.Lnu_unc,0.d0,0.d0,data.galaxy_id+'_calz',strtrim(data.filter_labels,2),$
-         z_shift=data.redshift,lightning_folder=lightning_folder,/par2_constant,/par3_constant,outfolder=outfolder,$
+; Run lightning for the Calzetti model
+; The run is saved in the output folder as a .idl file
+lightning_MCMC_vector,data.Lnu_obs,data.Lnu_unc,0.d0,0.d0,data.galaxy_id+'_calz',strtrim(data.filter_labels,2),Ntrials=1e5,$
+         z_shift=data.redshift,lightning_folder=lightning_folder,/par2_constant,/par3_constant,outfolder=outfolder,/print_time,$
          /adaptive,/dust_emission,/calzetti,/par6_constant,/par8_constant,parameter_start=parameter_start_c,coeff_start=coeff_start_c
-         
-         
-; Save the lightning output into a more convenient fits file for analysis
-MCMC_savefits_tuffs,data,strtrim(data.filter_labels,2),data.lnu_obs,data.lnu_unc,outfolder,outfolder,5000,5,$
-         file_name='MCMC_lightning_tuffs',/prior,L_star_abs_table_loc=lightning_folder+'L_star_abs_model_table/',$
-         lightning_folder=lightning_folder
 
+; Save the lightning output into a more convenient fits file for analysis
 MCMC_savefits_calz,data,strtrim(data.filter_labels,2),data.lnu_obs,data.lnu_unc,outfolder,outfolder,5000,5,$
          file_name='MCMC_lightning_calz',lightning_folder=lightning_folder,/calzetti
+
+
+; To run the Tuffs model with image-based prior on inclination uncomment the below calls to lightning_MCMC_vector
+;  and MCMC_savefits_tuffs to save it to a fits file
+; Note: Running the Tuffs model is time consuming, taking approximately ~40 minutes for this one galaxy
+;   compared to the ~15 minutes to run the Calzetti fit.
+;lightning_MCMC_vector,data.Lnu_obs,data.Lnu_unc,0.d0,0.d0,data.galaxy_id+'_tuffs',strtrim(data.filter_labels,2),$
+;         z_shift=data.redshift,Ntrials=1e5,lightning_folder=lightning_folder,$
+;         /par5_constant,outfolder=outfolder,/adaptive,/dust_emission,$
+;         /Tuffs,L_star_abs_table=L_star_abs_table,/L_star_abs_model_table,parameter_start=parameter_start_t,coeff_start=coeff_start_t,$
+;         /par6_constant,/par8_constant,prior_dist=data,/use_priors
+;
+;MCMC_savefits_tuffs,data,strtrim(data.filter_labels,2),data.lnu_obs,data.lnu_unc,outfolder,outfolder,5000,5,$
+;         file_name='MCMC_lightning_tuffs',/prior,L_star_abs_table_loc=lightning_folder+'L_star_abs_model_table/',$
+;         lightning_folder=lightning_folder
+         
 
