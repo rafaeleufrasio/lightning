@@ -294,15 +294,14 @@ An example code for fitting the SED of galaxy J123548.94+621144.7 can be found i
 subdirectory of the Lightning package.
 
 To run the example, enter the following into the IDL command line after changing the
-current directory to the installation directory (cd /PATH_TO_LIGHTNING_DIRECTORY/):
+current directory to the installation directory (cd /PATH_TO_LIGHTNING_DIRECTORY/lightning/):
 
-    @ ./lightning/Example/lightning_example.pro
+    @ ./Example/lightning_example.pro
 
-This example results in two output files. One that contains the fitting results to the SED of J123548.94+621144.7
-using the Calzetti et al. (2000) attenuation curve, and the other that contains the results using 
-the Tuffs et al. (2004) inclination-dependent attenuation curves. Fits files for the parameters of interest
-have been computed. The corresponding fits files (MCMC_lightning_calz.fits and MCMC_lightning_tuffs.fits, 
-respectively) contain the final 5,000 iterations of the MCMC chain for various parameters of interest, 
+This example results in an output file, which contains the fitting results to the SED of 
+J123548.94+621144.7 using the Calzetti et al. (2000) attenuation curve. A fits file for 
+the parameters of interest have been computed. The fits file (MCMC_lightning_calz.fits) 
+contain the final 5,000 iterations of the MCMC chain for various parameters of interest,
 such as the SFH, stellar mass, and AV; and the attenuation and dust emission parameters.
 
 
