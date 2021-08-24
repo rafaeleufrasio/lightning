@@ -26,10 +26,10 @@ L_star_abs_table=mrdfits(lightning_folder+'L_star_abs_model_table/L_star_abs_mod
 ; Limit parameters to set ranges or values for Tuffs Model
 rant=dblarr(2,10)
 rant[*,0] = [ 0.d,8.0d]        ;tau_b_f
-rant[*,1] = [ 0.d,1.0d]        ;r_disk
+rant[*,1] = [ 0.d,1.0d]        ;r0_old
 rant[*,2] = [0.d,0.61d]        ;F
 rant[*,3] = [ 0.d,1.0d]        ;cosi
-rant[*,4] = [ 0.d,0.0d]        ;r_bulge
+rant[*,4] = [ 0.d,0.0d]        ;B/D
 rant[*,5] = [ 2.d0, 2.d0]      ;alpha
 rant[*,6] = [ 0.7d0,25]        ;Umin
 rant[*,7] = [ 3.d5,  3.d5]     ;Umax
@@ -74,13 +74,11 @@ MCMC_savefits_calz,data,strtrim(data.filter_labels,2),data.lnu_obs,data.lnu_unc,
 ; Note: Running the Tuffs model is time consuming, taking approximately ~40 minutes for this one galaxy
 ;   compared to the ~15 minutes to run the Calzetti fit.
 ;lightning_MCMC_vector,data.Lnu_obs,data.Lnu_unc,0.d0,0.d0,data.galaxy_id+'_tuffs',strtrim(data.filter_labels,2),$
-;         z_shift=data.redshift,Ntrials=1e5,lightning_folder=lightning_folder,$
+;         z_shift=data.redshift,Ntrials=1e5,lightning_folder=lightning_folder,/par2_constant,$
 ;         /par5_constant,outfolder=outfolder,/adaptive,/dust_emission,$
 ;         /Tuffs,L_star_abs_table=L_star_abs_table,/L_star_abs_model_table,parameter_start=parameter_start_t,coeff_start=coeff_start_t,$
-;         /par6_constant,/par8_constant,prior_dist=data,/use_priors
+;         /par6_constant,/par8_constant,prior_dist=data,/use_priors,rold0_ages=[0,0,0,1,1]
 ;
 ;MCMC_savefits_tuffs,data,strtrim(data.filter_labels,2),data.lnu_obs,data.lnu_unc,outfolder,outfolder,5000,5,$
 ;         file_name='MCMC_lightning_tuffs',/prior,L_star_abs_table_loc=lightning_folder+'L_star_abs_model_table/',$
 ;         lightning_folder=lightning_folder
-         
-

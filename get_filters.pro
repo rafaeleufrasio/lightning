@@ -168,6 +168,14 @@ for f=0,(Nfilters-1) do begin
      ;'HERSCHEL_S3':        trans_curve = filters_dir+'HERSCHEL/SPIRE/SVO_SPIRE500_ext.txt'
      ;'HERSCHEL_S3':        trans_curve = filters_dir+'HERSCHEL/SPIRE/SVO_SPIRE500.txt'
       'HERSCHEL_S3':        trans_curve = filters_dir+'HERSCHEL/SPIRE/HCSS_SPIRE500.txt'
+      'SCUBA_450':          trans_curve = filters_dir+'JCMT/SCUBA/SCUBA_450.txt'
+      'SCUBA_850':          trans_curve = filters_dir+'JCMT/SCUBA/SCUBA_850.txt'
+      'HFI_850GHz':         trans_curve = filters_dir+'Planck/HFI/HFI_850GHz.txt'
+      'HFI_350GHz':         trans_curve = filters_dir+'Planck/HFI/HFI_350GHz.txt'
+      'HFI_350GHz':         trans_curve = filters_dir+'Planck/HFI/HFI_350GHz.txt'
+      'HFI_220GHz':         trans_curve = filters_dir+'Planck/HFI/HFI_220GHz.txt'
+      'HFI_140GHz':         trans_curve = filters_dir+'Planck/HFI/HFI_140GHz.txt'
+      'HFI_100GHz':         trans_curve = filters_dir+'Planck/HFI/HFI_100GHz.txt'
     endcase
     readcol,trans_curve,wraw,Kraw,form='D,D',/silent              ;read wraw in microns and normalized trasmission
     wcomb = [wraw,wave]

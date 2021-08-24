@@ -216,13 +216,16 @@ end
 
 
 
-function tuffs_matrix_unred_vector,wave,tauB_f_arr=tauB_f_arr,rdisk_arr=rdisk_arr,rbulge_arr=rbulge_arr, $
-			F_arr=F_arr,cosi_arr=cosi_arr,lightning_folder=lightning_folder
+function tuffs_matrix_unred_vector,wave,tauB_f_arr=tauB_f_arr,F_arr=F_arr,cosi_arr=cosi_arr, $
+			rold0_arr=rold0_arr,b_to_d_arr=b_to_d_arr,lightning_folder=lightning_folder
+
+;Modification History
+; Keith Doore     - modified to have rdisk as intrinsic property and rbulge as B/D - April 13th 2021
 
 ;input wavelengths must be in microns
-if (n_elements(tauB_f_arr) eq 0) then tauB_f_arr = 0.d0
-if (n_elements(rdisk_arr) eq 0)  then rdisk_arr  = 0.d0
-if (n_elements(rbulge_arr) eq 0) then rbulge_arr = 0.d0
+if (n_elements(tauB_f_arr) eq 0) then tauB_f_arr = 1.d0
+if (n_elements(rold0_arr) eq 0)  then rold0_arr  = 0.d0
+if (n_elements(b_to_d_arr) eq 0) then b_to_d_arr = 0.d0
 if (n_elements(F_arr) eq 0) 	 then F_arr      = 0.d0
 if (n_elements(cosi_arr) eq 0)   then cosi_arr   = 1.d0
 if (n_elements(lightning_folder) eq 0) then lightning_folder='~/Lightning/'
@@ -230,28 +233,31 @@ if (n_elements(lightning_folder) eq 0) then lightning_folder='~/Lightning/'
 
 if max(cosi_arr) gt 1 or min(cosi_arr) lt 0 then message,'Error -- cosi must be between 0 and 1'
 if max(F_arr) ge 0.61 or min(F_arr) lt 0 then message,'Error -- F must be between 0 and 0.61'
-if max(rbulge_arr) gt 1 or min(rbulge_arr) lt 0 then message,'Error -- rbulge must be between 0 and 1'
-if max(rdisk_arr) gt 1 or min(rdisk_arr) lt 0 then message,'Error -- rdisk must be between 0 and 1'
-if min(tauB_f_arr) lt 0 then message,'Error -- TauB_f must be greater than 0'
-;if max() gt 1 then message,'Error -- (rdisk + rbulge) must be less than or equal to 1'
+if min(b_to_d_arr) lt 0 then message,'Error -- b_to_d must be greater than or equal to 0'
+if min(rold0_arr) lt 0 or max(rold0_arr) gt 1 then message,'Error -- rold0 must be between 0 and 1'
+if min(tauB_f_arr) lt 0 then message,'Error -- TauB_f must be greater than or equal to 0'
 
 
 ;coeff.dat file from ftp site (http://cdsarc.u-strasbg.fr/ftp/J/A+A/527/A109/coeff.dat) in Popescu et al (2011)
 ;converted to convenient 3d matrix where [tau,wavebands,coeff] are the dimensions and values
 restore,lightning_folder+'tuffs_coeff.idl'
 
-tau=[0.1,0.3,0.5,1.0,2.0,4.0,8.0]  ;tau values used in Table 3 in Popescu et al (2011)
+tau=[0.1d,0.3,0.5,1.0,2.0,4.0,8.0]  ;tau values used in Table 3 in Popescu et al (2011)
 
 ;Include waveband at 50000 Angstroms where mlambda is 0 for interpolation smoothness
-wavebands=[912.,1350,1500,1650,2000,2200,2500,2800,3650,4430,5640,8090,12590,22000,50000]   ;wavelengths of the bands used (Angstroms)
+wavebands=[912.d,1350,1500,1650,2000,2200,2500,2800,3650,4430,5640,8090,12590,22000,50000]   ;wavelengths of the bands used (Angstroms)
 
 ;Values from Table E.4 in Popescu et al (2011)
 Fcal=0.35d0
-wave_flambda=[912.,1350,1500,1650,2000,2200,2500,2800,3650,4430,5640,8090,12590,22000,50000] ;wavelengths are in Angstroms
-flamb_fcal_column=[0.427,0.484,0.527,0.545,0.628,0.676,0.739,0.794,0.892,0.932,0.962,0.984,0.991,0.994,0.999]
+flamb_fcal_column=[0.427d,0.484,0.527,0.545,0.628,0.676,0.739,0.794,0.892,0.932,0.962,0.984,0.991,0.994,0.999]
 
 ;[value=(1−Fcal*fλ)]->[(1-value)/Fcal=fλ]
 flambda=(1-flamb_fcal_column)/Fcal ;fλ values
+
+;Convert b_to_d ratio into rbulge and rdisk
+;rdisk+rbulge=rold and rdisk*B/D=rbulge
+rdisk0_arr=rold0_arr/(1+b_to_d_arr)
+rbulge0_arr=rold0_arr*b_to_d_arr/(1+b_to_d_arr)
 
 ;Add a tau at 0 for interpolation smoothness
 ;Set the diffuse attenuation to 0 for this case
@@ -261,12 +267,12 @@ nwave=n_elements(wave)
 ncosi=n_elements(cosi_arr)
 ntauB_f=n_elements(tauB_f_arr)
 nF=n_elements(f_arr)
-nrdisk=n_elements(rdisk_arr)
-nrbulge=n_elements(rbulge_arr)
+nrdisk0=n_elements(rdisk0_arr)
+nrbulge0=n_elements(rbulge0_arr)
 nwavebands=n_elements(wavebands)
 
-if ncosi ne ntaub_f or ncosi ne nf or ncosi ne nrdisk or ncosi ne nrbulge or ntauB_f ne nf or ntauB_f ne nrdisk or ntauB_f ne nrbulge or $
-nF ne nrdisk or nF ne nrbulge or nrdisk ne nrbulge then message,'Input parameters must have same length for vectorization'
+if ncosi ne ntaub_f or ncosi ne nf or ncosi ne nrdisk0 or ncosi ne nrbulge0 or ntauB_f ne nf or ntauB_f ne nrdisk0 or ntauB_f ne nrbulge0 or $
+nF ne nrdisk0 or nF ne nrbulge0 or nrdisk0 ne nrbulge0 then message,'Input parameters must have same length for vectorization'
 nn=ncosi
 
 mlambda_d=dblarr(ntau,nwavebands,nn)
@@ -278,51 +284,57 @@ mlambda_b=dblarr(ntau,nwavebands,nn)
 ;First tau index is tau=0 and last wavelength index is wavelength=50000 Angstroms. Set both to 0 for mlambda
 One_minus_cosi_arr=rebin(reform((1-cosi_arr),1,1,nn),ntau,nwavebands,nn)
 for i=0,(nn-1) do begin
-	mlambda_d[1:*,0:-2,i]=(One_minus_cosi_arr[*,*,i])^0.d0*adisk[*,*,0]+(One_minus_cosi_arr[*,*,i])^1.d0*adisk[*,*,1]+(One_minus_cosi_arr[*,*,i])^2.d0*adisk[*,*,2]+$
-				(One_minus_cosi_arr[*,*,i])^3.d0*adisk[*,*,3]+(One_minus_cosi_arr[*,*,i])^4.d0*adisk[*,*,4]+(One_minus_cosi_arr[*,*,i])^5.d0*adisk[*,*,5]
-	mlambda_td[1:*,0:-2,i]=(One_minus_cosi_arr[*,*,i])^0.d0*atdisk[*,*,0]+(One_minus_cosi_arr[*,*,i])^1.d0*atdisk[*,*,1]+(One_minus_cosi_arr[*,*,i])^2.d0*atdisk[*,*,2]+$
-				(One_minus_cosi_arr[*,*,i])^3.d0*atdisk[*,*,3]+(One_minus_cosi_arr[*,*,i])^4.d0*atdisk[*,*,4]+(One_minus_cosi_arr[*,*,i])^5.d0*atdisk[*,*,5]
-	mlambda_b[1:*,0:-2,i]=(One_minus_cosi_arr[*,*,i])^0.d0*abulge[*,*,0]+(One_minus_cosi_arr[*,*,i])^1.d0*abulge[*,*,1]+(One_minus_cosi_arr[*,*,i])^2.d0*abulge[*,*,2]+$
-				(One_minus_cosi_arr[*,*,i])^3.d0*abulge[*,*,3]+(One_minus_cosi_arr[*,*,i])^4.d0*abulge[*,*,4]+(One_minus_cosi_arr[*,*,i])^5.d0*abulge[*,*,5]
+	mlambda_d[1:*,0:-2,i]=(One_minus_cosi_arr[1:*,0:-2,i])^0.d0*adisk[*,*,0]+(One_minus_cosi_arr[1:*,0:-2,i])^1.d0*adisk[*,*,1]+$
+                          (One_minus_cosi_arr[1:*,0:-2,i])^2.d0*adisk[*,*,2]+(One_minus_cosi_arr[1:*,0:-2,i])^3.d0*adisk[*,*,3]+$
+                          (One_minus_cosi_arr[1:*,0:-2,i])^4.d0*adisk[*,*,4]+(One_minus_cosi_arr[1:*,0:-2,i])^5.d0*adisk[*,*,5]
+	mlambda_td[1:*,0:-2,i]=(One_minus_cosi_arr[1:*,0:-2,i])^0.d0*atdisk[*,*,0]+(One_minus_cosi_arr[1:*,0:-2,i])^1.d0*atdisk[*,*,1]+$
+                           (One_minus_cosi_arr[1:*,0:-2,i])^2.d0*atdisk[*,*,2]+(One_minus_cosi_arr[1:*,0:-2,i])^3.d0*atdisk[*,*,3]+$
+                           (One_minus_cosi_arr[1:*,0:-2,i])^4.d0*atdisk[*,*,4]+(One_minus_cosi_arr[1:*,0:-2,i])^5.d0*atdisk[*,*,5]
+	mlambda_b[1:*,0:-2,i]=(One_minus_cosi_arr[1:*,0:-2,i])^0.d0*abulge[*,*,0]+(One_minus_cosi_arr[1:*,0:-2,i])^1.d0*abulge[*,*,1]+$
+                          (One_minus_cosi_arr[1:*,0:-2,i])^2.d0*abulge[*,*,2]+(One_minus_cosi_arr[1:*,0:-2,i])^3.d0*abulge[*,*,3]+$
+                          (One_minus_cosi_arr[1:*,0:-2,i])^4.d0*abulge[*,*,4]+(One_minus_cosi_arr[1:*,0:-2,i])^5.d0*abulge[*,*,5]
 endfor
 
-;calculate delta_mlambda for entire galaxy using Equation 16 from Tuffs et al (2004)
-rdisk_mat=rebin(reform(rdisk_arr,1,1,nn),ntau,nwavebands,nn)
-rbulge_mat=rebin(reform(rbulge_arr,1,1,nn),ntau,nwavebands,nn)
-att_tdisk_1=(1.d0-temporary(rdisk_mat)-temporary(rbulge_mat))
+;calculate delta_mlambda for entire galaxy using Equation 4 given in Doore et al. (2021)
+; Equation is the intrinsic version of Equation 16 from Tuffs et al (2004)
+rbulge0_mat=rebin(reform(rbulge0_arr,1,1,nn),ntau,nwavebands,nn)
+rdisk0_mat=rebin(reform(rdisk0_arr,1,1,nn),ntau,nwavebands,nn)
+
+mlambda_b_mat=mlambda_b
+att_bulge=rbulge0_mat*10.d0^(-1.d0*temporary(mlambda_b_mat)/2.5d0)
+;There is no attenuation from the bulge in the UV
+att_bulge[*,0:8]=0.d0
+
+
+mlambda_d_mat=mlambda_d
+att_disk=rdisk0_mat*10.d0^(-1.d0*temporary(mlambda_d_mat)/2.5d0)
+;There is no attenuation from the disk in the UV
+att_disk[*,0:8]=0.d0
+
+att_disk_bulge=temporary(att_disk)+temporary(att_bulge)
+
+
+mlambda_td_mat=mlambda_td
+att_tdisk_1=(1-temporary(rdisk0_mat)-temporary(rbulge0_mat))*10.d0^(-1.d0*temporary(mlambda_td_mat)/2.5d0)
 
 F_mat=rebin(reform(F_arr,1,1,nn),ntau,nwavebands,nn)
 flam_mat=rebin(reform(flambda,1,nwavebands,1),ntau,nwavebands,nn)
-att_tdisk_2=(1-(temporary(F_mat)*temporary(flam_mat)))
-
-att_tdisk_temp=temporary(att_tdisk_1)/temporary(att_tdisk_2)
-;NaNs occur due to 0/0. If this occurs there is no thin disk contribution to emission therefore there can be no attenuation
-att_tdisk_temp[where(finite(att_tdisk_temp,/nan) eq 1,/null)]=0.d0
-
-mlambda_td_mat=mlambda_td
-att_tdisk=temporary(att_tdisk_temp)*10.d0^(temporary(mlambda_td_mat)/2.5d0)
+att_tdisk=(1-(temporary(F_mat)*temporary(flam_mat)))*temporary(att_tdisk_1)
 
 
-rdisk_mat=rebin(reform(rdisk_arr,1,1,nn),ntau,nwavebands,nn)
-mlambda_d_mat=mlambda_d
-att_disk=temporary(rdisk_mat)*10.d0^(temporary(mlambda_d_mat)/2.5d0)
-
-att_tdisk_disk=temporary(att_tdisk)+temporary(att_disk)
-
-
-rbulge_mat=rebin(reform(rbulge_arr,1,1,nn),ntau,nwavebands,nn)
-mlambda_b_mat=mlambda_b
-att_bulge=temporary(rbulge_mat)*10.d0^(temporary(mlambda_b_mat)/2.5d0)
-
-
-mlambda=2.5d0*alog10(temporary(att_tdisk_disk)+temporary(att_bulge))
+mlambda=-2.5d0*alog10(temporary(att_tdisk)+temporary(att_disk_bulge))
+;There is no attenuation at 5um or taub_f=0
+mlambda[0,*]=0.d0
+mlambda[*,-1]=0.d0
+;Infinities occur if rdisk0 or rbulge0=1, due to no attenuation in UV. Set to 0
+mlambda[where(finite(mlambda) eq 0,/null)]=0.d0
 
 
 ;interpolate data for input tauB_f's and input wavelength's
 delta_m_tau=dblarr(nwavebands)
 delta_m=dblarr(nwave,nn)
 for i=0,(nn-1) do begin $
-  for m=0,(nwavebands-1) do delta_m_tau[m]=interpol(mlambda[*,m,i],tau,tauB_f_arr[i]) &$
+  for m=0,(nwavebands-1) do delta_m_tau[m]=interpol(mlambda[*,m,i],tau,tauB_f_arr[i])
   delta_m[*,i]=interpol(delta_m_tau,wavebands,(wave*10000.d0))
   ;Set attenuation to 0 at wavelengths greater than 5.0 microns. Do this in case interpolation has error.
   delta_m[where(wave gt 5.d0 or wave lt 9.12d-2,/null),i]=0.0  
@@ -342,7 +354,8 @@ end
 
 function lightning_models_vector,vectors=vectors,steps=steps,Tuffs_attenuation=Tuffs_attenuation,exp_tau=exp_tau, $
                                 Filters=Filters,print_time=print_time,time=time,L_star_abs_model_table=L_star_abs_model_table, $
-			                    L_star_abs_table=L_star_abs_table,BC_exp_tau=BC_exp_tau,_EXTRA=_e_models
+			                    L_star_abs_table=L_star_abs_table,BC_exp_tau=BC_exp_tau,rold0_ages=rold0_ages,$
+                                _EXTRA=_e_models
 
 
 ;Modification History
@@ -352,6 +365,8 @@ function lightning_models_vector,vectors=vectors,steps=steps,Tuffs_attenuation=T
 ; Keith Doore     - Fixed issue with L_star_abs_table if a data point was at the final point in the table - April 27th 2020
 ; Keith Doore     - Added ability to use pure Calzetti curve - May 6th 2020
 ; Keith Doore     - Added _REF_EXTRA for keyword inheritance to cut down on list of keywords - May 6th 2020
+; Keith Doore     - modified Tuffs attenuation to have rdisk as intrinsic property and rbulge as B/D - April 13th 2021
+; Keith Doore     - added rold0_ages, is 1 or 0 for the corresponding age bins - April 13th 2021
 
 
 
@@ -369,7 +384,6 @@ Nsteps = steps.bounds.length - 1
 wave_rest = steps.wave_rest ; restframe wavelength
 wave_obs  = steps.wave_obs  ; observed wavelength
 Nwave = wave_rest.length
-
 nu_rest = 1.d4 * !cv.clight / wave_rest
 nu_obs  = 1.d4 * !cv.clight / wave_obs
 z_shift = steps.z_shift
@@ -379,20 +393,49 @@ if (n_elements(Filters) eq 0) then begin
   for k=0,(Nfilters-1) do Filters[k,*] /= (trapez(Filters[k,*],nu_obs))[0]
 endif
 
+; check that rold0_ages is of correct format
+if n_elements(rold0_ages) ne 0 then begin
+  if n_elements(rold0_ages) ne nsteps then $
+    message,'rold0_ages must have same number of elements as number of age bins'
+  if n_elements(where(rold0_ages eq 1.d0 or rold0_ages eq 0.d0,/null)) ne nsteps then $
+    message,'rold0_ages must have values of either 1 or 0'
+endif else begin
+  rold0_ages=replicate(-1.0d0,nsteps)
+endelse
+
+
 if keyword_set(Tuffs_attenuation) then begin
   tauB_f_vectors = vectors.tauB_f_vectors & n1 = n_elements(tauB_f_vectors)
-  rdisk_vectors  = vectors.rdisk_vectors  & n2 = n_elements(rdisk_vectors)
+  rold0_vectors  = vectors.rold0_vectors  & n2 = n_elements(rold0_vectors)
   F_vectors      = vectors.F_vectors      & n3 = n_elements(F_vectors)
   cosi_vectors   = vectors.cosi_vectors   & n4 = n_elements(cosi_vectors)
-  rbulge_vectors = vectors.rbulge_vectors & n5 = n_elements(rbulge_vectors)
-  if n_elements(exp_tau) eq 0 then $
+  b_to_d_vectors = vectors.b_to_d_vectors & n5 = n_elements(b_to_d_vectors)
+  if n_elements(exp_tau) eq 0 and total(rold0_ages) lt 0 then begin
     exp_tau=Tuffs_matrix_unred_vector(wave_rest,               $
                                tauB_f_arr = tauB_f_vectors,$
-                               rdisk_arr  = rdisk_vectors, $
-                               rbulge_arr = rbulge_vectors,$
+                               rold0_arr = rold0_vectors, $
+                               b_to_d_arr = b_to_d_vectors,$
                                F_arr=F_vectors,            $
                                cosi_arr=cosi_vectors,      $
                                _EXTRA=_e_models)
+  endif else if n_elements(exp_tau) eq 0 and total(rold0_ages) ge 0 then begin
+    rold0_y_vectors = replicate(0.d0,n1)
+    exp_tau_young=Tuffs_matrix_unred_vector(wave_rest,               $
+                               tauB_f_arr = tauB_f_vectors,$
+                               rold0_arr = rold0_y_vectors, $
+                               b_to_d_arr = b_to_d_vectors,$
+                               F_arr=F_vectors,            $
+                               cosi_arr=cosi_vectors,      $
+                               _EXTRA=_e_models)
+    rold0_o_vectors = replicate(1.d0,n1)
+    exp_tau_old=Tuffs_matrix_unred_vector(wave_rest,               $
+                               tauB_f_arr = tauB_f_vectors,$
+                               rold0_arr = rold0_o_vectors, $
+                               b_to_d_arr = b_to_d_vectors,$
+                               F_arr=F_vectors,            $
+                               cosi_arr=cosi_vectors,      $
+                               _EXTRA=_e_models)
+  endif
 endif else begin
   tauV_DIFF_vectors = vectors.tauV_DIFF_vectors & n1 = n_elements(tauV_DIFF_vectors)
   delta_vectors     = vectors.delta_vectors     & n2 = n_elements(delta_vectors)
@@ -418,42 +461,80 @@ Lnu_inc = dblarr(Nsteps,nn)
 
 if keyword_set(L_star_abs_model_table) then begin
   if n_elements(L_star_abs_table) eq 0 then $
-    L_star_abs_table=mrdfits(_e_models.lightning_folder+'/L_star_abs_model_table/L_star_abs_model_table_z_'+string(z_shift,'(F4.2)')+'.fits',1)
+    L_star_abs_table=mrdfits(_e_models.lightning_folder+'L_star_abs_model_table/L_star_abs_model_table_z_'+string(z_shift,'(F4.2)')+'.fits',1)
 
   n1_L_star_abs_table = n_elements(L_star_abs_table.tauB_f_grid)
-  n2_L_star_abs_table = n_elements(L_star_abs_table.rdisk_grid)
+  n2_L_star_abs_table = n_elements(L_star_abs_table.rdisk0_grid)
   n3_L_star_abs_table = n_elements(L_star_abs_table.F_grid)
-  n5_L_star_abs_table = n_elements(L_star_abs_table.rbulge_grid)
-  taub_loc   = interpol(lindgen(n1_L_star_abs_table),L_star_abs_table.tauB_f_grid,tauB_f_vectors)>0
-  rdisk_loc  = interpol(lindgen(n2_L_star_abs_table),L_star_abs_table.rdisk_grid,rdisk_vectors)>0
-  F_loc      = interpol(lindgen(n3_L_star_abs_table),L_star_abs_table.F_grid,F_vectors)>0
-  rbulge_loc = interpol(lindgen(n5_L_star_abs_table),L_star_abs_table.rbulge_grid,rbulge_vectors)>0
-  
-  tau_weights=taub_loc-fix(taub_loc)
-  rdisk_weights=rdisk_loc-fix(rdisk_loc)
-  f_weights=f_loc-fix(f_loc)
-  rbulge_weights=rbulge_loc-fix(rbulge_loc)
-  
-  ;Needed to allow for below process to work if n5_L_star_abs_table=1, which it currently is
-  if n5_L_star_abs_table eq 1 then LTIR_model=rebin(L_star_abs_table.LTIR_model,L_star_abs_table.nsteps,n1_L_star_abs_table,n2_L_star_abs_table,n3_L_star_abs_table,2)
+  n5_L_star_abs_table = n_elements(L_star_abs_table.rbulge0_grid)
 
-  
-  for k1=0,(nn-1) do begin
-    if taub_loc[k1] eq (n1_L_star_abs_table-1) then taub_loc_temp=[taub_loc[k1],taub_loc[k1]] $
-      else taub_loc_temp=[taub_loc[k1]:(taub_loc[k1]+1)]
-    if rdisk_loc[k1] eq (n2_L_star_abs_table-1) then rdisk_loc_temp=[rdisk_loc[k1],rdisk_loc[k1]] $
-      else rdisk_loc_temp=[rdisk_loc[k1]:(rdisk_loc[k1]+1)]
-    if f_loc[k1] eq (n3_L_star_abs_table-1) then f_loc_temp=[f_loc[k1],f_loc[k1]] $
-      else f_loc_temp=[f_loc[k1]:(f_loc[k1]+1)] 
-    if rbulge_loc[k1] eq (n5_L_star_abs_table-1) then rbulge_loc_temp=[rbulge_loc[k1],rbulge_loc[k1]] $
-      else rbulge_loc_temp=[rbulge_loc[k1]:(rbulge_loc[k1]+1)] 
-      
-    averaging_region=reform(LTIR_model[*,taub_loc_temp,rdisk_loc_temp,f_loc_temp,rbulge_loc_temp])
-    temp1=reform(averaging_region[*,1,*,*,*]*tau_weights[k1]+averaging_region[*,0,*,*,*]*(1-tau_weights[k1]))
-    temp2=reform(temp1[*,1,*,*]*rdisk_weights[k1]+temp1[*,0,*,*]*(1-rdisk_weights[k1]))
-    temp3=reform(temp2[*,1,*]*f_weights[k1]+temp2[*,0,*]*(1-f_weights[k1]))
-    Lnu_inc[*,k1]=reform(temp3[*,1]*rbulge_weights[k1]+temp3[*,0]*(1-rbulge_weights[k1]))
-  endfor
+  ;Needed to allow for below process to work if n5_L_star_abs_table=1, which it currently is
+  if n5_L_star_abs_table eq 1 then LABS_STAR_MODEL=rebin(L_star_abs_table.LABS_STAR_MODEL,L_star_abs_table.nsteps,n1_L_star_abs_table,n2_L_star_abs_table,n3_L_star_abs_table,2)
+
+  taub_loc    = interpol(lindgen(n1_L_star_abs_table),L_star_abs_table.tauB_f_grid,tauB_f_vectors)>0
+  F_loc       = interpol(lindgen(n3_L_star_abs_table),L_star_abs_table.F_grid,F_vectors)>0
+  tau_weights=taub_loc-fix(taub_loc)
+  f_weights=f_loc-fix(f_loc)
+
+  if total(rold0_ages) lt 0 then begin
+    rdisk0_vectors=rold0_vectors/(1+b_to_d_vectors)
+    rbulge0_vectors=rold0_vectors*b_to_d_vectors/(1+b_to_d_vectors)
+
+    rdisk0_loc  = interpol(lindgen(n2_L_star_abs_table),L_star_abs_table.rdisk0_grid,rdisk0_vectors)>0
+    rbulge0_loc = interpol(lindgen(n5_L_star_abs_table),L_star_abs_table.rbulge0_grid,rbulge0_vectors)>0
+    
+    rdisk0_weights=rdisk0_loc-fix(rdisk0_loc)
+    rbulge0_weights=rbulge0_loc-fix(rbulge0_loc)
+    
+    for k1=0,(nn-1) do begin
+      if taub_loc[k1] eq (n1_L_star_abs_table-1) then taub_loc_temp=[taub_loc[k1],taub_loc[k1]] $
+        else taub_loc_temp=[taub_loc[k1]:(taub_loc[k1]+1)]
+      if rdisk0_loc[k1] eq (n2_L_star_abs_table-1) then rdisk0_loc_temp=[rdisk0_loc[k1],rdisk0_loc[k1]] $
+        else rdisk0_loc_temp=[rdisk0_loc[k1]:(rdisk0_loc[k1]+1)]
+      if f_loc[k1] eq (n3_L_star_abs_table-1) then f_loc_temp=[f_loc[k1],f_loc[k1]] $
+        else f_loc_temp=[f_loc[k1]:(f_loc[k1]+1)] 
+      if rbulge0_loc[k1] eq (n5_L_star_abs_table-1) then rbulge0_loc_temp=[rbulge0_loc[k1],rbulge0_loc[k1]] $
+        else rbulge0_loc_temp=[rbulge0_loc[k1]:(rbulge0_loc[k1]+1)] 
+        
+      averaging_region=reform(LABS_STAR_MODEL[*,taub_loc_temp,rdisk0_loc_temp,f_loc_temp,rbulge0_loc_temp])
+      temp1=reform(averaging_region[*,1,*,*,*]*tau_weights[k1]+averaging_region[*,0,*,*,*]*(1-tau_weights[k1]))
+      temp2=reform(temp1[*,1,*,*]*rdisk0_weights[k1]+temp1[*,0,*,*]*(1-rdisk0_weights[k1]))
+      temp3=reform(temp2[*,1,*]*f_weights[k1]+temp2[*,0,*]*(1-f_weights[k1]))
+      Lnu_inc[*,k1]=reform(temp3[*,1]*rbulge0_weights[k1]+temp3[*,0]*(1-rbulge0_weights[k1]))
+    endfor
+  endif else begin
+    rdisk0_vectors=rold0_o_vectors/(1+b_to_d_vectors)
+    rbulge0_vectors=rold0_o_vectors*b_to_d_vectors/(1+b_to_d_vectors)
+
+    rdisk0_o_loc  = interpol(lindgen(n2_L_star_abs_table),L_star_abs_table.rdisk0_grid,rdisk0_vectors)>0
+    rbulge0_o_loc = interpol(lindgen(n5_L_star_abs_table),L_star_abs_table.rbulge0_grid,rbulge0_vectors)>0
+    
+    rdisk0_o_weights=rdisk0_o_loc-fix(rdisk0_o_loc)
+    rbulge0_o_weights=rbulge0_o_loc-fix(rbulge0_o_loc)
+   
+    for k1=0,(nn-1) do begin
+      if taub_loc[k1] eq (n1_L_star_abs_table-1) then taub_loc_temp=[taub_loc[k1],taub_loc[k1]] $
+        else taub_loc_temp=[taub_loc[k1]:(taub_loc[k1]+1)]
+      if rdisk0_o_loc[k1] eq (n2_L_star_abs_table-1) then rdisk0_o_loc_temp=[rdisk0_o_loc[k1],rdisk0_o_loc[k1]] $
+        else rdisk0_o_loc_temp=[rdisk0_o_loc[k1]:(rdisk0_o_loc[k1]+1)]
+      if f_loc[k1] eq (n3_L_star_abs_table-1) then f_loc_temp=[f_loc[k1],f_loc[k1]] $
+        else f_loc_temp=[f_loc[k1]:(f_loc[k1]+1)] 
+      if rbulge0_o_loc[k1] eq (n5_L_star_abs_table-1) then rbulge0_o_loc_temp=[rbulge0_o_loc[k1],rbulge0_o_loc[k1]] $
+        else rbulge0_o_loc_temp=[rbulge0_o_loc[k1]:(rbulge0_o_loc[k1]+1)] 
+        
+      averaging_region=LABS_STAR_MODEL[where(rold0_ages eq 1,/null),*,*,*,*]
+      averaging_region=averaging_region[*,taub_loc_temp,rdisk0_o_loc_temp,f_loc_temp,rbulge0_o_loc_temp]
+      temp1=averaging_region[*,1,*,*,*]*tau_weights[k1]+averaging_region[*,0,*,*,*]*(1-tau_weights[k1])
+      temp2=temp1[*,*,1,*,*]*rdisk0_o_weights[k1]+temp1[*,*,0,*,*]*(1-rdisk0_o_weights[k1])
+      temp3=temp2[*,*,*,1,*]*f_weights[k1]+temp2[*,*,*,0,*]*(1-f_weights[k1])
+      Lnu_inc[where(rold0_ages eq 1,/null),k1]=reform(temp3[*,*,*,*,1]*rbulge0_o_weights[k1]+temp3[*,*,*,*,0]*(1-rbulge0_o_weights[k1]))
+
+      averaging_region=LABS_STAR_MODEL[where(rold0_ages eq 0,/null),*,0,*,0]
+      averaging_region=averaging_region[*,taub_loc_temp,*,f_loc_temp,*]
+      temp1=averaging_region[*,1,*,*,*]*tau_weights[k1]+averaging_region[*,0,*,*,*]*(1-tau_weights[k1])
+      Lnu_inc[where(rold0_ages eq 0,/null),k1]=reform(temp1[*,*,*,1,*]*f_weights[k1]+temp1[*,*,*,0,*]*(1-f_weights[k1]))
+    endfor
+  endelse
 endif
 
 if ~keyword_set(L_star_abs_model_table) then Lnu_att_total = dblarr(Nsteps,nn)
@@ -461,9 +542,14 @@ for st=0,(Nsteps-1) do begin
   Lnu_5D=rebin(steps.lnu[*,st],nwave,nn)
   if ~keyword_set(Tuffs_attenuation) and st eq 0 then begin
     steps_Lnu_red = BC_exp_tau*Lnu_5D
+  endif else if keyword_set(Tuffs_attenuation) and rold0_ages[st] eq 0 then begin
+    steps_Lnu_red = exp_tau_young*Lnu_5D
+  endif else if keyword_set(Tuffs_attenuation) and rold0_ages[st] eq 1 then begin
+    steps_Lnu_red = exp_tau_old*Lnu_5D
   endif else begin
     steps_Lnu_red = exp_tau*Lnu_5D
   endelse
+  
   ;Lbol = (1+z_shift)*trapez(lnu_5d,nu_rest)*(-1.d0) WRONG 1+z factor
   ;Lbol = trapez(lnu_5d,nu_rest)/(1+z_shift)*(-1.d0) ; correct 1+z factor, does not include nebular emission absorption
   ;Lbol = trapez(lnu_5d,nu_obs)*(-1.d0)              ; same as previous line
@@ -552,6 +638,7 @@ pro lightning_MCMC_vector,Lnu_obs,Lnu_unc,LTIR_obs,LTIR_unc,galaxy_id,filter_lab
 ; Keith Doore     - Changed all keywords that were the same to match across functions/procedures - May 6th 2020
 ; Keith Doore     - Removed any repetitive items at beginning that are set by other functions if not set in MCMC call - May 6th 2020
 ; Keith Doore     - Added needed items to run Tuffs attenuation as to match other attenuation - May 6th 2020
+; Keith Doore     - modified Tuffs attenuation to have rdisk as intrinsic property and rbulge as B/D - April 13th 2021
 
 
 
@@ -579,7 +666,7 @@ pro lightning_MCMC_vector,Lnu_obs,Lnu_unc,LTIR_obs,LTIR_unc,galaxy_id,filter_lab
     parameter_sigma=rebin(parameter_sigma,n_elements(parameter_sigma),Nparallel)
   endif
   if (n_elements(parameter_start) eq 0) and keyword_set(dust_emission) and keyword_set(Tuffs_attenuation) then begin
-    parameter_start=[1.0,0.2,0.2,0.8,0.2,-2.d0,1.0,1.d4,0.1,0.020]
+    parameter_start=[1.0,0.0,0.2,0.8,0.0,-2.d0,1.0,1.d4,0.1,0.020]
     parameter_start=rebin(parameter_start,n_elements(parameter_start),Nparallel)
   endif
   if (n_elements(parameter_sigma) eq 0) and keyword_set(dust_emission) and keyword_set(Tuffs_attenuation) then begin
@@ -614,7 +701,7 @@ pro lightning_MCMC_vector,Lnu_obs,Lnu_unc,LTIR_obs,LTIR_unc,galaxy_id,filter_lab
     ran2=[ 0.d,1.0d]
     ran3=[0.d,0.61d]
     ran4=[ 0.d,1.0d]
-    ran5=[ 0.d,1.0d]
+    ran5=[ 0.d,!values.d_infinity]
   
     par1_guess = parameter_start[0,*]  &  par1_sigma = parameter_sigma[0,*]
     par2_guess = parameter_start[1,*]  &  par2_sigma = parameter_sigma[1,*]
@@ -627,7 +714,7 @@ pro lightning_MCMC_vector,Lnu_obs,Lnu_unc,LTIR_obs,LTIR_unc,galaxy_id,filter_lab
     if keyword_set(par4_constant) then par4_sigma=rebin(reform(0.d0,1,1),1,Nparallel)
     if keyword_set(par5_constant) then par5_sigma=rebin(reform(0.d0,1,1),1,Nparallel)
 
-    vectors = {tauB_f_vectors: reform(par1_guess), rdisk_vectors: reform(par2_guess), F_vectors: reform(par3_guess), cosi_vectors: reform(par4_guess), rbulge_vectors: reform(par5_guess)}
+    vectors = {tauB_f_vectors: reform(par1_guess), rold0_vectors: reform(par2_guess), F_vectors: reform(par3_guess), cosi_vectors: reform(par4_guess), b_to_d_vectors: reform(par5_guess)}
     models=lightning_models_vector(steps=steps,vectors=vectors,Filters=Filters,/tuffs,_EXTRA=_extra_MCMC)
     models[where(finite(models,/NaN),/null)] = 0.0
   endif else begin
@@ -654,7 +741,7 @@ pro lightning_MCMC_vector,Lnu_obs,Lnu_unc,LTIR_obs,LTIR_unc,galaxy_id,filter_lab
 
   if keyword_set(dust_emission) then begin
     ran6 = [-10.d0,  4d0]       ; alpha
-    ran7 = [ 0.1d0,25]        ; Umin
+    ran7 = [ 0.7d0,25]          ; Umin
     ran8 = [ 1.d3,  3.d5]       ; Umax
     ran9 = [ 0.d0,  1d0]        ; gamma
     ran10= [ 0.0047,0.0458d0]  ; qPAH
@@ -736,6 +823,7 @@ pro lightning_MCMC_vector,Lnu_obs,Lnu_unc,LTIR_obs,LTIR_unc,galaxy_id,filter_lab
   p_jump=[0.441,0.352,0.316,0.279,0.275,0.266,0.261,0.255,0.261,0.267]
   alpha_star=p_jump[(Npar-1) < (p_jump.length-1)]
   accepted_trials=fltarr(Nparallel)
+  t0=systime(/sec)
 
   for trial=0,(Ntrials-2) do begin
     gamma_new  = 1.d0/(trial+1.d0)^beta_exponent
@@ -803,9 +891,9 @@ pro lightning_MCMC_vector,Lnu_obs,Lnu_unc,LTIR_obs,LTIR_unc,galaxy_id,filter_lab
 ;    endif
 ;stop
     if keyword_set(Tuffs_attenuation) then begin
-      vectors = {tauB_f_vectors: reform(chain_new[Nsteps,*]), rdisk_vectors: reform(chain_new[Nsteps+1,*]), $
+      vectors = {tauB_f_vectors: reform(chain_new[Nsteps,*]), rold0_vectors: reform(chain_new[Nsteps+1,*]), $
                  F_vectors: reform(chain_new[Nsteps+2,*]), cosi_vectors: reform(chain_new[Nsteps+3,*]), $
-                 rbulge_vectors: reform(chain_new[Nsteps+4,*])}
+                 b_to_d_vectors: reform(chain_new[Nsteps+4,*])}
       models=lightning_models_vector(steps=steps,vectors=vectors,Filters=Filters,/tuffs,_EXTRA=_extra_MCMC)
       models[where(finite(models,/NaN),/null)] = 0.0
     endif else begin
@@ -858,7 +946,7 @@ pro lightning_MCMC_vector,Lnu_obs,Lnu_unc,LTIR_obs,LTIR_unc,galaxy_id,filter_lab
   endfor
 
   steps_Mstar = steps.Mstar
-  
+
   ;if n_elements(Tuffs_attenuation) eq 0 then chain=chain[0:(nsteps+2),*]
   
   save,chain,chi2_chain,galaxy_id,sigma_new,lambda_new,mu_new,steps_Mstar,steps_bounds, $

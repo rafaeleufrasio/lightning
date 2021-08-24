@@ -8,10 +8,6 @@ x = {   Galaxy_ID			    : '',										$
         DECJ2000			    : !values.D_NaN,							$
         redshift			    : !values.D_NaN,							$ 
         metallicity			    : !values.D_NaN,							$ 
-        N_J                     : !values.D_NaN,                            $
-        N_J_ERR                 : !values.D_NaN,                            $
-        Q_J                     : !values.D_NaN,                            $
-        Q_J_ERR                 : !values.D_NaN,                            $
         filter_labels		    : strarr(Nfilters),			                $
         WAVE_FILTERS            : !values.D_NaN*dblarr(Nfilters),			$ 
         Lnu_obs				    : !values.D_NaN*dblarr(Nfilters),			$ 
@@ -19,7 +15,6 @@ x = {   Galaxy_ID			    : '',										$
         Lnu_mod                 : !values.D_NaN*dblarr(Nfilters,Nchain),    $
         Lnu_mod_unred           : !values.D_NaN*dblarr(Nfilters,Nchain),    $
         LTIR_mod                : !values.D_NaN*dblarr(Nchain),             $
-        LFUV_mod                : !values.D_NaN*dblarr(Nchain),             $
         wave_hires_dustmod      : !values.D_NaN*dblarr(1001),               $
         wave_hires_starmod      : !values.D_NaN*dblarr(1221),               $
         wave_hires_totalmod     : !values.D_NaN*dblarr(1971),               $
@@ -28,9 +23,7 @@ x = {   Galaxy_ID			    : '',										$
         lnu_hires_starmod_unred : !values.D_NaN*dblarr(1221),               $
         lnu_hires_totalmod      : !values.D_NaN*dblarr(1971),               $
         Afuv                    : !values.D_NaN*dblarr(Nchain),             $
-        Ab                      : !values.D_NaN*dblarr(Nchain),             $
         Av                      : !values.D_NaN*dblarr(Nchain),             $
-        Anir                    : !values.D_NaN*dblarr(Nchain),             $
         Nsteps				    : 0L,										$ 
         Steps_bounds		    : !values.D_NaN*dblarr(Nsteps_max+1),		$
         chisqr_lightning 	    : !values.D_NaN*dblarr(Nchain), 			$
@@ -72,7 +65,7 @@ for i=0,(ngal-1) do begin
   
   steps = STEPS_STELLAR(filter_labels=filter_labels,steps_bounds=steps_bounds,$
                         z_shift=galaxy[i].redshift,_EXTRA=_extra_savefits)
-  steps_alambda = STEPS_STELLAR(filter_labels=['GALEX_FUV','ACS_F435W','ACS_F555W','SUBARU_Ks'],steps_bounds=steps_bounds,$
+  steps_alambda = STEPS_STELLAR(filter_labels=['GALEX_FUV','ACS_F555W'],steps_bounds=steps_bounds,$
 	                      z_shift=0.d0,_EXTRA=_extra_savefits)
   dl07     = dl07_templates(filter_labels=filter_labels,z_shift=galaxy[i].redshift,_EXTRA=_extra_savefits)
 	                      
@@ -92,11 +85,10 @@ for i=0,(ngal-1) do begin
   Lnu_unred = total((rebin(reform(chain[0:(nsteps-1),-Nchain:-1],1,Nsteps,Nchain),Nfilters,Nsteps,Nchain))*$
               (rebin(reform(steps.mean_Lnu,Nfilters,Nsteps,1),Nfilters,Nsteps,Nchain)),2)
 
-  Lnu_mod_star_alambda = total(models_alambda * (rebin(reform(chain[0:(nsteps-1),-Nchain:-1],1,Nsteps,Nchain),5,Nsteps,Nchain)),2)
-  Lnu_unred_alambda = total((rebin(reform(chain[0:(nsteps-1),-Nchain:-1],1,Nsteps,Nchain),4,Nsteps,Nchain))*$
-                 (rebin(reform(steps_alambda.mean_Lnu,4,Nsteps,1),4,Nsteps,Nchain)),2)
-  Alambda=-2.5*alog10(Lnu_mod_star_alambda[0:3,*]/Lnu_unred_alambda)
-
+  Lnu_mod_star_alambda = total(models_alambda * (rebin(reform(chain[0:(nsteps-1),-Nchain:-1],1,Nsteps,Nchain),3,Nsteps,Nchain)),2)
+  Lnu_unred_alambda = total((rebin(reform(chain[0:(nsteps-1),-Nchain:-1],1,Nsteps,Nchain),2,Nsteps,Nchain))*$
+                 (rebin(reform(steps_alambda.mean_Lnu,2,Nsteps,1),2,Nsteps,Nchain)),2)
+  Alambda=-2.5*alog10(Lnu_mod_star_alambda[0:1,*]/Lnu_unred_alambda)
   
   min_chi2=(where(chi2_chain[-Nchain:-1] eq min(chi2_chain[-Nchain:-1])))[0]
   nsteps=n_elements(steps.bounds)-1
@@ -131,10 +123,6 @@ for i=0,(ngal-1) do begin
   out[i].DECJ2000	                      = galaxy[i].decj2000
   out[i].redshift	                      = galaxy[i].redshift
   out[i].metallicity                      = 0.020
-  out[i].N_J                              = galaxy[i].N_J    
-  out[i].N_J_ERR                          = galaxy[i].N_J_ERR
-  out[i].Q_J                              = galaxy[i].Q_J    
-  out[i].Q_J_ERR                          = galaxy[i].Q_J_ERR
   out[i].filter_labels                    = filter_labels
   out[i].WAVE_FILTERS                     = steps.WAVE_FILTERS
   out[i].Lnu_obs	                      = lnu_obs[*,i]
@@ -142,7 +130,6 @@ for i=0,(ngal-1) do begin
   out[i].Lnu_mod                          = Lnu_mod
   out[i].Lnu_mod_unred                    = Lnu_unred
   out[i].LTIR_mod                         = reform(lnu_mod_star[Nfilters,*])
-  out[i].LFUV_mod                         = reform(lnu_mod_star_alambda[0,*])
   out[i].wave_hires_dustmod               = dl07.wave_obs
   out[i].wave_hires_starmod               = steps.wave_obs
   out[i].wave_hires_totalmod              = total_wave
@@ -150,10 +137,8 @@ for i=0,(ngal-1) do begin
   out[i].lnu_hires_starmod                = Lhi_res_red
   out[i].lnu_hires_starmod_unred          = Lhi_res_unred
   out[i].lnu_hires_totalmod               = total_lnu_v01
-  out[i].Av		                          = reform(Alambda[2,*])
-  out[i].Ab		                          = reform(Alambda[1,*])
   out[i].Afuv		                      = reform(Alambda[0,*])
-  out[i].Anir		                      = reform(Alambda[3,*])
+  out[i].Av		                          = reform(Alambda[1,*])
   out[i].Nsteps		                      = Nsteps
   out[i].Steps_bounds	                  = steps_bounds
   out[i].chisqr_lightning                 = chi2_chain[-Nchain:-1] 
@@ -171,8 +156,6 @@ for i=0,(ngal-1) do begin
   out[i].gamma			                  = chain[nsteps+8,-Nchain:-1]   
   out[i].q_pah			                  = chain[nsteps+9,-Nchain:-1]   
 	
-  print,i
-  
 endfor
 
 spawn,'rm -r '+outfolder+file_name+'.fits'
