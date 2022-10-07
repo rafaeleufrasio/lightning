@@ -5,8 +5,8 @@ The following will provide examples of both basic and advanced use-cases for Lig
 
 .. note::
 
-	Examples will be published on an ongoing basis as we work toward
-    a publication describing the new version of Lightning.
+	Examples will be published on an ongoing basis as we work toward a publication describing the new version of Lightning.
+
 
 .. toctree::
    :maxdepth: 1
