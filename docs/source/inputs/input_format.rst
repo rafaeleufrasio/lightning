@@ -24,7 +24,7 @@ either of the :ref:`table-format-label`, the column name must be ``SED_ID``.
 Fluxes and Filter Labels (UV-to-IR)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A set of fluxes (in terms of :math:`F_\nu`), which must be within the UV-to-IR wavelength range, are 
+A set of fluxes (in terms of :math:`F_\nu`), which must be within the UV-to-IR wavelength range, are
 **required** inputs for each SED. Additionally, the :math:`1\sigma` uncertainty on the fluxes and the corresponding
 names (labels) of the filters are **required** for each SED. Both the fluxes and the uncertainties are
 the calibrated observed values in units of :math:`\rm Jy`. The filter labels are strings indicating which
@@ -32,7 +32,7 @@ instrument and filter corresponds to each observation. (A list of filter labels 
 be found :ref:`here <filter_table>`.) The names and format of the fluxes and filter label columns are unique
 to each of the :ref:`table-format-label` and are described in the respective sections below.
 
-If multiple SEDs are included in the input file and some of these SEDs do not have an observation in a 
+If multiple SEDs are included in the input file and some of these SEDs do not have an observation in a
 given filter, setting the corresponding uncertainty to ``0`` will result in that filter being ignored during
 fitting. Also, to indicate upper limits on fluxes, we recommend setting the flux to ``0`` and the corresponding
 uncertainty to the flux upper limit.
@@ -46,7 +46,7 @@ Distance Indicators
 A distance indicator is a **required** input for each SED. This indicator can either be a luminosity distance
 in :math:`{\rm Mpc}` or a redshift, from which a luminosity distance can be inferred. The column names in
 both of the :ref:`table-format-label` are ``lumin_dist`` and ``redshift`` for the luminosity distance and
-redshift, respectively. Only one of the columns is required. If both columns are included, the 
+redshift, respectively. Only one of the columns is required. If both columns are included, the
 luminosity distance takes precedence over the redshift column unless its value is equal to ``0``, in which
 case the redshift will be used as the distance indicator instead.
 
@@ -70,9 +70,9 @@ Counts
 For X-ray data in units of counts, the columns ``xray_spec_file`` and ``xray_arf_file``
 are **required** inputs for each SED when using either of the :ref:`table-format-label`.
 These columns must be a string containing the file name (including path) to the FITS-formatted X-ray
-spectrum (e.g., the outputs of ACISExtract) and a string containing the file name (including path) to 
-the FITS-formatted X-ray Auxiliary Response Function (ARF), respectively. The contents of the spectral
-and ARF files are given in the tables below.
+spectrum (e.g., the outputs of ACISExtract) and a string containing the file name (including path) to
+the FITS-formatted X-ray `Auxiliary Response Function (ARF) <https://cxc.cfa.harvard.edu/ciao/dictionary/arf.html>_`,
+respectively. The contents of the spectral and ARF files are given in the tables below.
 
 **X-ray spectral file contents**:
 
@@ -161,19 +161,19 @@ The names of these columns indicate the associated filter label. For example, if
 first filter was ``SDSS_u``, you would replace the column names ``filterA`` and ``filterA_unc``
 with ``SDSS_u`` and ``SDSS_u_unc``, respectively.
 
-To give an example of each type of X-ray input, we will expand on the example above. For the 
+To give an example of each type of X-ray input, we will expand on the example above. For the
 X-ray counts input method, the ASCII table should look like::
 
     # This is an example of the ASCII table format for X-ray data input into Lightning.
     # sed_id             lumin_dist  redshift  filterA     filterA_unc  filterB    filterB_unc  galactic_nh  xray_spec_file                                     xray_arf_file
-    NGC_5194             8.2         NaN       0.568       0.011        5.77       0.29         1.53         <path_to_file>/NGC_5194_xray_spec.fits             <path_to_file>/NGC_5194.arf          
+    NGC_5194             8.2         NaN       0.568       0.011        5.77       0.29         1.53         <path_to_file>/NGC_5194_xray_spec.fits             <path_to_file>/NGC_5194.arf
     J123624.82+620719.2  0           0.1141    3.0747e-05  1.08e-07     1.3232e-4  1.57e-07     1.48         <path_to_file>/J123624.82+620719.2_xray_spec.fits  <path_to_file>/J123624.82+620719.2.arf
 
 The three newly added columns give the Galactic HI column density, the X-ray spectral file, and the
-X-ray ARF file as described :ref:`above <xray-input-label>`. 
+X-ray ARF file as described :ref:`above <xray-input-label>`.
 
 For the X-ray flux input method, the ``xray_spec_file`` and ``xray_arf_file`` columns will need to be
-replaced with the X-ray bandpass, flux, and flux uncertainty columns. These columns are formatted 
+replaced with the X-ray bandpass, flux, and flux uncertainty columns. These columns are formatted
 similarly to the UV-to-IR flux columns, where the ending of the column name relates the bandpass to the
 corresponding flux. Updating our example to include these flux and bandpass columns, our ASCII table
 should look like::
@@ -183,12 +183,12 @@ should look like::
     NGC_5194             8.2         NaN       0.568       0.011        5.77       0.29         1.53         0.5                 2.0                3.24E-02     1.54e-03         2.0                 7.0                1.83E-02     2.70e-03
     J123624.82+620719.2  0           0.1141    3.0747e-05  1.08e-07     1.3232e-4  1.57e-07     1.48         0.5                 7.0                1.47e-08     2.31e-09         NaN                 NaN                NaN          NaN
 
-Notice that each bandpass and flux are related to each other with the ending of each column name (i.e., 
+Notice that each bandpass and flux are related to each other with the ending of each column name (i.e.,
 ``xray_bandpass_l_1``, ``xray_bandpass_u_1``, ``xray_flux_1``, and ``xray_flux_unc_1`` are the first
 X-ray bandpass indicated by the ``_1`` ending). This numbering can be increased arbitrarily for any
 number of desired bandpasses, which allows for multiple bandpasses to be input for each SED.
 Also, values describing a single X-ray bandpass are contained within the ``xray_bandpass_l_*``
-and ``xray_bandpass_u_*`` columns, which give the lower and upper bounds of the bandpass in 
+and ``xray_bandpass_u_*`` columns, which give the lower and upper bounds of the bandpass in
 :math:`{\rm keV}`, respectively. This allows for each bandpass to be unique to each SED. Finally,
 if an SED has more bandpasses than another in the input catalogue, the one with less bandpasses should
 have the columns of the unused numbered bandpasses set to ``NaN``, as shown in the example.
@@ -255,4 +255,3 @@ XRAY_FLUX_UNC  [4]_         float/double(Nxray, Nsed)        Uncertainties assoc
 .. [4] Only used if inputting X-ray data in units of flux (i.e., :ref:`configuration setting <configure-setting-label>` ``XRAY_UNIT = 'FLUX'``
 .. [5] The X-ray bandpasses for each SED can be unique. If an SED has more bandpasses than another in the input catalogue, the one with
    less bandpasses should have the value of the unused bandpasses set to ``NaN``.
-

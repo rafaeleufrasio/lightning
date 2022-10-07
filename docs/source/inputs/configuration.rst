@@ -12,7 +12,7 @@ within Lightning (e.g., cosmology). The next five, :ref:`stellar-config-label`,
 and :ref:`agn-config-label`, make up the model selection sections. Lastly,
 :ref:`fit-algor-config-label` gives the choice of fitting algorithm and its corresponding
 hyper-parameters, and :ref:`postpro-config-label` gives the choice of how to post-process
-the resulting data from the :ref:`fit-algor-config-label`.
+the resulting data.
 
 .. note::
 
@@ -46,8 +46,8 @@ Core
 
     .. note::
 
-        This is a key assumption in most SED fitting codes as it attempts to preserve energy
-        conservation. See our guide on :ref:`model-select-label` if you are unsure if you
+        This is a key assumption in most SED fitting codes as it attempts to preserve conservation
+        of energy. See our guide on :ref:`model-select-label` if you are unsure if you
         want energy balance in your model.
 
 
@@ -172,8 +172,8 @@ Stellar Emission
 
     .. warning::
 
-        We do not recommend changing this value from its default. The only reason
-        we recommend changing it is if you specified age bins with differences less than
+        We do not recommend changing this value from its default. The only case
+        in which it should be changed is if you specified age bins with differences less than
         the default value. However, in that case, your age bins are likely too small.
 
 
@@ -289,8 +289,8 @@ Doore+21
 
         We recommend setting age bins that contain ages :math:`< 500\ {\rm Myr}` to be part
         the young population as they can contain significant UV emission. If you choose
-        to set age bins with ages :math:`< 500\ {\rm Myr}` to the old population, do so at
-        your own risk.
+        to set age bins with ages :math:`< 500\ {\rm Myr}` to the old population, the SFR may
+        be underestimated due to under-attenuation of the UV-emitting population.
 
 
 .. _dust-config-label:
@@ -374,7 +374,7 @@ X-ray Emission
 ``XRAY_EMISSION`` : flag
     A flag indicating if an X-ray emission model will be used. This always includes
     stellar X-ray emission, but can optionally include AGN X-ray emission
-    (:ref:`see below <xray-agn-config-label>`). The stellar X-ray emission is generated
+    (:ref:`see below <xray-agn-config-label>`). The stellar X-ray emission is normalized
     according to the :math:`L_X/M` parametrizations with stellar age from `Gilbertson et
     al. (2022) <https://ui.adsabs.harvard.edu/abs/2022ApJ...926...28G/abstract>`_.
 
@@ -387,7 +387,7 @@ X-ray Emission
 ``XRAY_UNIT`` : string scalar
     The form (or unit type) of X-ray data within the input catalog.
     Currently, there are two types of X-ray data that can be input into Lightning.
-    These are instrumental counts or fluxes (in :math:`{\rm erg\ cm^{-2]\ s^{-1}}), which are
+    These are instrumental counts or fluxes (in :math:`{\rm erg\ cm^{-2]\ s^{-1}}`), which are
     selected by setting ``XRAY_UNIT`` to ``'COUNTS'`` or ``'FLUX'``, respectively.
     See the discussion on :ref:`input-formats-label` for more details on how to
     format the different X-ray data types.
@@ -449,6 +449,11 @@ X-ray Emission
     This structure contains the prior to assume for :math:`N_H`.
     Values of :math:`N_H` are limited to being between ``1e-4`` and ``1e5``.
 
+    .. note::
+
+    	While the value of :math:`N_H` is allowed to be larger than :math:`10^{24}\ {\rm cm^{-2}}`,
+        we caution that our emission models are not suitable for the Compton-thick case.
+
 
 .. _xray-agn-config-label:
 
@@ -456,7 +461,7 @@ X-ray Emission
     The AGN X-ray emission model to use. There are two AGN X-ray emission models currently available
     in Lightning, the `qsosed <https://heasarc.gsfc.nasa.gov/xanadu/xspec/manual/node132.html>`_
     models from `Kubota & Done (2018) <https://ui.adsabs.harvard.edu/abs/2018MNRAS.480.1247K/abstract>`_ and a power law model
-    with and exponential cut off. The power law model has a power law of :math:`\Gamma = 1.8` and an exponential
+    with and exponential cut off. The power law model has a photon index of :math:`\Gamma = 1.8` and an exponential
     cut off at 300 :math:`{\rm keV}`. This power law model is tied to the 2500 Angstrom emission using the
     relationship from `Lusso & Risaliti (2017) <https://ui.adsabs.harvard.edu/abs/2017A%26A...602A..79L/abstract>`_.
     These models are selected by setting ``XRAY_AGN_MODEL`` to ``'QSOSED'`` and ``'PLAW'``, respectively.
@@ -472,16 +477,16 @@ QSOSED
 ^^^^^^
 
 ``AGN_MASS`` : structure
-    The free parameter :math:`M_{\rm AGN}`, the super massive black hole mass in
+    The free parameter :math:`M_{\rm AGN}`, the supermassive black hole mass in
     :math:`M_\odot`.
     This structure contains the prior to assume for :math:`M_{\rm AGN}`.
     Values of :math:`M_{\rm AGN}` are limited to being between ``1e5`` and ``1e10``.
 
 ``AGN_LOGMDOT`` : structure
-    The free parameter :math:`\log(\dot{M_{\rm AGN}})`, the :math:`\log_{10}`
-    of the super massive black hole accretion rate normalized by the Eddington rate.
-    This structure contains the prior to assume for :math:`\log(\dot{M_{\rm AGN}})`.
-    Values of :math:`\log(\dot{M_{\rm AGN}})` are limited to being between ``-1.5`` and ``0.3``.
+    The free parameter :math:`\log(\dot m)`, the :math:`\log_{10}` of :math:`\dot m`,
+    the supermassive black hole accretion rate normalized by the Eddington rate.
+    This structure contains the prior to assume for :math:`\log(\dot m)`.
+    Values of :math:`\log(\dot m)` are limited to being between ``-1.5`` and ``0.3``.
 
 
 .. _agn-config-label:
@@ -540,9 +545,9 @@ Fitting Algorithm
     The fitting algorithm used to fit the SED(s). Lightning currently has three fitting algorithms
     that can be used: an adaptive MCMC, an affine-invariant MCMC, and a Levenberg–Marquardt algorithm.
     The adaptive MCMC algorithm is Algorithm 4 from `Andrieu & Thoms (2008)
-    <https://link.springer.com/article/10.1007/s11222-008-9110-y>`_. The affine-invariant MCMC
+    <https://link.springer.com/article/10.1007/s11222-008-9110-y>`_, the affine-invariant MCMC
     algorithm is the algorithm from `Goodman & Weare (2010)
-    <https://ui.adsabs.harvard.edu/abs/2010CAMCS...5...65G/abstract>`_. The Levenberg–Marquardt
+    <https://ui.adsabs.harvard.edu/abs/2010CAMCS...5...65G/abstract>`_, and the Levenberg–Marquardt
     algorithm is `Craig Markwardt’s MPFIT <http://purl.com/net/mpfit>`_
     implementation.
     These fitting algorithms are selected by setting ``METHOD`` to ``'MCMC-ADAPTIVE'``, ``'MCMC-AFFINE'``,
