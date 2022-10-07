@@ -1,4 +1,5 @@
 # Lightning SED Fitting Package
+[![Documentation Status](https://readthedocs.org/projects/lightning-sed/badge/?version=latest)](https://lightning-sed.readthedocs.io/en/latest/?badge=latest)
 
 ## Description
 
@@ -29,7 +30,7 @@ idl lightning_build
 
 ## How to Use & Documentation
 
-To learn how to run Lightning and for a helpful user guide, please read our [Online Documentation]().
+To learn how to run Lightning and for a helpful user guide, please read our [Online Documentation](https://lightning-sed.readthedocs.io/en/latest/).
 
 ## Citation
 
