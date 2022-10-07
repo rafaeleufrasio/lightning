@@ -11,11 +11,10 @@ Getting Started
     inputs/priors.rst
 
 
-The first step in getting started with Lightning requires you to have :ref:`input-label`
-that can be properly understood by Lightning. This includes having the required input
-values in the proper units and format. The next step will require :ref:`configure-label`.
-Configuration consists of you selecting a model, fitting algorithm, and more. Finally,
-once the input and configuration steps are complete, you can start :ref:`run-lightning-label`.
+The first step in getting started with Lightning requires you to format you :ref:`input-label`
+such that they can be understood by Lightning. In the next step, :ref:`configure-label`, you select
+a model, fitting algorithm, and more. Finally, once the input and configuration steps are complete,
+you can start :ref:`run-lightning-label`.
 
 
 .. _input-label:
@@ -40,31 +39,31 @@ for the full details on the input data and file formats.
 Configuring Lightning
 ---------------------
 
-Before running, Lightning requires you to configure it (e.g., select a model, prior, fitting algorithm, etc.).
-To allow for a variety of users, we have included two different methods for configuring Lightning. The
-first is more complex and requires you to edit a file directly, while the other simply gives interactive
-prompts to the terminal for you to respond. Both methods are described below, and further details on
+Before running, Lightning requires you to configure it (e.g., select a model, priors, fitting algorithm, etc.).
+We have included two different methods for configuring Lightning: the
+first is more complex, and requires you to edit a file directly, while the other gives interactive
+prompts to the terminal for you to answer. Both methods are described below, and further details on
 each configuration setting are discussed in the :ref:`configure-setting-label`.
 
 .. note::
 
-    We highly recommend that first time users to Lightning (and those newer to SED fitting)
+    We recommend that first time users to Lightning (and those newer to SED fitting)
     use the interactive method to get a better understanding of Lightning's configuration settings
-    and minimize any chance for user error.
+    and minimize frustration.
 
 
 .. _file-method-label:
 
-File Method
-^^^^^^^^^^^
+File Configuration
+^^^^^^^^^^^^^^^^^^
 
 To use the default file method, you will first need to copy the ``lightning_configure.pro`` file
 within the top level of the Lightning installation into your input data directory without changing
-its name. You will then open the copied file and edit the values associated with each structure
+its name. You can then open the copied file and edit the values associated with each structure
 tag to your desired configuration. The values already given for each tag indicate the default
-Lightning configuration. Overall guiding comments are given in the notes of the header and
-guiding comments for each configuration setting are included above each tag. These comments give
-basic details and indicate the expected values and type. Further details are discussed in the
+Lightning configuration. Guiding comments are given in the notes of the header and
+for each configuration setting above the corresponding tag. These comments give
+basic details and indicate the expected values and type. Further details are discussed in
 :ref:`configure-setting-label`.
 
 .. note::
@@ -75,15 +74,15 @@ basic details and indicate the expected values and type. Further details are dis
     :ref:`api-label`.
 
 
-Interactive Method
-^^^^^^^^^^^^^^^^^^
+Interactive Configuration
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
-With the interactive method, prompts are displayed to the terminal, which lead you through configuring Lightning. 
+With the interactive method, prompts are displayed to the terminal, which lead you through configuring Lightning.
 This method prevents any user error in the configuration, as responses to the prompts are required to be
 allowed values. If a value is not allowed, a new prompt will be displayed stating your error and asking you
-to update your value appropriately. Additionally, if you are unsure on what values to choose for each 
+to update your value appropriately. Additionally, if you are unsure on what values to choose for each
 input, we give default values for most configuration options. To use the non-default interactive method,
-run Lightning in :ref:`interactive-label`. 
+run Lightning in :ref:`interactive-label`.
 
 
 .. highlight:: idl
@@ -92,7 +91,7 @@ run Lightning in :ref:`interactive-label`.
 Running Lightning
 -----------------
 
-Running Lightning only requires you to make a simple call to the main ``lightning`` procedure::
+Running Lightning only requires you to make a call to the main ``lightning`` procedure::
 
     IDL> lightning, '<input_dir>/<your_photometric_catalog>'
 
@@ -132,7 +131,7 @@ by passing the ``/resume`` flag to ``lightning``::
 Interactive Mode
 ^^^^^^^^^^^^^^^^
 
-You can also run Lightning in an interactive mode by passing the ``/interactive`` flag to ``lightning``::
+You can run Lightning in interactive mode by passing the ``/interactive`` flag to ``lightning``::
 
     IDL> lightning, '<input_dir>/<your_photometric_catalog>', /interactive
 

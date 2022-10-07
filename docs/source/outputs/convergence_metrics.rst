@@ -9,13 +9,13 @@ Convergence Metrics
     So, it may be helpful to review or reference them as you read this discussion.
 
 Convergence for our algorithms is the concept that enough walkers, chains, or solvers have
-reached the same solution after their allowed iterations for us to be confident that it is 
+reached the same solution after their allowed iterations for us to be confident that it is
 the best solution and that the parameter space around the solution is well sampled.
-The metrics used to test for convergence are therefore essential to ensuring that the 
+The metrics used to test for convergence are therefore essential to ensuring that the
 algorithm successfully fit each SED. Below, we give a detailed discussion on the metrics for
 each algorithm and how to determine if they indicate that convergence was or was not reached.
 
-Before discussing the individual metrics for each algorithm, we will note that the output 
+Before discussing the individual metrics for each algorithm, we will note that the output
 ``CONVERGENCE_FLAG`` is a quick and easy way to check if convergence was reached.
 If the value is ``0``, the metrics for the given algorithm allow us to confidently say that
 convergence has been reached and that we can trust our solution for that SED.
@@ -36,39 +36,38 @@ algorithm is taking too large of steps in parameter space and failing to properl
 while larger fractions can indicate too small of steps. If any walkers have the ``ACCEPTANCE_FLAG``
 set, this does not mean the ensemble as a whole failed to converge. As discussed for the :ref:`affine-mcmc-label`,
 if only a few walkers have abnormally low acceptance rates, we label them as stranded and excluded them from
-the post-processed chain portion (i.e., they have no effect on convergence). Therefore, we recommend comparing 
+the post-processed chain portion (i.e., they have no effect on convergence). Therefore, we recommend comparing
 the ``STRANDED_FLAG`` with the ``ACCEPTANCE_FLAG``, and if they are both set for the same walkers only, then you
-can be confident that acceptance fraction metric is **not** indicating failed convergence. 
+can be confident that acceptance fraction metric is **not** indicating failed convergence.
 
 Additionally, in some of our test with more complex models, we have found that most walkers in the ensemble
 can have acceptance fractions at or just below 20% when using the default ``AFFINE_A`` in the
-:ref:`configure-setting-label`. This does not necessarily indicate failed convergence, especially if the 
+:ref:`configure-setting-label`. This does not necessarily indicate failed convergence, especially if the
 acceptance fraction is just below 20% (i.e., >18%) and consistent for the vast majority of the ensemble.
 However, it does indicate that the algorithm is not sampling efficiently. Therefore, we recommend
 rerunning Lightning using a slightly smaller value for ``AFFINE_A``, which should improve sampling
 and increase the acceptance fraction into the expected range.
 
 As for the autocorrelation time, it is a measure of how many steps it takes for a walker to forget
-where it started. We recommend reading the `emcee Autocorrelation Analysis & Convergence
-documentation <https://emcee.readthedocs.io/en/stable/tutorials/autocorr/#autocorr>`_ for more details,
-since our autocorrelation metric is a ported version of their methods. To summarize that documentation,
-the MCMC algorithm needs to run for a number of iterations equal to some factor (e.g., they recommend ~50) 
-times the autocorrelation time
+where it started. We recommend the `emcee Autocorrelation Analysis & Convergence
+documentation <https://emcee.readthedocs.io/en/stable/tutorials/autocorr/#autocorr>`_ for more details.
+To summarize that documentation, the MCMC algorithm needs to run for a number of iterations equal to some factor
+(e.g., they recommend ~50) times the autocorrelation time
 in order for us to trust that the autocorrelation time estimate is accurate. A factor fewer than ~50 can
-cause the autocorrelation time to be underestimated, which can result in having a post-processed
-chain portion that has highly correlated samples.
+cause the autocorrelation time to be underestimated, which could result in a post-processed
+chain with a section of highly correlated samples.
 
 You explicitly set what minimum value you are willing to tolerate for this factor
 using the ``TOLERANCE`` value in the :ref:`configure-setting-label`, such that
 if the ``AUTOCORR_TIME`` times ``TOLERANCE`` is less than ``NTRIALS``, the ``AUTOCORR_FLAG`` will be set.
 We recommend using a ``TOLERANCE`` value of 50, since if the factor is above that, you can be confident
 that your autocorrelation time is accurate and your walkers converged. However, if a parameter has the
-``AUTOCORR_FLAG`` set, we recommend first checking the actual factor (which can be calculated by dividing 
-``NTRIALS`` by ``AUTOCORR_TIME``) before assuming convergence failed. If this calculated factor is >45, 
-the autocorrelation time estimate is likely still accurate and convergence was likely still reached. 
+``AUTOCORR_FLAG`` set, we recommend first checking the actual factor (which can be calculated by dividing
+``NTRIALS`` by ``AUTOCORR_TIME``) before assuming convergence failed. If this calculated factor is >45,
+the autocorrelation time estimate is likely still accurate and convergence was likely still reached.
 However, below this we urge caution as ``AUTOCORR_TIME`` can become underestimated and convergence may
 have failed. If you are not getting calculated factors large enough to confidently have convergence,
-we recommend simply increasing ``NTRIALS`` until you get a reasonable value. (Note that this will very 
+we recommend simply increasing ``NTRIALS`` until you get a reasonable value. (Note that this will very
 likely take more additional trials than just ``AUTOCORR_TIME`` times ``TOLERANCE``, as ``AUTOCORR_TIME``
 is underestimated and will increase with more trials.)
 
@@ -90,7 +89,7 @@ The Gelman-Rubin metric is the best indicator of convergence for the adaptive MC
 The metric compares the within chain variance and the between chain variance
 to test if multiple parallel chains have converged to the same solution for each parameter. The metric results
 in a value that is greater than or equal to 1, where a value of 1 indicates that the parallel chains are identical.
-As discussed in their `original paper <https://ui.adsabs.harvard.edu/abs/1992StaSc...7..457G/abstract>`_, 
+As discussed in their `original paper <https://ui.adsabs.harvard.edu/abs/1992StaSc...7..457G/abstract>`_,
 if the square root of this metric is less than 1.2, it can be concluded that the chains have
 converged to the same solution. Therefore, if the square root of ``GELMAN_RUBIN_R_HAT`` is greater
 than 1.2, the ``GELMAN_RUBIN_FLAG`` is set for the offending parameter. If the flag is set, we recommend
@@ -100,13 +99,13 @@ any value above 1.69 should be considered non-convergence for the parameter, and
 
 The Brooks-Gelman multidimension metric is very similar to the Gelman-Rubin metric. The only difference is
 that the Brooks-Gelman metric looks at all parameters collectively versus individually like the Gelman-Rubin
-metric. Therefore, it is more sensitive to slight differences in the parallel chains. Just like the 
+metric. Therefore, it is more sensitive to slight differences in the parallel chains. Just like the
 ``GELMAN_RUBIN_FLAG``, the ``BROOKS_GELMAN_FLAG`` is set if the ``BROOKS_GELMAN_R_HAT`` is larger than 1.44.
-If this flag is set and the value of ``BROOKS_GELMAN_R_HAT`` is larger than 1.44, we still highly recommend 
+If this flag is set and the value of ``BROOKS_GELMAN_R_HAT`` is larger than 1.44, we still highly recommend
 checking the ``GELMAN_RUBIN_R_HAT`` first before concluding that convergence has not been reached. In our
-tests, we have found several cases where the ``BROOKS_GELMAN_R_HAT`` can be > 2, while all parameters can 
+tests, we have found several cases where the ``BROOKS_GELMAN_R_HAT`` can be > 2, while all parameters can
 have ``GELMAN_RUBIN_R_HAT`` values very close to 1 (i.e., < 1.05). This discrepancy is due to the increased
-sensitivity of the Brooks-Gelman metric across the whole chain. Therefore, we recommend relying on the 
+sensitivity of the Brooks-Gelman metric across the whole chain. Therefore, we recommend relying on the
 Gelman-Rubin metric to determine if convergence has failed.
 
 
@@ -118,24 +117,24 @@ fraction (``ITER_FRAC``), the stuck fraction (``STUCK_FRAC``), and the similarit
 The status code is the success status of the MPFIT algorithm. If the code is greater than 0, then the algorithm
 executed successfully. This should always be the case when using the MPFIT algorithm in Lightning, since any
 errors that could occur in the input or configuration should be detected by Lightning before running. Therefore,
-the ``STATUS_FLAG`` should never occur, but if it does please submit an issue to the `Lightning GitHub 
+the ``STATUS_FLAG`` should never occur, but if it does please submit an issue to the `Lightning GitHub
 <https://github.com/rafaeleufrasio/lightning/issues>`_ page so we can resolve the error.
 
 The goal for running multiple solvers for the MPFIT algorithm is the expectation that at least
 a majority of them will converge to the same solution. Therefore, the
-solvers that did not make it to the same solution need to be filtered out. 
-The iteration fraction does this by giving 
+solvers that did not make it to the same solution need to be filtered out.
+The iteration fraction does this by giving
 the fraction of the maximum iterations used by each solver to reach their final
-solution. If a solver used the maximum allotted iterations, then it was likely still searching 
-for the best solution before it was terminated by the algorithm. Solvers that reach the maximum 
-iteration have their ``ITER_FLAG`` set. Therefore, if only a small minority have their 
-``ITER_FLAG`` set, then convergence of the other solvers may have still occurred. In this case, 
+solution. If a solver used the maximum allotted iterations, then it was likely still searching
+for the best solution before it was terminated by the algorithm. Solvers that reach the maximum
+iteration have their ``ITER_FLAG`` set. Therefore, if only a small minority have their
+``ITER_FLAG`` set, then convergence of the other solvers may have still occurred. In this case,
 we recommend checking the next two metrics to determine if convergence has been reached.
 
 To first check if the solvers reach the same solution, a check needs to be preformed for how many solvers
-reached a similar value in :math:`\chi^2` space and how many did not. The fraction of all solvers that did 
-not reach a similar value of :math:`\chi^2` is given by the stuck fraction. The ``STUCK_FLAG`` is then set 
-if this fraction is less than 50%, meaning a minority of solvers had similar :math:`\chi^2` values. We define 
+reached a similar value in :math:`\chi^2` space and how many did not. The fraction of all solvers that did
+not reach a similar value of :math:`\chi^2` is given by the stuck fraction. The ``STUCK_FLAG`` is then set
+if this fraction is less than 50%, meaning a minority of solvers had similar :math:`\chi^2` values. We define
 a similar value of :math:`\chi^2` as values within 4 of the best fit solver. This value is completely arbitrary,
 and we note that solvers at :math:`\chi^2` greater than 4 could still have reached the same solution.
 Therefore, if this fraction is less than 50%, we recommend comparing the :math:`\chi^2` of each solver to
@@ -146,16 +145,14 @@ see how much worse each solver's fit was compared to the best-fit solver.
     The :math:`\chi^2` of each solver can be recalculated from ``PVALUE`` of ``DOF`` using the
     IDL function ``CHISQR_CVF`` (i.e., ``chisqr = CHISQR_CVF(PVALUE, DOF)``).
 
-Finally, to check if the solvers reached the same solution in parameter space, the parameter values of the 
+Finally, to check if the solvers reached the same solution in parameter space, the parameter values of the
 non-stuck solvers need to be compared with the best-fit solver. Parameter values that are within 1% difference
 of best-fit solver’s parameter values are considered to have converged to the same solution. If parameters
 have a larger difference, this can indicate that a multi-modal solution may exist and convergence to a
-common solution may not be possible with MPFIT. The ``SIMILAR_FLAG`` is set if more than 10% of non-stuck solvers 
+common solution may not be possible with MPFIT. The ``SIMILAR_FLAG`` is set if more than 10% of non-stuck solvers
 had different solutions compared to the best-fit solver. This 10% cutoff is arbitrary, and is mainly
-set for a situation where convergence can be assured. Therefore, if your ``SIMILAR_FRAC`` is less than 90%, you 
+set for a situation where convergence can be assured. Therefore, if your ``SIMILAR_FRAC`` is less than 90%, you
 will need to decide on how low of a fraction you are willing to allow. The lower the fraction
 the less chance that you solutions converged to the same solution. Therefore, we recommend not settling for
 a fraction less than 75-80%. Below this fraction, you risk having a multi-modal solution, which MPFIT is
 not designed to evaluate.
-
-
