@@ -596,7 +596,7 @@ pro lightning_postprocessing, input_dir, config, sed_id
    if keyword_set(config.XRAY_EMISSION) then begin
      out[i].XRAY_BANDPASS[*, 0:Nxray-1]   = sed_data.XRAY_BANDPASS
      out[i].GALACTIC_NH     = sed_data.GALACTIC_NH
-     out[i].LNU_XRAYMOD[0:Nxray-1, finite_model_idc]  = Lnu_xray_mod
+     out[i].LNU_XRAYMOD[0:Nxray-1, *]  = Lnu_xray_mod
 
      case strupcase(config.XRAY_UNIT) of
          'COUNTS': begin
@@ -604,10 +604,10 @@ pro lightning_postprocessing, input_dir, config, sed_id
              out[i].NET_COUNTS[0:Nxray-1]      = sed_data.NET_COUNTS
              out[i].NET_COUNTS_UNC[0:Nxray-1]  = sed_data.NET_COUNTS_UNC
              out[i].XRAY_COUNTS_MOD[0:Nxray-1, *] = xray_counts_mod
-             out[i].LNU_XRAY_OBS[0:Nxray-1, finite_model_idc] = rebin(sed_data.NET_COUNTS, Nxray, Nmodels) / $
-                                                                xray_counts_mod[*, finite_model_idc] * Lnu_xray_mod
-             out[i].LNU_XRAY_UNC[0:Nxray-1, finite_model_idc] = rebin(sed_data.NET_COUNTS_UNC, Nxray, Nmodels) / $
-                                                                xray_counts_mod[*, finite_model_idc] * Lnu_xray_mod
+             out[i].LNU_XRAY_OBS[0:Nxray-1, finite_model_idc] = rebin(sed_data.NET_COUNTS, Nxray, Nfinite_models) / $
+                                                                xray_counts_mod[*, finite_model_idc] * Lnu_xray_mod[*, finite_model_idc]
+             out[i].LNU_XRAY_UNC[0:Nxray-1, finite_model_idc] = rebin(sed_data.NET_COUNTS_UNC, Nxray, Nfinite_models) / $
+                                                                xray_counts_mod[*, finite_model_idc] * Lnu_xray_mod[*, finite_model_idc]
          end
          'FLUX': begin
             out[i].LNU_XRAY_OBS[0:Nxray-1] = sed_data.XRAY_LNU_OBS
