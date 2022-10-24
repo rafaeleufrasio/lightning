@@ -91,4 +91,5 @@ Modification History
 - 2022/09/01: Added handling for user-supplied X-ray count uncertainties (Erik B. Monson)
 - 2022/09/14: Updated to allow fitting with X-ray fluxes (Erik B. Monson)
 - 2022/09/15: Updated documentation (Keith Doore)
+- 2022/10/24: Allowed for negative flux inputs (Keith Doore)
 

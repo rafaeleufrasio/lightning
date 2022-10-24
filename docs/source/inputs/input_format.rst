@@ -32,10 +32,16 @@ instrument and filter corresponds to each observation. (A list of filter labels 
 be found :ref:`here <filter_table>`.) The names and format of the fluxes and filter label columns are unique
 to each of the :ref:`table-format-label` and are described in the respective sections below.
 
-If multiple SEDs are included in the input file and some of these SEDs do not have an observation in a
-given filter, setting the corresponding uncertainty to ``0`` will result in that filter being ignored during
-fitting. Also, to indicate upper limits on fluxes, we recommend setting the flux to ``0`` and the corresponding
-uncertainty to the flux upper limit.
+.. note::
+
+    - If multiple SEDs are included in the input file and some of these SEDs do not have an observation in a
+      given filter, setting the corresponding uncertainty to ``0`` will result in that filter being ignored during
+      fitting.
+    - For upper limits on fluxes, we recommend setting the flux to ``0`` and the corresponding uncertainty to 
+      the :math:`1\sigma` flux upper limit. This is not the proper way to account for upper limits, which 
+      requires a complex adjustment to the computation of :math:`\chi^2` (see Appendix A of `Sawicki 2012
+      <https://ui.adsabs.harvard.edu/abs/2012PASP..124.1208S/abstract>`_ for details). However, it is a
+      reasonable approximation.
 
 
 .. _distance-input-label:
@@ -71,7 +77,7 @@ For X-ray data in units of counts, the columns ``xray_spec_file`` and ``xray_arf
 are **required** inputs for each SED when using either of the :ref:`table-format-label`.
 These columns must be a string containing the file name (including path) to the FITS-formatted X-ray
 spectrum (e.g., the outputs of ACISExtract) and a string containing the file name (including path) to
-the FITS-formatted X-ray `Auxiliary Response Function (ARF) <https://cxc.cfa.harvard.edu/ciao/dictionary/arf.html>_`,
+the FITS-formatted X-ray `Auxiliary Response Function (ARF) <https://cxc.cfa.harvard.edu/ciao/dictionary/arf.html>`_,
 respectively. The contents of the spectral and ARF files are given in the tables below.
 
 **X-ray spectral file contents**:

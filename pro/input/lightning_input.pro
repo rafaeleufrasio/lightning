@@ -90,6 +90,7 @@ pro lightning_input, input_file_fits, cosmology=cosmology, xray_emission=xray_em
 ;   - 2022/09/01: Added handling for user-supplied X-ray count uncertainties (Erik B. Monson)
 ;   - 2022/09/14: Updated to allow fitting with X-ray fluxes (Erik B. Monson)
 ;   - 2022/09/15: Updated documentation (Keith Doore)
+;   - 2022/10/24: Allowed for negative flux inputs (Keith Doore)
 ;-
  On_error, 2
  compile_opt idl2
@@ -113,7 +114,6 @@ pro lightning_input, input_file_fits, cosmology=cosmology, xray_emission=xray_em
    message, 'FNU_OBS tag in input file table must be of type float or double.'
  if size(data.FNU_OBS, /n_dim) lt 1 or size(data.FNU_OBS, /n_dim) gt 2 then $
    message, 'FNU_OBS tag in input file table must be a 1-D or 2-D array.'
- if min(data.FNU_OBS) lt 0 then message, 'FNU_OBS tag in input file table must only contain non-negative values.'
  Fnu_obs = data.FNU_OBS
  Nfilters = (size(data.FNU_OBS, /dim))[0]
  if size(data.FNU_OBS, /n_dim) eq 1 then Nsed = 1 else Nsed = (size(data.FNU_OBS, /dim))[1]
@@ -284,7 +284,6 @@ pro lightning_input, input_file_fits, cosmology=cosmology, xray_emission=xray_em
              message, 'XRAY_FLUX tag in input file table must be of type int, float, or double.'
            if size(data.XRAY_FLUX, /n_dim) lt 1 or size(data.XRAY_FLUX, /n_dim) gt 2 then $
              message, 'XRAY_FLUX tag in input file table must be a 1-D or 2-D array.'
-           if min(data.XRAY_FLUX) lt 0 then message, 'XRAY_FLUX tag in input file table must only contain non-negative values.'
            Nxray = (size(data.XRAY_FLUX, /dim))[0]
            xray_flux = data.XRAY_FLUX
          endelse
