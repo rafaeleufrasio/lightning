@@ -546,7 +546,7 @@ function lightning_configure_interactive, config_edit=config_edit
              temp = ''
              read,temp, prompt='NSTEPS: ',form='(A0)'
              if temp eq '' then temp = default_val
-             temp = long(temp)
+             temp = long(double(temp))
 
              if temp le 0 then begin
                nsteps_message = 'The number of steps must be 1 or more.'
@@ -1962,7 +1962,7 @@ function lightning_configure_interactive, config_edit=config_edit
          temp = ''
          read,temp, prompt='NTRIALS: ',form='(A0)'
          if temp eq '' then temp = default_val
-         temp = long(temp)
+         temp = long(double(temp))
 
          if temp le 0 then begin
            ntrials_message = 'Please specify a positive value.'
@@ -1990,7 +1990,7 @@ function lightning_configure_interactive, config_edit=config_edit
          temp = ''
          read,temp, prompt='NPARALLEL: ',form='(A0)'
          if temp eq '' then temp = default_val
-         temp = long(temp)
+         temp = long(double(temp))
 
          if temp le 0 then begin
            npar_message = 'Please specify a positive value.'
@@ -2020,7 +2020,7 @@ function lightning_configure_interactive, config_edit=config_edit
          temp = ''
          read,temp, prompt='C_STEP: ',form='(A0)'
          if temp eq '' then temp = default_val
-         temp = long(temp)
+         temp = double(temp)
 
          if temp le 0 then begin
            cstep_message = 'Please specify a positive value.'
@@ -2049,7 +2049,7 @@ function lightning_configure_interactive, config_edit=config_edit
          temp = ''
          read,temp, prompt='TOLERANCE: ',form='(A0)'
          if temp eq '' then temp = default_val
-         temp = long(temp)
+         temp = double(temp)
 
          if temp le 0 then begin
            toler_message = 'Please specify a positive value.'
@@ -2109,7 +2109,7 @@ function lightning_configure_interactive, config_edit=config_edit
          temp = ''
          read,temp, prompt='NTRIALS: ',form='(A0)'
          if temp eq '' then temp = default_val
-         temp = long(temp)
+         temp = long(double(temp))
 
          if temp le 0 then begin
            ntrials_message = 'Please specify a positive value.'
@@ -2139,7 +2139,7 @@ function lightning_configure_interactive, config_edit=config_edit
          temp = ''
          read,temp, prompt='NPARALLEL: ',form='(A0)'
          if temp eq '' then temp = default_val
-         temp = long(temp)
+         temp = long(double(temp))
 
          if temp le 0 then begin
            npar_message = 'Please specify a positive value.'
@@ -2169,7 +2169,7 @@ function lightning_configure_interactive, config_edit=config_edit
          temp = ''
          read,temp, prompt='C_STEP: ',form='(A0)'
          if temp eq '' then temp = default_val
-         temp = long(temp)
+         temp = double(temp)
 
          if temp le 0 then begin
            cstep_message = 'Please specify a positive value.'
@@ -2198,7 +2198,7 @@ function lightning_configure_interactive, config_edit=config_edit
          temp = ''
          read,temp, prompt='TOLERANCE: ',form='(A0)'
          if temp eq '' then temp = default_val
-         temp = long(temp)
+         temp = double(temp)
 
          if temp le 0 then begin
            toler_message = 'Please specify a positive value.'
@@ -2258,7 +2258,7 @@ function lightning_configure_interactive, config_edit=config_edit
          temp = ''
          read,temp, prompt='NSOLVERS: ',form='(A0)'
          if temp eq '' then temp = default_val
-         temp = long(temp)
+         temp = long(double(temp))
 
          if temp le 0 then begin
            nsolvers_message = 'Please specify a positive value.'
@@ -2373,7 +2373,7 @@ function lightning_configure_interactive, config_edit=config_edit
          temp = ''
          read,temp, prompt='MAXITER: ',form='(A0)'
          if temp eq '' then temp = default_val
-         temp = long(temp)
+         temp = long(double(temp))
 
          if temp le 0 then begin
            maxiter_message = 'Please specify a positive value.'
@@ -2446,7 +2446,7 @@ function lightning_configure_interactive, config_edit=config_edit
      temp = ''
      read,temp, prompt='BURN_IN: ',form='(A0)'
      if temp eq '' then temp = default_val
-     temp = long(temp)
+     temp = long(double(temp))
 
      if temp lt 0 then begin
        burnin_message = 'Please specify a non-negative value.'
@@ -2483,7 +2483,7 @@ function lightning_configure_interactive, config_edit=config_edit
      temp = ''
      read,temp, prompt='THIN_FACTOR: ',form='(A0)'
      if temp eq '' then temp = default_val
-     temp = long(temp)
+     temp = long(double(temp))
 
      if temp lt 0 then begin
        thin_message = 'Please specify a non-negative value.'
@@ -2512,7 +2512,7 @@ function lightning_configure_interactive, config_edit=config_edit
      temp = ''
      read,temp, prompt='FINAL_CHAIN_LENGTH: ',form='(A0)'
      if temp eq '' then temp = default_val
-     temp = long(temp)
+     temp = long(double(temp))
 
      if temp le 0 then begin
        final_message = 'Please specify a positive value.'
@@ -2544,7 +2544,7 @@ function lightning_configure_interactive, config_edit=config_edit
      temp = ''
      read,temp, prompt='HIGH_RES_MODEL_FRACTION: ',form='(A0)'
      if temp eq '' then temp = default_val
-     temp = long(temp)
+     temp = double(temp)
 
      if temp lt 0 or temp gt 1 then begin
        hires_message = 'Please specify a value between 0 and 1.'
