@@ -54,6 +54,7 @@ pro lightning_print_progress, iteration, Niteration, t0, funcname=funcname
 ;   - 2022/06/28: Simplified number of chunks using percentage (Keith Doore)
 ;   - 2022/06/28: Removed remainder for double the speed (Keith Doore)
 ;   - 2022/08/18: Made it so that if ``iteration+1 == Niteration`` then end with new line (Keith Doore)
+;   - 2022/10/24: Update to make changing values to take up a constant number of characters (Keith Doore)
 ;-
  On_error,2
  compile_opt idl2
@@ -80,10 +81,10 @@ pro lightning_print_progress, iteration, Niteration, t0, funcname=funcname
 
  if iteration + 1 eq Niteration then begin
    print, string(13b), funcname, percent, bar, (iteration + 1), Niteration, avg_speed, t_remaining, $
-          format='(A,A,": ",(I3),"%|",(A10),"| ",(I0),"/",(I0)," | ",(F0.1)," steps/s | ",(F0.1)," s remaining")'
+          format='(A,A,": ",(I3),"%|",(A10),"| ",(I7),"/",(I7)," | ",(F5.1)," steps/s | ",(F9.1)," s remaining")'
  endif else begin
    print, string(13b), funcname, percent, bar, (iteration + 1), Niteration, avg_speed, t_remaining, $
-          format='(A,A,": ",(I3),"%|",(A10),"| ",(I0),"/",(I0)," | ",(F0.1)," steps/s | ",(F0.1)," s remaining",$)'
+          format='(A,A,": ",(I3),"%|",(A10),"| ",(I7),"/",(I7)," | ",(F5.1)," steps/s | ",(F9.1)," s remaining",$)'
  endelse
 
 end

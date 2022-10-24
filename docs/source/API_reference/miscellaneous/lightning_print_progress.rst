@@ -55,4 +55,5 @@ Modification History
 - 2022/06/28: Simplified number of chunks using percentage (Keith Doore)
 - 2022/06/28: Removed remainder for double the speed (Keith Doore)
 - 2022/08/18: Made it so that if ``iteration+1 == Niteration`` then end with new line (Keith Doore)
+- 2022/10/24: Update to make changing values to take up a constant number of characters (Keith Doore)
 
