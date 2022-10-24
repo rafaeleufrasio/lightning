@@ -58,6 +58,7 @@ pro lightning_postprocessing, input_dir, config, sed_id
 ;   - 2022/09/22: Updated how we identify stranded walkers in affine MCMC (Keith Doore)
 ;   - 2022/09/23: Made ``autocorr_flag`` unique to affine MCMC (Keith Doore)
 ;   - 2022/09/26: Added ``DOF`` to MPFIT output (Keith Doore)
+;   - 2022/10/24: Updated stranded walker search to use configuration input value (Keith Doore)
 ;-
  On_error, 2
  compile_opt idl2
@@ -312,11 +313,11 @@ pro lightning_postprocessing, input_dir, config, sed_id
            lnprob_chain = lnprob_chain[burn_in:*, *]
            chi2_chain = chi2_chain[burn_in:*, *]
 
-           ; Check for stranded walkers (acceptance fraction < median(acceptance fraction) - 3*stddev(acceptance fraction)),
-           ;   and remove them.
+           ; Check for stranded walkers and remove them.
            med_accept = median(convergence_metric.acceptance_frac)
            std_accept = stddev(convergence_metric.acceptance_frac)
-           stranded = where(convergence_metric.acceptance_frac lt med_accept - 3*std_accept, Nstranded, comp=free, ncomp=Nfree, /null)
+           stranded = where(convergence_metric.acceptance_frac lt med_accept - config.AFFINE_STRANDED_DEVIATION*std_accept, $
+                            Nstranded, comp=free, ncomp=Nfree, /null)
            stranded_flag = intarr(config.NPARALLEL)
            if Nstranded gt 0 then stranded_flag[stranded] = 1
            chain = chain[*, *, free]

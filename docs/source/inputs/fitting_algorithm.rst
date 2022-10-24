@@ -11,7 +11,7 @@ to select from: the adaptive MCMC algorithm (Algorithm 4) from `Andrieu & Thoms 
 algorithm from `Goodman & Weare (2010) 
 <https://ui.adsabs.harvard.edu/abs/2010CAMCS...5...65G/abstract>`_, and a Levenberg–Marquardt
 algorithm implemented via `Craig Markwardt’s MPFIT <http://purl.com/net/mpfit>`_.
-Below, we first compare the MPFIT and MCMC algorithms and give advise on how to select between
+Below, we first compare the MPFIT and MCMC algorithms and give advice on how to select between
 them. Then, we explain how the algorithms are initialized. Finally, we describe each algorithm
 and its corresponding hyper-parameters in more detail.
 
@@ -43,7 +43,7 @@ All three algorithms in Lightning require an initial starting value for each fre
 Currently, Lightning automatically selects the starting values by randomly sampling the prior
 distribution of each parameter independently. Since uniform priors likely have a much larger
 range than we would want to randomly sample, we allow the user to input an initialization range.
-This limits the random sampling of the prior to only occur with the initialization range.
+This limits the random sampling of the prior to only occur within the initialization range.
 
 To give an example of this, say we have a uniform prior for a parameter with a range of 0 to 100.
 However, we typically expect this parameter's solution to be less than 10. If
@@ -163,19 +163,31 @@ During post-processing, only a portion of the raw MCMC ensemble from fitting is 
 For the affine-invariant MCMC, the post-processed chain portion is determined as follows:
 
 1) each walker in the ensemble has ``BURN_IN`` number of initial trials discarded as the burn-in phase,
-2) if a walker has an acceptance fractions more than 3 standard deviations below the median acceptance
-   fraction, we consider them stranded walkers and remove them from the ensemble,
+2) if a walker has an acceptance fraction less than ``AFFINE_STRANDED_DEVIATION`` standard deviations 
+   below the median acceptance fraction, we consider them stranded walkers and remove them from the ensemble,
 3) the non-stranded truncated ensemble is then thinned by keeping only every ``THIN_FACTOR`` elements,
 4) the thinned and truncated ensemble is flattened element-wise into a single chain,
 5) the final ``FINAL_CHAIN_LENGTH`` elements from this flattened chain are kept as the post-processed chain.
 
 Here, we explain our reason for removing stranded walkers in step 2. Due to the boundaries of the
-free parameters, the affine-invariant MCMC can have trouble moving a walker near a boundary towards
-the ensemble if it is near the other boundary. This results in the walker becoming stranded and
-having a very low acceptance rate, since it is failing to have any proposal jumps accepted.
-We find that this typically happens for only a few walkers within the ensemble. Therefore, if
-some have an abnormally low acceptance fraction compared to the rest of the walkers in the ensemble
-(> :math:`3 \sigma`), we assume they have become stranded.
+free parameters, the affine-invariant MCMC can have trouble accepting moves of walkers separated from
+the ensemble when the ensemble is near a boundary. This results in the walkers becoming stranded and
+having a very low acceptance rates, since they are failing to have any proposal jumps accepted. With 
+enough iterations, these walkers will get lucky and have a jump that rejoins them with the ensemble.
+However, we do not have an infinite amount of iterations to allow for this to occur. Therefore, once
+our iteration limit has been reached, we want to remove any stranded walkers that may remain. We have 
+found that the most effective method for correctly selecting stranded walkers is to compare each walker's
+acceptance fraction with that of the median of the ensemble. Those that that have an abnormally low
+acceptance fractions compared to the rest of the ensemble are usually stranded.
+
+.. note::
+
+    We find that only a few walkers within the ensemble end up being stranded when using a standard amount
+    of iterations. Therefore, having ``AFFINE_STRANDED_DEVIATION = 2`` effectively removes these walkers without
+    removing non-stranded ones. However, when using a smaller amount of iteration for quick sampling, more 
+    walkers may end up remaining stranded. Therefore, we recommend setting ``AFFINE_STRANDED_DEVIATION = 1`` to
+    account for the increase in the ensemble's standard deviation and better classify stranded walkers.
+
 
 
 Adaptive vs Affine-Invariant MCMC

@@ -641,8 +641,13 @@ config = {                             $
               ;        so will increase the post-processed file size by
               ;        FINAL_CHAIN_LENGTH * HIGH_RES_MODEL_FRACTION * 1e3 * 8 bytes per SED per
               ;        model component.
-              HIGH_RES_MODEL_FRACTION: 0               $
+              HIGH_RES_MODEL_FRACTION: 0              ,$
 
+              ;======== AFFINE =================================================
+                  ; AFFINE_STRANDED_DEVIATION : int, float, or double scalar
+                  ;  The number of standard deviations a walker must be below the median
+                  ;  acceptance fraction of the ensemble to be considered a stranded walker.
+                  AFFINE_STRANDED_DEVIATION: 2.0d      $
 
           }
 

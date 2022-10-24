@@ -743,3 +743,9 @@ distributions.
         the post-processed file to balloon dramatically. Be careful when
         increasing this value above ``0``. Doing so will increase the file size by **at least**
         ``FINAL_CHAIN_LENGTH`` * ``HIGH_RES_MODEL_FRACTION`` * ``8`` kB per SED per model component.
+
+
+``AFFINE_STRANDED_DEVIATION`` : int, float, or double scalar
+    The number of standard deviations a walker must be below the median
+    acceptance fraction of the ensemble to be considered a stranded walker.
+    (See the :ref:`affine-mcmc-label` description for more details on stranded walkers.)

@@ -41,6 +41,7 @@ function lightning_configure_interactive, config_edit=config_edit
 ;   - 2022/08/30: Placed cosmology parameters at end of Core section for online documentation purposes (Keith Doore)
 ;   - 2022/09/01: Replaced ``XRAY_STAT`` with ``XRAY_UNC`` (Erik B. Monson)
 ;   - 2022/09/14: Updates to allow fitting with X-ray fluxes (Erik B. Monson)
+;   - 2022/10/24: Added option to choose stranded walker deviation value for affine MCMC (Keith Doore)
 ;-
  On_error, 2
  Compile_opt idl2
@@ -2550,6 +2551,36 @@ function lightning_configure_interactive, config_edit=config_edit
      endif else error = 0
    endwhile
    config['HIGH_RES_MODEL_FRACTION'] = temp
+
+   ;============ Stranded walker acceptance fraction deviation ============
+   if strupcase(config['METHOD']) eq 'MCMC-AFFINE' then begin
+     error = 1
+     default_val = '2'
+     default = '(Default: '+default_val+')'
+     if edit then begin
+       if strupcase(config_edit.METHOD) eq 'MCMC-AFFINE' then begin
+         default_val = strtrim(string(config_edit.AFFINE_STRANDED_DEVIATION, f='(I0)'), 2)
+         default = '(Previous configuration: '+default_val+')'
+       endif
+     endif
+     stranded_message = 'Please specify the number of standard deviations a walker must be below the median '+$
+                        'acceptance fraction of the ensemble to be considered a stranded walker. '+default
+     print_to_width, '======================='
+     while error do begin
+       print_to_width, ''
+       print_to_width, stranded_message
+
+       temp = ''
+       read, temp, prompt='AFFINE_STRANDED_DEVIATION: ', form='(A0)'
+       if temp eq '' then temp = default_val
+       temp = double(temp)
+
+       if temp le 0 then begin
+         stranded_message = 'Please specify a positive value.'
+       endif else error = 0
+     endwhile
+     config['AFFINE_STRANDED_DEVIATION'] = temp
+   endif
  endif
 
 

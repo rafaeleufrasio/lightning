@@ -11,7 +11,7 @@ Getting Started
     inputs/priors.rst
 
 
-The first step in getting started with Lightning requires you to format you :ref:`input-label`
+The first step in getting started with Lightning requires you to format your :ref:`input-label`
 such that they can be understood by Lightning. In the next step, :ref:`configure-label`, you select
 a model, fitting algorithm, and more. Finally, once the input and configuration steps are complete,
 you can start :ref:`run-lightning-label`.

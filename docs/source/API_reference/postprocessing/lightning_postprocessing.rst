@@ -59,4 +59,5 @@ Modification History
 - 2022/09/22: Updated how we identify stranded walkers in affine MCMC (Keith Doore)
 - 2022/09/23: Made ``autocorr_flag`` unique to affine MCMC (Keith Doore)
 - 2022/09/26: Added ``DOF`` to MPFIT output (Keith Doore)
+- 2022/10/24: Updated stranded walker search to use configuration input value (Keith Doore)
 

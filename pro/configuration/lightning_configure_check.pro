@@ -44,6 +44,7 @@ function lightning_configure_check, config
 ;   - 2022/09/01: Replaced ``XRAY_STAT`` with ``XRAY_UNC`` (Erik B. Monson)
 ;   - 2022/09/14: Updates to allow fitting with X-ray fluxes (Erik B. Monson)
 ;   - 2022/09/14: Fixed issue with MCMC post-processing size check for affine MCMC (Keith Doore)
+;   - 2022/10/24: Added option to choose stranded walker deviation value for affine MCMC (Keith Doore)
 ;-
  On_error, 2
  Compile_opt idl2
@@ -920,9 +921,20 @@ function lightning_configure_check, config
              message, base_err+'HIGH_RES_MODEL_FRACTION tag must be a scalar.'
            if config.HIGH_RES_MODEL_FRACTION lt 0 or config.HIGH_RES_MODEL_FRACTION gt 1 then $
              message, base_err+'HIGH_RES_MODEL_FRACTION tag must be a value between 0 and 1.'
+
+           if strupcase(config.METHOD) eq 'MCMC-AFFINE'then begin
+             if n_elements(where(strupcase(tags) eq 'AFFINE_STRANDED_DEVIATION', /null)) eq 0 then $
+               message, base_err+'AFFINE_STRANDED_DEVIATION tag is missing.'
+             if size(config.AFFINE_STRANDED_DEVIATION, /type) lt 2 or size(config.AFFINE_STRANDED_DEVIATION, /type) gt 5 then $
+               message, base_err+'AFFINE_STRANDED_DEVIATION tag must be of type int, float, or double.'
+             if size(config.AFFINE_STRANDED_DEVIATION, /n_dim) ne 0 then $
+               message, base_err+'AFFINE_STRANDED_DEVIATION tag must be a scalar.'
+             if config.AFFINE_STRANDED_DEVIATION le 0 then $
+               message, base_err+'AFFINE_STRANDED_DEVIATION tag must be a positive value.'
+           endif
      endif else begin
 
-           unused_tags = ['BURN_IN', 'THIN_FACTOR', 'FINAL_CHAIN_LENGTH', 'HIGH_RES_MODEL_FRACTION']
+           unused_tags = ['BURN_IN', 'THIN_FACTOR', 'FINAL_CHAIN_LENGTH', 'HIGH_RES_MODEL_FRACTION', 'AFFINE_STRANDED_DEVIATION']
            remove_tag = intarr(n_elements(unused_tags))
            for i=0, n_elements(unused_tags)-1 do remove_tag[i] = total(strmatch(strupcase(tags), unused_tags[i])) eq 1
            unused_tags = unused_tags[where(remove_tag, /null)]
