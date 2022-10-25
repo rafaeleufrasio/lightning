@@ -408,7 +408,7 @@ function lightning_configure_interactive, config_edit=config_edit
           default = '(Previous configuration: '+default_val+')'
         endif
       endif
-      metal_message = 'Please specify the metallicity to use in the SSP models in terms of Z. '+$
+      metal_message = 'Please specify the metallicity to use in the SSP models in terms of Z [Zsun = 0.02]. '+$
                       'Current options: '+strjoin(string(zmetal_options, f='(F0.3)'), ', ')+'. '+$
                       default
       print_to_width, '======================='
