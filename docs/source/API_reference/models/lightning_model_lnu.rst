@@ -104,4 +104,5 @@ Modification History
 - 2022/07/22: Added optional output of unreddened ``Lnu_stellar`` (Keith Doore)
 - 2022/07/22: Added optional output of unreddened ``Lnu_AGN`` (Keith Doore)
 - 2022/07/27: Renamed unreddened Lnus to prevent ambiguous keywords (Keith Doore)
+- 2022/10/25: Renamed SPS to SSP (Keith Doore)
 

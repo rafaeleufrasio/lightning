@@ -1,4 +1,4 @@
-function lightning_model_lnu_highres, parameters, parameter_name, models, sps=sps, sfh=sfh, $
+function lightning_model_lnu_highres, parameters, parameter_name, models, ssp=ssp, sfh=sfh, $
                                       dust_model=dust_model, agn_model=agn_model, energy_balance=energy_balance, $
                                       error_check=error_check, get_wave=get_wave, wave=wave, $
                                       Lnu_stellar_highres=Lnu_stellar_highres, Lnu_unred_stellar_highres=Lnu_unred_stellar_highres, $
@@ -19,7 +19,7 @@ function lightning_model_lnu_highres, parameters, parameter_name, models, sps=sp
 ; ----------------
 ;   ::
 ;
-;       Lnu_mod_highres = lightning_model_lnu_highres(parameters, parameter_name, models [, sps = , $
+;       Lnu_mod_highres = lightning_model_lnu_highres(parameters, parameter_name, models [, ssp = , $
 ;                                                     sfh = , dust_model = , agn_model = , /energy_balance, $
 ;                                                     /error_check, /get_wave, Lnu_stellar_highres=Lnu_stellar_highres, $
 ;                                                     wave=wave, Lnu_unred_stellar_highres=Lnu_unred_stellar_highres, $
@@ -42,8 +42,8 @@ function lightning_model_lnu_highres, parameters, parameter_name, models, sps=sp
 ;
 ; Optional Inputs
 ; ---------------
-;   ``sps`` : string scalar
-;       The stellar population synthesis (SPS) models to use for the stellar
+;   ``ssp`` : string scalar
+;       The simple stellar population (SSP) models to use for the stellar
 ;       population. Current options  are: ``'PEGASE'`` or ``'NONE'``.
 ;       (Default = ``'PEGASE'``)
 ;   ``sfh`` : string scalar
@@ -117,6 +117,7 @@ function lightning_model_lnu_highres, parameters, parameter_name, models, sps=sp
 ;   - 2022/07/22: Added optional output of unreddened ``Lnu_AGN_highres`` (Keith Doore)
 ;   - 2022/07/27: Renamed unreddened Lnus to prevent ambiguous keywords (Keith Doore)
 ;   - 2022/09/08: Allow user-specified arbitary wavelength grid (Erik B. Monson)
+;   - 2022/10/25: Renamed SPS to SSP (Keith Doore)
 ;-
  On_error, 2
  compile_opt idl2
@@ -138,11 +139,11 @@ function lightning_model_lnu_highres, parameters, parameter_name, models, sps=sp
    if n_elements(models) eq 0 then message, 'Variable is undefined: MODELS.'
    if size(models, /type) ne 8 then message, 'MODELS must be of type structure.'
 
-   if n_elements(sps) ne 0 then begin
-     if size(sps, /type) ne 7 then message, 'SPS must be of type string.'
-     if size(sps, /dim) ne 0 then message, 'SPS must be a scalar.'
-     if total(strupcase(sps) eq ['PEGASE', 'NONE']) ne 1 then $
-       message, "SPS must be set to either 'PEGASE' or 'NONE'."
+   if n_elements(ssp) ne 0 then begin
+     if size(ssp, /type) ne 7 then message, 'SSP must be of type string.'
+     if size(ssp, /dim) ne 0 then message, 'SSP must be a scalar.'
+     if total(strupcase(ssp) eq ['PEGASE', 'NONE']) ne 1 then $
+       message, "SSP must be set to either 'PEGASE' or 'NONE'."
    endif
 
    if n_elements(sfh) ne 0 then begin
@@ -183,7 +184,7 @@ function lightning_model_lnu_highres, parameters, parameter_name, models, sps=sp
    endif
  endif
 
- if n_elements(sps) eq 0 then sps = 'PEGASE'
+ if n_elements(ssp) eq 0 then ssp = 'PEGASE'
  if n_elements(sfh) eq 0 then sfh = 'NON-PARAMETRIC'
  if n_elements(dust_model) eq 0 then dust_model = 'DL07'
  if n_elements(agn_model) eq 0 then agn_model = 'NONE'
@@ -210,7 +211,7 @@ function lightning_model_lnu_highres, parameters, parameter_name, models, sps=sp
 
 
 ; Generate attenuated stellar emission
- case strupcase(sps) of
+ case strupcase(ssp) of
    'PEGASE': begin
         case strupcase(sfh) of
           'NON-PARAMETRIC': begin

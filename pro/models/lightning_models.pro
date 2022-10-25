@@ -94,7 +94,9 @@ function lightning_models, config, filter_labels=filter_labels, redshift=redshif
 ; --------------------
 ;   - 2022/07/11: Created (Keith Doore)
 ;   - 2022/08/01: Added ``/silent`` to ``mrdfits`` (Keith Doore)
-;   - 2022/08/09: Added ``GALACTIC_NH`` as input rather than keyword inheritance from ``config``, since now in input file (Keith Doore)
+;   - 2022/08/09: Added ``GALACTIC_NH`` as input rather than keyword inheritance from 
+;     ``config``, since now in input file (Keith Doore)
+;   - 2022/10/25: Renamed SPS to SSP (Keith Doore)
 ;-
  ;On_error, 2
  compile_opt idl2
@@ -202,7 +204,7 @@ function lightning_models, config, filter_labels=filter_labels, redshift=redshif
 
 ;====== Generating models =========
  ; Generate stellar emission models
- case strupcase(config.SPS) of
+ case strupcase(config.SSP) of
    'PEGASE': begin
         case strupcase(config.SFH) of
           'NON-PARAMETRIC': stellar_models = binned_stellar_models(filter_labels=filter_labels, $

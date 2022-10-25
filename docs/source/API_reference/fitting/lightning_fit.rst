@@ -40,4 +40,5 @@ Modification History
 - 2022/09/15: Removed different calls to ``lightning_models.pro`` for X-ray emission and
   no X-ray emission, since ``lightning_input.pro`` now handles including X-ray emission if
   requested in configuration. (Keith Doore)
+- 2022/10/25: Renamed SPS to SSP (Keith Doore)
 

@@ -39,6 +39,7 @@ pro lightning_fit, input_dir, sed_data, config
 ;   - 2022/09/15: Removed different calls to ``lightning_models.pro`` for X-ray emission and
 ;     no X-ray emission, since ``lightning_input.pro`` now handles including X-ray emission if
 ;     requested in configuration. (Keith Doore)
+;   - 2022/10/25: Renamed SPS to SSP (Keith Doore)
 ;-
  On_error, 2
  compile_opt idl2
@@ -64,7 +65,7 @@ pro lightning_fit, input_dir, sed_data, config
 ; Check if a stellar model is used and adjust PSI in configuration structure to reflect
 ;   potential changes in STEPS_BOUNDS due to redshift
  config_updated = config
- if strupcase(config.SPS) eq 'PEGASE' then begin
+ if strupcase(config.SSP) eq 'PEGASE' then begin
    if strupcase(config.SFH) eq 'NON-PARAMETRIC' then begin
      if n_elements(models.stellar_models.BOUNDS) ne n_elements(config.STEPS_BOUNDS) then begin
        Nsteps_new = n_elements(models.stellar_models.BOUNDS) - 1

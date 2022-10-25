@@ -42,6 +42,7 @@ function lightning_configure_interactive, config_edit=config_edit
 ;   - 2022/09/01: Replaced ``XRAY_STAT`` with ``XRAY_UNC`` (Erik B. Monson)
 ;   - 2022/09/14: Updates to allow fitting with X-ray fluxes (Erik B. Monson)
 ;   - 2022/10/24: Added option to choose stranded walker deviation value for affine MCMC (Keith Doore)
+;   - 2022/10/25: Renamed SPS to SSP (Keith Doore)
 ;-
  On_error, 2
  Compile_opt idl2
@@ -333,37 +334,37 @@ function lightning_configure_interactive, config_edit=config_edit
 
 ;==================================    STELLAR EMISSION    ===================================================
 ; Stellar emission module options
- ;============ SPS ============
- sps_options = ['PEGASE', 'none']
+ ;============ SSP ============
+ ssp_options = ['PEGASE', 'none']
  error = 1
  default_val = 'PEGASE'
  default = '(Default: '+default_val+')'
  if edit then begin
-   default_val = strupcase(config_edit.SPS)
+   default_val = strupcase(config_edit.SSP)
    default = '(Previous configuration: '+default_val+')'
  endif
- sps_message = 'Please specify the stellar population synthesis (SPS) models to use '+$
+ ssp_message = 'Please specify the stellar population synthesis (SSP) models to use '+$
                'for the stellar population. For no stellar emission model, set '+$
-               "to 'NONE'. Current options: "+strjoin(sps_options, ', ')+'. '+$
+               "to 'NONE'. Current options: "+strjoin(ssp_options, ', ')+'. '+$
                default
  print_to_width, '======================='
  while error do begin
    print_to_width, ''
-   print_to_width, sps_message
+   print_to_width, ssp_message
 
    temp = ''
-   read,temp, prompt='SPS: ',form='(A0)'
+   read,temp, prompt='SSP: ',form='(A0)'
    if temp eq '' then temp = default_val
    temp = strtrim(temp, 2)
 
-   if total(strupcase(temp) eq strupcase(sps_options)) eq 0 then begin
-     sps_message = 'Please specify one of the current options: '+strjoin(sps_options, ', ')+'.'
+   if total(strupcase(temp) eq strupcase(ssp_options)) eq 0 then begin
+     ssp_message = 'Please specify one of the current options: '+strjoin(ssp_options, ', ')+'.'
    endif else error = 0
  endwhile
- config['SPS'] = strupcase(temp)
+ config['SSP'] = strupcase(temp)
 
 
- case strupcase(config['SPS']) of
+ case strupcase(config['SSP']) of
    'PEGASE': begin
       ;============ IMF ============
       imf_options = ['Kroupa01']
@@ -371,12 +372,12 @@ function lightning_configure_interactive, config_edit=config_edit
       default_val = 'Kroupa01'
       default = '(Default: '+default_val+')'
       if edit then begin
-        if strupcase(config_edit.SPS) eq 'PEGASE' then begin
+        if strupcase(config_edit.SSP) eq 'PEGASE' then begin
           default_val = strupcase(config_edit.IMF)
           default = '(Previous configuration: '+default_val+')'
         endif
       endif
-      imf_message = 'Please specify the initial mass function (IMF) to use in the SPS models. '+$
+      imf_message = 'Please specify the initial mass function (IMF) to use in the SSP models. '+$
                     'Current options: '+strjoin(imf_options, ', ')+'. '+$
                     default
       print_to_width, '======================='
@@ -402,12 +403,12 @@ function lightning_configure_interactive, config_edit=config_edit
       default_val = '0.02'
       default = '(Default: '+default_val+')'
       if edit then begin
-        if strupcase(config_edit.SPS) eq 'PEGASE' then begin
+        if strupcase(config_edit.SSP) eq 'PEGASE' then begin
           default_val = strtrim(string(config_edit.ZMETAL, f='(F0.3)'), 2)
           default = '(Previous configuration: '+default_val+')'
         endif
       endif
-      metal_message = 'Please specify the metallicity to use in the SPS models in terms of Z. '+$
+      metal_message = 'Please specify the metallicity to use in the SSP models in terms of Z. '+$
                       'Current options: '+strjoin(string(zmetal_options, f='(F0.3)'), ', ')+'. '+$
                       default
       print_to_width, '======================='
@@ -433,12 +434,12 @@ function lightning_configure_interactive, config_edit=config_edit
       default_val = 'YES'
       default = '(Default: '+strlowcase(default_val)+')'
       if edit then begin
-        if strupcase(config_edit.SPS) eq 'PEGASE' then begin
+        if strupcase(config_edit.SSP) eq 'PEGASE' then begin
           if config_edit.EMISSION_LINES eq 1 then default_val = 'YES' else default_val = 'NO'
           default = '(Previous configuration: '+strlowcase(default_val)+')'
         endif
       endif
-      emis_line_message = 'Would you like the SPS models to include nebular emission lines? '+$
+      emis_line_message = 'Would you like the SSP models to include nebular emission lines? '+$
                           'Please indicate yes or no. '+$
                           default
       print_to_width, '======================='
@@ -464,12 +465,12 @@ function lightning_configure_interactive, config_edit=config_edit
       default_val = 'YES'
       default = '(Default: '+strlowcase(default_val)+')'
       if edit then begin
-        if strupcase(config_edit.SPS) eq 'PEGASE' then begin
+        if strupcase(config_edit.SSP) eq 'PEGASE' then begin
           if config_edit.NEBULAR_EXTINCTION eq 1 then default_val = 'YES' else default_val = 'NO'
           default = '(Previous configuration: '+strlowcase(default_val)+')'
         endif
       endif
-      neb_ext_message = 'Would you like the SPS models to include nebular extinction? '+$
+      neb_ext_message = 'Would you like the SSP models to include nebular extinction? '+$
                         'Please indicate yes or no. '+$
                         default
       print_to_width, '======================='
@@ -496,7 +497,7 @@ function lightning_configure_interactive, config_edit=config_edit
       default_val = 'Non-Parametric'
       default = '(Default: '+default_val+')'
       if edit then begin
-        if strupcase(config_edit.SPS) eq 'PEGASE' then begin
+        if strupcase(config_edit.SSP) eq 'PEGASE' then begin
           default_val = config_edit.SFH
           default = '(Previous configuration: '+config_edit.SFH+')'
         endif
@@ -529,7 +530,7 @@ function lightning_configure_interactive, config_edit=config_edit
            default_val = '5'
            default = '(Default: '+default_val+')'
            if edit then begin
-             if strupcase(config_edit.SPS) eq 'PEGASE' then begin
+             if strupcase(config_edit.SSP) eq 'PEGASE' then begin
                if strupcase(config_edit.SFH) eq 'NON-PARAMETRIC' then begin
                  default_val = strtrim(string(n_elements(config_edit.STEPS_BOUNDS)-1, f='(I0)'), 2)
                  default = '(Previous configuration: '+default_val+')'
@@ -562,7 +563,7 @@ function lightning_configure_interactive, config_edit=config_edit
            default_val = strjoin(string(default_val, f='(E0.3)'), ', ')
            default = '(Default: '+default_val+')'
            if edit then begin
-             if strupcase(config_edit.SPS) eq 'PEGASE' then begin
+             if strupcase(config_edit.SSP) eq 'PEGASE' then begin
                 if strupcase(config_edit.SFH) eq 'NON-PARAMETRIC' then begin
                   if n_elements(config_edit.STEPS_BOUNDS)-1 eq nsteps then begin
                     default_val = strjoin(string(config_edit.STEPS_BOUNDS, f='(E0.3)'), ', ')
@@ -616,14 +617,14 @@ function lightning_configure_interactive, config_edit=config_edit
            default_val = '5.d5'
            default = '(Default: '+default_val+')'
            if edit then begin
-             if strupcase(config_edit.SPS) eq 'PEGASE' then begin
+             if strupcase(config_edit.SSP) eq 'PEGASE' then begin
                if strupcase(config_edit.SFH) eq 'NON-PARAMETRIC' then begin
                  default_val = strtrim(string(config_edit.DTIME_SF, f='(E0.3)'), 2)
                  default = '(Previous configuration: '+default_val+')'
                endif
              endif
            endif
-           dtime_message = 'Please specify the time step used for interpolating the SPS '+$
+           dtime_message = 'Please specify the time step used for interpolating the SSP '+$
                            'models into the age bins in units of years. NOTE: We do not '+$
                            'recommend changing this value from its default, unless you '+$
                            'specified age bins with differences less than the default '+$
@@ -649,7 +650,7 @@ function lightning_configure_interactive, config_edit=config_edit
            default_priors = replicate('uniform', Nsteps)
            edit_temp = 0
            if edit then begin
-             if strupcase(config_edit.SPS) eq 'PEGASE' then begin
+             if strupcase(config_edit.SSP) eq 'PEGASE' then begin
                if strupcase(config_edit.SFH) eq 'NON-PARAMETRIC' then begin
                  if total(config_edit.STEPS_BOUNDS eq config['STEPS_BOUNDS']) eq Nsteps+1 then begin
                    default_priors = config_edit.PSI.PRIOR
@@ -667,7 +668,7 @@ function lightning_configure_interactive, config_edit=config_edit
            initialization_range = dblarr(Nsteps, 2)
            for i=0, Nsteps-1 do begin
              if edit then begin
-               if strupcase(config_edit.SPS) eq 'PEGASE' then begin
+               if strupcase(config_edit.SSP) eq 'PEGASE' then begin
                  if strupcase(config_edit.SFH) eq 'NON-PARAMETRIC' then begin
                    if total(config_edit.STEPS_BOUNDS eq config['STEPS_BOUNDS']) eq Nsteps+1 then begin
                      if Nsteps gt 1 then prior_args = reform((config_edit.PSI.PRIOR_ARG)[i, *]) else $
@@ -758,7 +759,7 @@ function lightning_configure_interactive, config_edit=config_edit
    default = '(Previous configuration: '+default_val+')'
  endif
  ; Check if stellar model is used, since DOORE21 requires it
- if strupcase(config['SPS']) eq 'NONE' then $
+ if strupcase(config['SSP']) eq 'NONE' then $
    atten_curve_options = ['CALZETTI00', 'CALZETTI_MOD']
  atten_message = 'Please specify the attenuation curve to apply to the stellar and/or AGN '+$
                  'models. Current options: '+strjoin(atten_curve_options, ', ')+'. '+$
@@ -1360,9 +1361,9 @@ function lightning_configure_interactive, config_edit=config_edit
    if config_edit.XRAY_EMISSION eq 1 then default_val = 'YES' else default_val = 'NO'
    default = '(Previous configuration: '+strlowcase(default_val)+')'
  endif
- ; Check if SPS is not NONE, if it is NONE, no xray emission can be used.
- if strupcase(config['SPS']) eq 'NONE' then begin
-   xray_message = "You can not have X-ray emission if not using a stellar population model (i.e., SPS='NONE')."+$
+ ; Check if SSP is not NONE, if it is NONE, no xray emission can be used.
+ if strupcase(config['SSP']) eq 'NONE' then begin
+   xray_message = "You can not have X-ray emission if not using a stellar population model (i.e., SSP='NONE')."+$
                   ' Please indicate no, for no X-ray emission. (Required value: no)'
    default_val = 'NO'
  endif else begin
@@ -1380,7 +1381,7 @@ function lightning_configure_interactive, config_edit=config_edit
    if temp eq '' then temp = default_val
    temp = strtrim(temp, 2)
 
-   if strupcase(config['SPS']) eq 'NONE' then begin
+   if strupcase(config['SSP']) eq 'NONE' then begin
      if strupcase(temp) ne 'NO' then begin
        xray_message = 'Please type no.'
      endif else error = 0

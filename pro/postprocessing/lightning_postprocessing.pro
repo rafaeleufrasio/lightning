@@ -59,6 +59,7 @@ pro lightning_postprocessing, input_dir, config, sed_id
 ;   - 2022/09/23: Made ``autocorr_flag`` unique to affine MCMC (Keith Doore)
 ;   - 2022/09/26: Added ``DOF`` to MPFIT output (Keith Doore)
 ;   - 2022/10/24: Updated stranded walker search to use configuration input value (Keith Doore)
+;   - 2022/10/25: Renamed SPS to SSP (Keith Doore)
 ;-
  On_error, 2
  compile_opt idl2
@@ -174,7 +175,7 @@ pro lightning_postprocessing, input_dir, config, sed_id
  endforeach
 
 
- case strupcase(config.SPS) of
+ case strupcase(config.SSP) of
    'PEGASE': begin
         case strupcase(config.SFH) of
           'NON-PARAMETRIC': begin
@@ -564,7 +565,7 @@ pro lightning_postprocessing, input_dir, config, sed_id
      endif
    endfor
 
-   case strupcase(config.SPS) of
+   case strupcase(config.SSP) of
      'PEGASE': begin
           case strupcase(config.SFH) of
             'NON-PARAMETRIC': begin

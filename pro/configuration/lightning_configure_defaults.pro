@@ -104,33 +104,33 @@ config = {                             $
 ;==================================    STELLAR EMISSION    ===================================================
 ; Stellar emission module options
 
-          ; SPS : string scalar
-          ;   The stellar population synthesis (SPS) models to use for
+          ; SSP : string scalar
+          ;   The simple stellar population (SSP) models to use for
           ;   the stellar population. For no stellar emission model, set
           ;   to 'NONE'.
           ;   Current options: 'PEGASE' and 'NONE'
           ; NOTE - If no stellar emission model is chosen, all stellar
           ;        emission model parameters will be ignored.
-          SPS: 'PEGASE'                               ,$
+          SSP: 'PEGASE'                               ,$
 
 
           ;=========== STELLAR POPULATION ===========
           ; IMF : string scalar
-          ;   The initial mass function (IMF) to use in the SPS models.
+          ;   The initial mass function (IMF) to use in the SSP models.
           ;   Current options: 'Kroupa01'
           IMF: 'Kroupa01'                             ,$
 
           ; ZMETAL : float or double scalar
-          ;   The metallicity to use in the SPS models in terms of Z [Zsun].
+          ;   The metallicity to use in the SSP models in terms of Z [Zsun].
           ;   Current options: 0.001, 0.004, 0.008, 0.02, 0.05, 0.1
           ZMETAL: 0.02                                ,$
 
           ; EMISSION_LINES : flag (0 or 1)
-          ;   If set, nebular emission lines are included in the SPS models.
+          ;   If set, nebular emission lines are included in the SSP models.
           EMISSION_LINES: 1                           ,$
 
           ; NEBULAR_EXTINCTION : flag (0 or 1)
-          ;   If set, nebular extinction is included in the SPS models.
+          ;   If set, nebular extinction is included in the SSP models.
           NEBULAR_EXTINCTION: 1                       ,$
 
           ; SFH : string scalar
@@ -152,7 +152,7 @@ config = {                             $
               STEPS_BOUNDS: [0.d0, 1.d7, 1.d8, 1.d9, 5.d9, 13.6d9]  ,$
 
               ; DTIME_SF : int, float, or double scalar
-              ;   The time step used for interpolating the SPS models into the age
+              ;   The time step used for interpolating the SSP models into the age
               ;   bins in yr.
               ; NOTE - We do not recommend changing this value from its default,
               ;        unless you specified age bins with differences less than

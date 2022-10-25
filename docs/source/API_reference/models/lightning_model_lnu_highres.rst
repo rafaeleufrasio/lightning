@@ -112,4 +112,5 @@ Modification History
 - 2022/07/22: Added optional output of unreddened ``Lnu_AGN_highres`` (Keith Doore)
 - 2022/07/27: Renamed unreddened Lnus to prevent ambiguous keywords (Keith Doore)
 - 2022/09/08: Allow user-specified arbitary wavelength grid (Erik B. Monson)
+- 2022/10/25: Renamed SPS to SSP (Keith Doore)
 

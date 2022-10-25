@@ -93,4 +93,5 @@ Modification History
 - 2022/07/11: Created (Keith Doore)
 - 2022/08/01: Added ``/silent`` to ``mrdfits`` (Keith Doore)
 - 2022/08/09: Added ``GALACTIC_NH`` as input rather than keyword inheritance from ``config``, since now in input file (Keith Doore)
+- 2022/10/25: Renamed SPS to SSP (Keith Doore)
 

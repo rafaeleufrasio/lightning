@@ -45,6 +45,7 @@ function lightning_configure_check, config
 ;   - 2022/09/14: Updates to allow fitting with X-ray fluxes (Erik B. Monson)
 ;   - 2022/09/14: Fixed issue with MCMC post-processing size check for affine MCMC (Keith Doore)
 ;   - 2022/10/24: Added option to choose stranded walker deviation value for affine MCMC (Keith Doore)
+;   - 2022/10/25: Renamed SPS to SSP (Keith Doore)
 ;-
  On_error, 2
  Compile_opt idl2
@@ -60,7 +61,7 @@ function lightning_configure_check, config
 ; Current options for Lightning parameters (makes for easier updating if more options are added).
  prior_options = ['fixed', 'uniform', 'normal', 'tabulated']
  prior_options_narg = [1, 2, 4, 1]
- sps_options = ['PEGASE', 'none']
+ ssp_options = ['PEGASE', 'none']
  imf_options = ['Kroupa01']
  zmetal_options = [0.001, 0.004, 0.008, 0.02, 0.05, 0.1]
  sfh_options = ['NON-PARAMETRIC']
@@ -151,17 +152,17 @@ function lightning_configure_check, config
 
 
 ; ===================    Stellar Emission Parameter Check   =============================================
- if n_elements(where(strupcase(tags) eq 'SPS', /null)) eq 0 then $
-   message, base_err+'SPS tag is missing.'
- if size(config.SPS, /type) ne 7 then $
-   message, base_err+'SPS tag must be of type string.'
- if size(config.SPS, /n_dim) ne 0 then $
-   message, base_err+'SPS tag must be a scalar.'
- if total(strupcase(config.SPS) eq strupcase(sps_options)) eq 0 then $
-   message, base_err+"SPS tag must be set to one of the following: '"+$
-            strjoin(sps_options, "', '")+"'."
+ if n_elements(where(strupcase(tags) eq 'SSP', /null)) eq 0 then $
+   message, base_err+'SSP tag is missing.'
+ if size(config.SSP, /type) ne 7 then $
+   message, base_err+'SSP tag must be of type string.'
+ if size(config.SSP, /n_dim) ne 0 then $
+   message, base_err+'SSP tag must be a scalar.'
+ if total(strupcase(config.SSP) eq strupcase(ssp_options)) eq 0 then $
+   message, base_err+"SSP tag must be set to one of the following: '"+$
+            strjoin(ssp_options, "', '")+"'."
 
-     case strupcase(config.SPS) of
+     case strupcase(config.SSP) of
      ; ===================    Stellar Population Parameter Check   =============================================
        'PEGASE': begin
           if n_elements(where(strupcase(tags) eq 'IMF', /null)) eq 0 then $
@@ -277,7 +278,7 @@ function lightning_configure_check, config
  if size(config.ATTEN_CURVE, /n_dim) ne 0 then $
    message, base_err+'ATTEN_CURVE tag must be a scalar.'
  ; Doore21 attenuation requires stellar emission
- if strupcase(config.SPS) eq 'NONE' then $
+ if strupcase(config.SSP) eq 'NONE' then $
    atten_curve_options = ['CALZETTI00', 'CALZETTI_MOD']
  if total(strupcase(config.ATTEN_CURVE) eq strupcase(atten_curve_options)) eq 0 then $
    message, base_err+"ATTEN_CURVE tag must be set to one of the following: '"+$
@@ -486,7 +487,7 @@ function lightning_configure_check, config
    message, base_err+'XRAY_EMISSION tag must be a scalar.'
  if ~(config.XRAY_EMISSION eq 0 or config.XRAY_EMISSION eq 1) then $
    message, base_err+'XRAY_EMISSION tag must be a flag with a value of 0 or 1.'
- if config.SPS eq 'NONE' and config.XRAY_EMISSION eq 1 then $
+ if config.SSP eq 'NONE' and config.XRAY_EMISSION eq 1 then $
    message, base_err+'XRAY_EMISSION tag must be set to 0 if there is no stellar emission.'
 
  if config.XRAY_EMISSION then begin
@@ -664,7 +665,7 @@ function lightning_configure_check, config
 
 
 ; ====== Additional check to make sure AGN and/or stellar models are set if using a dust model and energy balance
- if strupcase(config.AGN_MODEL) eq 'NONE' and strupcase(config.SPS) eq 'NONE' and $
+ if strupcase(config.AGN_MODEL) eq 'NONE' and strupcase(config.SSP) eq 'NONE' and $
     strupcase(config.DUST_MODEL) ne 'NONE' then $
    if config.ENERGY_BALANCE then $
      message, base_err+'ENERGY_BALANCE tag cannot be set if using a dust emission model '+$
