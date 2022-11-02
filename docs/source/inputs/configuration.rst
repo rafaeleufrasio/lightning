@@ -387,7 +387,7 @@ X-ray Emission
 ``XRAY_UNIT`` : string scalar
     The form (or unit type) of X-ray data within the input catalog.
     Currently, there are two types of X-ray data that can be input into Lightning.
-    These are instrumental counts or fluxes (in :math:`{\rm erg\ cm^{-2]\ s^{-1}}`), which are
+    These are instrumental counts or fluxes (in :math:`{\rm erg\ cm^{-2}\ s^{-1}}`), which are
     selected by setting ``XRAY_UNIT`` to ``'COUNTS'`` or ``'FLUX'``, respectively.
     See the discussion on :ref:`input-formats-label` for more details on how to
     format the different X-ray data types.
