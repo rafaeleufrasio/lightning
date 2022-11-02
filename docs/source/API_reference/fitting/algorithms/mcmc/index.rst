@@ -1,4 +1,4 @@
-MCMC
+Mcmc
 ====
 
 .. toctree::

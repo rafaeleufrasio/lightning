@@ -1,5 +1,5 @@
-Calzetti+00
-===========
+Calzetti00
+==========
 
 .. toctree::
     :maxdepth: 1

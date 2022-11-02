@@ -7,8 +7,8 @@ SKIRTOR_SPECTRUM
 
 Purpose
 -------
-Generates the AGN model spectra for a given set of AGN model parameters. 
-The AGN model is based on the SKIRTOR models (Stalevski et al. 2016), 
+Generates the AGN model spectra for a given set of AGN model parameters.
+The AGN model is based on the SKIRTOR models (Stalevski et al. 2016),
 which include the parameters of :math:`\tau_{9.7}` and :math:`i_{\rm AGN}`.
 
 Calling Sequence
@@ -42,7 +42,7 @@ Optional Inputs
     The name of the attenuation curve to apply to the AGN models. Current
     options are ``'CALZETTI00'`` and ``'CALZETTI_MOD'``.
 ``uv_bump`` : flag
-    If set, then a 2175 Angstrom UV bump feature will be added to the 
+    If set, then a 2175 Angstrom UV bump feature will be added to the
     attenuation curve.
 ``error_check`` : flag
     If set, all inputs are checked for errors. Otherwise, all inputs are

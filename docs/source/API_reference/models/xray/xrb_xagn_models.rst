@@ -111,4 +111,5 @@ Modification History
 - 2022/06/22: Major update to include new implementation (Keith Doore)
 - 2022/07/07: Changed several variable names and updated documentation (Keith Doore)
 - 2022/09/14: Updates to allow fitting with X-ray fluxes (Erik B. Monson)
+- 2022/11/02: Galactic NH is now in units of 1e20 cm-2 (Erik B. Monson)
 

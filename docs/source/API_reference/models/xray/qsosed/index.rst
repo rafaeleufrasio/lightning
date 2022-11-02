@@ -1,4 +1,4 @@
-qsosed
+Qsosed
 ======
 
 .. toctree::

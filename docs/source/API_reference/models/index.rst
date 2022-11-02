@@ -7,8 +7,8 @@ Models
     :caption: Contents
 
     *
-    agn/stalevski2016/index
+    agn/index
     attenuation/index
-    dust/DL07/index
-    stellar/nonparametric_sfh/index
+    dust/index
+    stellar/index
     xray/index

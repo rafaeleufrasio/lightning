@@ -44,6 +44,8 @@ Optional Inputs
 ``counts_predict``: int, float, or double array(Nxray, Nchain)
     The X-ray counts predicted by the model. If specified, ``counts_obs`` and ``counts_unc``
     must also be given.
+``model_unc`` : int, float, or double scalar
+    The fractional model uncertainty to use in all bands. (Default = ``0.d0``)
 
 Output
 ------
@@ -81,4 +83,5 @@ Modification History
   force ``-1`` to be ``0`` (Keith Doore)
 - 2022/09/01: Added X-ray emission (Erik B. Monson)
 - 2022/09/15: Changed from ``chi2_chain`` input to ``lnprob_chain`` (Keith Doore)
+- 2022/09/30: Added ``model_unc`` input to include in uncertainties (Keith Doore)
 

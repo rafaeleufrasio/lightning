@@ -114,6 +114,7 @@ function xrb_xagn_models, xray_bandpass, xray_exposure=xray_exposure,$
 ;   - 2022/06/22: Major update to include new implementation (Keith Doore)
 ;   - 2022/07/07: Changed several variable names and updated documentation (Keith Doore)
 ;   - 2022/09/14: Updates to allow fitting with X-ray fluxes (Erik B. Monson)
+;   - 2022/11/02: Galactic NH is now in units of 1e20 cm-2 (Erik B. Monson)
 ;-
  On_error, 2
  compile_opt idl2
@@ -270,8 +271,8 @@ function xrb_xagn_models, xray_bandpass, xray_exposure=xray_exposure,$
 
  ; Convert the X-ray models to counts s-1 Hz-1 / L_band, where L_band is as above.
  ;  If we've got our X-ray data in fluxes, this will all just come out as NaNs
- model_xrb_count_rate = arf_interp * (exp_neg_tau_xray_MW ^ (galactic_nH / 1.d20) * Lnu_x_xrb * LtoF_over_photon_energy_obs)
- model_hotgas_count_rate = arf_interp * (exp_neg_tau_xray_MW ^ (galactic_nH / 1.d20) * Lnu_x_hotgas * LtoF_over_photon_energy_obs)
+ model_xrb_count_rate = arf_interp * (exp_neg_tau_xray_MW ^ (galactic_nH) * Lnu_x_xrb * LtoF_over_photon_energy_obs)
+ model_hotgas_count_rate = arf_interp * (exp_neg_tau_xray_MW ^ (galactic_nH) * Lnu_x_hotgas * LtoF_over_photon_energy_obs)
 
 
  ; Integrate the XRB and hot gas models to get counts / L_band for each bin.
@@ -300,7 +301,7 @@ function xrb_xagn_models, xray_bandpass, xray_exposure=xray_exposure,$
 
    'PLAW': begin
        Lnu_x_agn = xray_plaw_expcut(wave_rest, plaw_gamma=1.8, E_cut=300.0)
-       model_agn_count_rate = arf_interp * (exp_neg_tau_xray_MW ^ (galactic_nH / 1.d20) * Lnu_x_agn * LtoF_over_photon_energy_obs)
+       model_agn_count_rate = arf_interp * (exp_neg_tau_xray_MW ^ (galactic_nH) * Lnu_x_agn * LtoF_over_photon_energy_obs)
        L2500 = !values.D_NaN
        agn_mass = !values.D_NaN
        agn_logmdot = !values.D_NaN
