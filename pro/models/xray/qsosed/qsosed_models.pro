@@ -9,8 +9,8 @@ function qsosed_models, redshift, wave_rest, arf_interp, exp_neg_tau_xray_MW, ga
 ;
 ; Purpose
 ; -------
-;   Generates the spectra and X-ray parameters for the QSOSED model as 
-;   described in Kubota & Done (2018). The spectra can include or not 
+;   Generates the spectra and X-ray parameters for the QSOSED model as
+;   described in Kubota & Done (2018). The spectra can include or not
 ;   include Galactic absorption.
 ;
 ; Calling Sequence
@@ -31,17 +31,17 @@ function qsosed_models, redshift, wave_rest, arf_interp, exp_neg_tau_xray_MW, ga
 ;   ``arf_interp`` : double array(Nwave)
 ;       A grid of ARF values interpolated from the input ARF file :math:`[{\rm cm}^2]`.
 ;   ``exp_neg_tau_xray_MW`` : float or double array(Nwave)
-;       The attenuation from the Milky Way to be applied to the X-ray data in terms 
+;       The attenuation from the Milky Way to be applied to the X-ray data in terms
 ;       of :math:`e^{-\tau}`.
 ;   ``galactic_nH`` : int, float, or double scalar
 ;       Galactic, i.e. Milky Way, neutral Hydrogen column density along the line
-;       of sight :math:`[{\rm cm}^2]`.
+;       of sight :math:`[10^{20}\ {\rm cm}^2]`.
 ;   ``lumin_dist`` : int, float, double scalar
 ;       The luminosity distance of the model :math:`[{\rm Mpc}]`.
 ;
 ; Output
 ; ------
-;   ``model_agn_count_rate`` : double array(Nwave, Nmass, Nmdot) 
+;   ``model_agn_count_rate`` : double array(Nwave, Nmass, Nmdot)
 ;       Instrumental count rate density produced by qsosed model grid
 ;       :math:`[{\rm counts\ s^{-1}\ Hz^{-1}}]`.
 ;
@@ -50,7 +50,7 @@ function qsosed_models, redshift, wave_rest, arf_interp, exp_neg_tau_xray_MW, ga
 ;   ``Lnu_x_agn`` : double array(Nwave, Nmass, Nmdot)
 ;       The qsosed model luminosity :math:`[L_\odot\ {\rm Hz}^{-1}]`.
 ;   ``L2500`` : double array(Nmass, Nmdot)
-;       The rest-frame 2500 Angstrom monochromatic luminosity shifted to the 
+;       The rest-frame 2500 Angstrom monochromatic luminosity shifted to the
 ;       observed frame :math:`[L_\odot\ {\rm Hz}^{-1}]`.
 ;   ``agn_mass`` : double array(Nmass, Nmdot)
 ;       The SMBH mass grid :math:`[M_\odot]`.
@@ -66,6 +66,7 @@ function qsosed_models, redshift, wave_rest, arf_interp, exp_neg_tau_xray_MW, ga
 ;   - 2021/09/21: Created (Erik B. Monson).
 ;   - 2022/06/22: Moved to separate file and documentation improved (Keith Doore).
 ;   - 2022/06/22: Major update to include new implementation (Keith Doore)
+;   - 2022/11/02: Galactic NH is now in units of 1e20 cm-2 (Erik B. Monson)
 ;-
  On_error, 2
  compile_opt idl2
@@ -122,21 +123,21 @@ function qsosed_models, redshift, wave_rest, arf_interp, exp_neg_tau_xray_MW, ga
  Nwave = n_elements(wave_rest)
 
  qsosed = mrdfits(!lightning_dir + 'models/xray/qsosed/qsosed.fits.gz', 1, qsosed_hdr, /SILENT)
- 
+
  mass_card_idx = (where(stregex(qsosed_hdr, 'N_MASS') ne -1, /NULL))[0]
  Nmass = fix(strtrim((strsplit(qsosed_hdr[mass_card_idx], '=', /EXTRACT))[1], 2))
- 
+
  mdot_card_idx = (where(stregex(qsosed_hdr, 'N_MDOT') ne -1, /NULL))[0]
  Nmdot = fix(strtrim((strsplit(qsosed_hdr[mdot_card_idx], '=', /EXTRACT))[1], 2))
- 
+
  Nenergy = (size(qsosed.LNU, /DIMENSIONS))[0]
  ; Rest-frame energy and wavelength
  qsosed_energy = (qsosed.E_MID)[*, 0]
  qsosed_wave = (qsosed.WAVE_MID)[*, 0]
- 
+
  L2500 = qsosed.L2500
  qsosed_gamma = qsosed.GAMMA_EFFECTIVE
- 
+
  ; All this transposing is to get us to M begin the first dimension and
  ; log(mdot) the second. Array indexing is the other way around from python,
  ; where these models were generated in Sherpa.
@@ -144,7 +145,7 @@ function qsosed_models, redshift, wave_rest, arf_interp, exp_neg_tau_xray_MW, ga
  M_matr = transpose(reform(transpose(qsosed.mass), Nmdot, Nmass))
  logmdot_matr = transpose(reform(transpose(qsosed.LOG_MDOT), Nmdot, Nmass))
  L2500_matr = transpose(reform(transpose(qsosed.L2500), Nmdot, Nmass))
- 
+
  ; Interpolate to our normal wavelength grid
  qsosed_matr_interp = dblarr(Nwave, Nmass, Nmdot)
  for i=0, Nmass-1 do begin
@@ -177,7 +178,7 @@ function qsosed_models, redshift, wave_rest, arf_interp, exp_neg_tau_xray_MW, ga
 
  ; Inside the loops as we sample parameter space we'll need to further multiply the AGN model by
  ; exptau_xray ^ (NH_AGN), changing the shape of the model.
- model_agn_count_rate = rebin(reform(arf_interp * (exp_neg_tau_xray_MW ^ (galactic_nH / 1.d20)), Nwave, 1, 1), $
+ model_agn_count_rate = rebin(reform(arf_interp * (exp_neg_tau_xray_MW ^ (galactic_nH)), Nwave, 1, 1), $
                           Nwave, Nmass, Nmdot) * qsosed_matr_interp * $
                     rebin(reform(LtoF_over_photon_energy_obs, Nwave, 1, 1), Nwave, Nmass, Nmdot)
 
