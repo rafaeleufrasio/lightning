@@ -42,7 +42,7 @@ Optional Inputs
     The name of the attenuation curve to apply to the AGN models. Current
     options are ``'CALZETTI00'`` and ``'CALZETTI_MOD'``.
 ``uv_bump`` : flag
-    If set, then a 2175 Angstrom UV bump feature will be added to the 
+    If set, then a 2175 Angstrom UV bump feature will be added to the
     attenuation curve.
 ``error_check`` : flag
     If set, all inputs are checked for errors. Otherwise, all inputs are
@@ -60,7 +60,7 @@ Output
 Optional Outputs
 ----------------
 ``mean_Lnu_unred_AGN`` : double array(Nfilters, Nmodels)
-    The unattenuated mean luminosity of each filter and set of AGN model 
+    The unattenuated mean luminosity of each filter and set of AGN model
     parameters :math:`[L_\odot\ {\rm Hz}^{-1}]`.
 ``Lbol_abs_AGN``:  double array(Nmodels)
     The bolometric luminosity of the attenuated AGN emission for each

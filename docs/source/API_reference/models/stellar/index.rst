@@ -1,4 +1,4 @@
-Doore21
+Stellar
 =======
 
 .. toctree::
@@ -6,4 +6,4 @@ Doore21
     :glob:
     :caption: Contents
 
-    *
+    nonparametric_sfh/index
