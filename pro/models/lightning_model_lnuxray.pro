@@ -77,6 +77,7 @@ function lightning_model_lnuxray, parameters, parameter_name, models, Lbol_AGN_m
 ; --------------------
 ;   - 2022/09/08: Created (Erik B. Monson)
 ;   - 2022/09/15: Updated documentation (Keith Doore)
+;   - 2022/11/02: Galactic NH is now in units of 1e20 cm-2 (Erik B. Monson)
 ;-
  On_error, 2
  compile_opt IDL2
@@ -145,7 +146,7 @@ function lightning_model_lnuxray, parameters, parameter_name, models, Lbol_AGN_m
  ; Handle absorption
  nh_milkyway = models.xray_models.GALACTIC_NH
  exp_neg_tau_milkyway = rebin(reform(models.xray_models.EXP_NEG_TAU_XRAY_MW, Nwave_mod, 1), Nwave_mod, Nmodels)^$
-                        replicate(nh_milkyway / 1.d20, Nwave_mod, Nmodels)
+                        replicate(nh_milkyway, Nwave_mod, Nmodels)
 
  exp_neg_tau_nucleus = rebin(reform(models.xray_models.EXP_NEG_TAU_XRAY, Nwave_mod, 1), Nwave_mod, Nmodels)^$
                        rebin(reform(nh, 1, Nmodels), Nwave_mod, Nmodels)

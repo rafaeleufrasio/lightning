@@ -74,4 +74,5 @@ Modification History
 --------------------
 - 2022/09/08: Created (Erik B. Monson)
 - 2022/09/15: Updated documentation (Keith Doore)
+- 2022/11/02: Galactic NH is now in units of 1e20 cm-2 (Erik B. Monson)
 

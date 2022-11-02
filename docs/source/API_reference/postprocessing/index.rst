@@ -1,5 +1,5 @@
-Post-processing
-===============
+Postprocessing
+==============
 
 .. toctree::
     :maxdepth: 1

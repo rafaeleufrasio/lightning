@@ -1,5 +1,5 @@
-X-ray
-=====
+Xray
+====
 
 .. toctree::
     :maxdepth: 1
