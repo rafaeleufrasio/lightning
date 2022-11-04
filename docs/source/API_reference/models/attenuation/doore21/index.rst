@@ -1,5 +1,5 @@
-Doore21
-=======
+Doore+21
+========
 
 .. toctree::
     :maxdepth: 1

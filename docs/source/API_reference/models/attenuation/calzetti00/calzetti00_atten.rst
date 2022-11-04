@@ -74,4 +74,5 @@ Modification History
 - 2022/04/07: Allowed for array of only one optional input to be given (Keith Doore)
 - 2022/06/09: Changed ``no_bump`` keyword to ``uv_bump`` keyword and adjusted logic accordingly (Keith Doore)
 - 2022/06/09: Added ``error_check`` keyword to do error handling (Keith Doore)
+- 2022/11/04: Corrected extrapolation below 0.12um to use method from Noll+2009 (Keith Doore)
 

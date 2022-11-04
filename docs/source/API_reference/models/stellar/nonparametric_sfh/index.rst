@@ -1,5 +1,5 @@
-Nonparametric_sfh
-=================
+Stellar
+=======
 
 .. toctree::
     :maxdepth: 1

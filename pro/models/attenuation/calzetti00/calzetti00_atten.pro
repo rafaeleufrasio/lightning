@@ -74,6 +74,7 @@ function calzetti00_atten, wave, tauV_diff=tauV_diff, delta=delta, $
 ;   - 2022/04/07: Allowed for array of only one optional input to be given (Keith Doore)
 ;   - 2022/06/09: Changed ``no_bump`` keyword to ``uv_bump`` keyword and adjusted logic accordingly (Keith Doore)
 ;   - 2022/06/09: Added ``error_check`` keyword to do error handling (Keith Doore)
+;   - 2022/11/04: Corrected extrapolation below 0.12um to use method from Noll+2009 (Keith Doore)
 ;-
  On_error, 2
  compile_opt idl2
@@ -145,10 +146,18 @@ function calzetti00_atten, wave, tauV_diff=tauV_diff, delta=delta, $
  RV = 4.05d0 ;Calzetti+2000
 
  w1 = where((wavelength GE 0.6300) AND (wavelength LE 2.2000), nw1, /null)
- w2 = where((wavelength GE 0.0912) AND (wavelength LT 0.6300), nw2, /null)
+ w2 = where((wavelength GE 0.1200) AND (wavelength LT 0.6300), nw2, /null)
  inverse_wave  = 1.d0/wavelength  ;Wavelength in inverse microns
  if (nw1 ne 0) then klam[w1] = 2.659d0*(-1.857d0 + 1.040d0*inverse_wave[w1]) + RV
  if (nw2 ne 0) then klam[w2] = 2.659d0*(poly(inverse_wave[w2], [-2.156, 1.509d0, -0.198d0, 0.011d0])) + RV
+
+ ; Linearly extrapolate from 0.12 to 0.0912 as stated in Noll+2009
+ ;slope = 2.659d0*(-1.509/0.12^2+ 2*0.198/0.12^3 - 3*0.011/0.12^4) = -92.449445
+ ;value = 2.659d0*(poly(1/0.12, [-2.156, 1.509d0, -0.198d0, 0.011d0])) + RV = 12.119377
+ w3 = where((wavelength GE 0.0912) AND (wavelength LT 0.1200), nw3, /null)
+ slope = -92.449445d
+ value =  12.119377d
+ if (nw3 ne 0) then klam[w3] = slope * wavelength[w3] + (value - slope * 0.1200)
 
  ; Combine bump feature, variable slope, and Calzetti curve
  ; If uv_bump is not set and delta is 0, then this results in original Calzetti curve

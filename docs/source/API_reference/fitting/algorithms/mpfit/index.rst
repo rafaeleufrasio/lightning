@@ -1,4 +1,4 @@
-Mpfit
+MPFIT
 =====
 
 .. toctree::
