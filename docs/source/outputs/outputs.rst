@@ -83,7 +83,7 @@ By default, the post-processed outputs include:
 ``WAVE_HIRES`` : double array(1000)
     The wavelength grid for the high resolution UV-to-FIR model :math:`[\mu \rm m]`.
 
-``LNU_HIRES_MOD`` : double array(1000, Nhighres_models)
+``LNU_MOD_HIRES`` : double array(1000, Nhighres_models)
     The total high resolution UV-to-FIR luminosities produced by the model :math:`[L_\odot\ {\rm Hz}^{-1}]`.
 
 ``LNPROB`` : double array(Nmodels)
