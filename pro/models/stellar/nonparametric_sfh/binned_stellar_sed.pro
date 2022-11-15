@@ -125,6 +125,7 @@ function binned_stellar_sed, stellar_models, psi, atten_curve=atten_curve, tauV_
 ;   - 2022/07/07: Change name of ``sfh_coeff`` to ``psi`` (Keith Doore)
 ;   - 2022/07/07: Change name of ``Lbol_abs`` to ``Lbol_abs_stellar`` (Keith Doore)
 ;   - 2022/07/22: Added optional output of unreddened mean Lnu (Keith Doore)
+;   - 2022/11/15: Fixed bug with variable redshift and ``rold0_ages`` (Keith Doore)
 ;-
  On_error, 2
  compile_opt idl2
@@ -336,7 +337,7 @@ function binned_stellar_sed, stellar_models, psi, atten_curve=atten_curve, tauV_
  endfor
 
  if strupcase(atten_curve) eq 'DOORE21' then begin
-   steps_Lbol_abs = doore21_interp_lbol_abs_table(tauB_f, F_clump, b_to_d, rold0_ages, atten_models.doore21_Lbol_abs_table)
+   steps_Lbol_abs = doore21_interp_lbol_abs_table(tauB_f, F_clump, b_to_d, rold0_ages[0:(Nsteps-1)], atten_models.doore21_Lbol_abs_table)
  endif
 
  ; Exclude NaNs in case a filter included NaNs.

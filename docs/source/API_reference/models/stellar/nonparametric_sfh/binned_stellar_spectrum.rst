@@ -101,4 +101,5 @@ Modification History
 - 2022/06/30: Updated to match format of ``binned_stellar_sed.pro`` (Keith Doore)
 - 2022/07/07: Change name of ``sfh_coeff`` to ``psi`` (Keith Doore)
 - 2022/07/22: Added optional output of unreddened Lnu spectrum (Keith Doore)
+- 2022/11/15: Fixed bug with variable redshift and ``rold0_ages`` (Keith Doore)
 

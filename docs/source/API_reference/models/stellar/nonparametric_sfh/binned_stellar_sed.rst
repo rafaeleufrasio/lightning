@@ -121,4 +121,5 @@ Modification History
 - 2022/07/07: Change name of ``sfh_coeff`` to ``psi`` (Keith Doore)
 - 2022/07/07: Change name of ``Lbol_abs`` to ``Lbol_abs_stellar`` (Keith Doore)
 - 2022/07/22: Added optional output of unreddened mean Lnu (Keith Doore)
+- 2022/11/15: Fixed bug with variable redshift and ``rold0_ages`` (Keith Doore)
 
