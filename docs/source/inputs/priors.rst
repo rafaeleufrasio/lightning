@@ -7,7 +7,7 @@ In terms of analytical priors, Lightning only has two options: uniform and trunc
 Additionally, there is the option to input a prior of any shape in tabulated form.
 Finally, while not actually a prior, we consider fixing a free parameter in a model a prior for implementation purposes. 
 
-For general cases, we recommend using using the defaults uniform or fixed priors specified in the configuration.
+For general cases, we recommend using using the default uniform or fixed priors specified in the configuration.
 However, the choice of prior strongly depends on your research goals, which means different kinds of SEDs will
 likely need different priors. Below, we give examples on how to input the different prior options into
 the configuration using the file method, along with an example of how to
@@ -19,6 +19,7 @@ format the tabulated priors.
     is typically not an issue for uniform priors, this can be a problem if you want unique
     normal priors for each SED in the batch. However, tabulated priors can be unique for each
     SED, and unique normal priors can be implemented this way by inputting them in tabulated form.
+    Alternatively, you can run a unique configuration of Lightning for each unique normal prior.
 
 
 File Configuration Method

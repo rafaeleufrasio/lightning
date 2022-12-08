@@ -177,7 +177,7 @@ enough iterations, these walkers will get lucky and have a jump that rejoins the
 However, we do not have an infinite amount of iterations to allow for this to occur. Therefore, once
 our iteration limit has been reached, we want to remove any stranded walkers that may remain. We have 
 found that the most effective method for correctly selecting stranded walkers is to compare each walker's
-acceptance fraction with that of the median of the ensemble. Those that that have an abnormally low
+acceptance fraction with that of the median of the ensemble. Those that have an abnormally low
 acceptance fractions compared to the rest of the ensemble are usually stranded.
 
 .. note::
