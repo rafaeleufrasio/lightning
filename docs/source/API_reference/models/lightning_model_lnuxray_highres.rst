@@ -94,4 +94,5 @@ Modification History
 - 2022/08/11: Renamed function to match function naming scheme (Keith Doore)
 - 2022/09/08: Allow user-specified arbitary wavelength grid (Erik B. Monson)
 - 2022/11/02: Galactic NH is now in units of 1e20 cm-2 (Erik B. Monson)
+- 2022/12/13: Fixed bug in ``wave`` error check (Keith Doore)
 

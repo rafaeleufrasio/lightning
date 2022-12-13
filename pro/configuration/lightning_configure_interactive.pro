@@ -43,6 +43,7 @@ function lightning_configure_interactive, config_edit=config_edit
 ;   - 2022/09/14: Updates to allow fitting with X-ray fluxes (Erik B. Monson)
 ;   - 2022/10/24: Added option to choose stranded walker deviation value for affine MCMC (Keith Doore)
 ;   - 2022/10/25: Renamed SPS to SSP (Keith Doore)
+;   - 2022/12/13: Prevented ``XRAY_UNC`` from begin set if ``XRAY_UNIT='FLUX'`` (Keith Doore)
 ;-
  On_error, 2
  Compile_opt idl2
@@ -1427,34 +1428,36 @@ function lightning_configure_interactive, config_edit=config_edit
    config['XRAY_UNIT'] = strupcase(temp)
 
   ;============ Xray uncertainties ============
-   xray_unc_options = ['SQRT', 'GEHRELS', 'USER']
-   error = 1
-   default_val = 'GEHRELS'
-   default = '(Default: '+default_val+')'
-   if edit then begin
-     if config_edit.XRAY_EMISSION then begin
-       default_val = strupcase(config_edit.XRAY_UNC)
-       default = '(Previous configuration: '+default_val+')'
+   if config['XRAY_UNIT'] eq 'COUNTS' then begin
+     xray_unc_options = ['SQRT', 'GEHRELS', 'USER']
+     error = 1
+     default_val = 'GEHRELS'
+     default = '(Default: '+default_val+')'
+     if edit then begin
+       if config_edit.XRAY_EMISSION then begin
+         default_val = strupcase(config_edit.XRAY_UNC)
+         default = '(Previous configuration: '+default_val+')'
+       endif
      endif
+     xray_unc_message = 'Please specify the uncertainties to assume for the X-ray counts. '+$
+                         'Current options: '+strjoin(xray_unc_options, ', ')+$
+                         '. '+default
+     print_to_width, '======================='
+     while error do begin
+       print_to_width, ''
+       print_to_width, xray_unc_message
+
+       temp = ''
+       read,temp, prompt='XRAY_UNC: ',form='(A0)'
+       if temp eq '' then temp = default_val
+       temp = strtrim(temp, 2)
+
+       if total(strupcase(temp) eq strupcase(xray_unc_options)) eq 0 then begin
+         xray_unc_message = 'Please specify one of the current options: '+strjoin(xray_unc_options, ', ')+'.'
+       endif else error = 0
+     endwhile
+     config['XRAY_UNC'] = strupcase(temp)
    endif
-   xray_unc_message = 'Please specify the uncertainties to assume for the X-ray counts. '+$
-                       'Current options: '+strjoin(xray_unc_options, ', ')+$
-                       '. '+default
-   print_to_width, '======================='
-   while error do begin
-     print_to_width, ''
-     print_to_width, xray_unc_message
-
-     temp = ''
-     read,temp, prompt='XRAY_UNC: ',form='(A0)'
-     if temp eq '' then temp = default_val
-     temp = strtrim(temp, 2)
-
-     if total(strupcase(temp) eq strupcase(xray_unc_options)) eq 0 then begin
-       xray_unc_message = 'Please specify one of the current options: '+strjoin(xray_unc_options, ', ')+'.'
-     endif else error = 0
-   endwhile
-   config['XRAY_UNC'] = strupcase(temp)
 
   ;============ Xray Absorption ============
    xray_abs_options = ['TBABS-WILM', 'TBABS-ANGR', 'ATTEN']

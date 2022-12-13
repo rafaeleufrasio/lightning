@@ -118,6 +118,7 @@ function lightning_model_lnu_highres, parameters, parameter_name, models, ssp=ss
 ;   - 2022/07/27: Renamed unreddened Lnus to prevent ambiguous keywords (Keith Doore)
 ;   - 2022/09/08: Allow user-specified arbitary wavelength grid (Erik B. Monson)
 ;   - 2022/10/25: Renamed SPS to SSP (Keith Doore)
+;   - 2022/12/13: Fixed bug in ``wave`` error check (Keith Doore)
 ;-
  On_error, 2
  compile_opt idl2
@@ -178,7 +179,7 @@ function lightning_model_lnu_highres, parameters, parameter_name, models, ssp=ss
    if n_elements(wave) ne 0 then begin
      if size(wave, /type) lt 2 or size(wave, /type) gt 5 then $
          message, 'WAVE must be of type int, float, or double.'
-     if size(wave, /dim) gt 1 then message, 'WAVE must be a scalar or 1-D array.'
+     if size(wave, /n_dim) gt 1 then message, 'WAVE must be a scalar or 1-D array.'
      if min(wave) lt 0 then $
          message, 'WAVE must only contain positive values.'
    endif

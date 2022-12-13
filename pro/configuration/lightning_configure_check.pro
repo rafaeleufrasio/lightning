@@ -46,6 +46,7 @@ function lightning_configure_check, config
 ;   - 2022/09/14: Fixed issue with MCMC post-processing size check for affine MCMC (Keith Doore)
 ;   - 2022/10/24: Added option to choose stranded walker deviation value for affine MCMC (Keith Doore)
 ;   - 2022/10/25: Renamed SPS to SSP (Keith Doore)
+;   - 2022/12/13: Prevented ``XRAY_UNC`` from begin checked if ``XRAY_UNIT='FLUX'`` (Keith Doore)
 ;-
  On_error, 2
  Compile_opt idl2
@@ -501,15 +502,17 @@ function lightning_configure_check, config
        message, base_err+"XRAY_UNIT tag must be set to one of the following: '"+$
                 strjoin(xray_unit_options, "', '")+"'."
 
-     if n_elements(where(strupcase(tags) eq 'XRAY_UNC', /null)) eq 0 then $
-       message, base_err+'XRAY_UNC tag is missing.'
-     if size(config.XRAY_UNC, /type) ne 7 then $
-       message, base_err+'XRAY_UNC tag must be of type string.'
-     if size(config.XRAY_UNC, /n_dim) ne 0 then $
-       message, base_err+'XRAY_UNC tag must be a scalar.'
-     if total(strupcase(config.XRAY_UNC) eq strupcase(xray_unc_options)) eq 0 then $
-       message, base_err+"XRAY_UNC tag must be set to one of the following: '"+$
-                strjoin(xray_unc_options, "', '")+"'."
+     if strupcase(config.XRAY_UNIT) eq 'COUNTS' then begin
+       if n_elements(where(strupcase(tags) eq 'XRAY_UNC', /null)) eq 0 then $
+         message, base_err+'XRAY_UNC tag is missing.'
+       if size(config.XRAY_UNC, /type) ne 7 then $
+         message, base_err+'XRAY_UNC tag must be of type string.'
+       if size(config.XRAY_UNC, /n_dim) ne 0 then $
+         message, base_err+'XRAY_UNC tag must be a scalar.'
+       if total(strupcase(config.XRAY_UNC) eq strupcase(xray_unc_options)) eq 0 then $
+         message, base_err+"XRAY_UNC tag must be set to one of the following: '"+$
+                  strjoin(xray_unc_options, "', '")+"'."
+     endif
 
      if n_elements(where(strupcase(tags) eq 'XRAY_ABS_MODEL', /null)) eq 0 then $
        message, base_err+'XRAY_ABS_MODEL tag is missing.'

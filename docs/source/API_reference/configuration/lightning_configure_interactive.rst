@@ -44,4 +44,5 @@ Modification History
 - 2022/09/14: Updates to allow fitting with X-ray fluxes (Erik B. Monson)
 - 2022/10/24: Added option to choose stranded walker deviation value for affine MCMC (Keith Doore)
 - 2022/10/25: Renamed SPS to SSP (Keith Doore)
+- 2022/12/13: Prevented ``XRAY_UNC`` from begin set if ``XRAY_UNIT='FLUX'`` (Keith Doore)
 

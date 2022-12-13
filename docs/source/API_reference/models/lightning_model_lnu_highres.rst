@@ -113,4 +113,5 @@ Modification History
 - 2022/07/27: Renamed unreddened Lnus to prevent ambiguous keywords (Keith Doore)
 - 2022/09/08: Allow user-specified arbitary wavelength grid (Erik B. Monson)
 - 2022/10/25: Renamed SPS to SSP (Keith Doore)
+- 2022/12/13: Fixed bug in ``wave`` error check (Keith Doore)
 
