@@ -45,4 +45,6 @@ Modification History
 --------------------
 - 2022/08/02: Created (Keith Doore)
 - 2022/09/19: Allowed for X-ray fluxes to be input (Keith Doore)
+- 2022/12/28: Fixed bug if only reading in one SED (Keith Doore)
+- 2022/12/28: Fixed bug if no x-ray data (Keith Doore)
 

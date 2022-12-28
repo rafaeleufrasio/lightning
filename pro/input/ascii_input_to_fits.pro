@@ -44,6 +44,8 @@ pro ascii_input_to_fits, input_file, input_file_fits=input_file_fits
 ; --------------------
 ;   - 2022/08/02: Created (Keith Doore)
 ;   - 2022/09/19: Allowed for X-ray fluxes to be input (Keith Doore)
+;   - 2022/12/28: Fixed bug if only reading in one SED (Keith Doore)
+;   - 2022/12/28: Fixed bug if no x-ray data (Keith Doore)
 ;-
  On_error, 2
  compile_opt idl2
@@ -59,7 +61,7 @@ pro ascii_input_to_fits, input_file, input_file_fits=input_file_fits
 ; Read in ASCII data file
 ; Determine the number of lines in the file.
  Nlines = file_lines(input_file)
- line_start = lonarr(Nlines)
+ line_start = lonarr(Nlines + 1)
 
 ; Determine the line where the header ends.
  openr, lun, input_file, /Get_Lun
@@ -141,9 +143,11 @@ pro ascii_input_to_fits, input_file, input_file_fits=input_file_fits
  if Nxray_flux_unc ne 0 then xray_flux_unc = reform(data[xray_flux_unc_idc, *])
  ; Combine xray bandpass lower and upper bounds into one array
  Nxray_band = max([Nxray_band_l, Nxray_band_u])
- xray_bandpass = !values.D_NaN*dblarr(2, Nxray_band, Nsed)
- xray_bandpass[0, 0:Nxray_band_l-1, *] = xray_band_l
- xray_bandpass[1, 0:Nxray_band_u-1, *] = xray_band_u
+ if Nxray_band gt 0 then begin
+   xray_bandpass = !values.D_NaN*dblarr(2, Nxray_band, Nsed)
+   xray_bandpass[0, 0:Nxray_band_l-1, *] = xray_band_l
+   xray_bandpass[1, 0:Nxray_band_u-1, *] = xray_band_u
+ endif
 
  ; Extract the filter indices
  nonfilter_idc = where(strupcase(tags) eq 'SED_ID'        or strupcase(tags) eq 'LUMIN_DIST'  or $
