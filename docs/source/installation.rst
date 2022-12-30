@@ -18,7 +18,7 @@ The latest Lightning release can be installed as source from our `GitHub <https:
 
 Before running Lightning, you will need to build the package using::
 
-    cd <install_dir>
+    cd <install_dir>/lightning
     idl lightning_build
 
 .. highlight:: idl

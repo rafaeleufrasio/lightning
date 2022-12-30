@@ -23,7 +23,7 @@ git clone https://github.com/rafaeleufrasio/lightning
 Lightning will then need to be built by running:
 
 ```
-cd <install_dir>
+cd <install_dir>/lightning
 idl lightning_build
 ```
 
