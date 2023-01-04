@@ -17,8 +17,8 @@ cd <install_dir>
 git clone https://github.com/rafaeleufrasio/lightning
 ```
 
-> NOTE: Lightning is written in the Interactive Data Language (IDL) and requires IDL version 8.3 or later. It additionally requires the [IDL Astronomy User's Library](https://idlastro.gsfc.nasa.gov) and
-[Craig Markwardt's MPFIT library](http://purl.com/net/mpfit). Both will need to installed and [added to your IDL path](https://www.l3harrisgeospatial.com/Support/Self-Help-Tools/Help-Articles/Help-Articles-Detail/ArtMID/10220/ArticleID/16156/Quick-tips-for-customizing-your-IDL-program-search-path) before using Lightning.
+> NOTE: Lightning is written in the Interactive Data Language (IDL) and requires IDL version 8.3 or later. It additionally requires the [IDL Astronomy User's Library](https://idlastro.gsfc.nasa.gov), [IDL Coyote](http://www.idlcoyote.com), and
+[Craig Markwardt's MPFIT library](http://purl.com/net/mpfit). All three will need to be installed and [added to your IDL path](https://www.l3harrisgeospatial.com/Support/Self-Help-Tools/Help-Articles/Help-Articles-Detail/ArtMID/10220/ArticleID/16156/Quick-tips-for-customizing-your-IDL-program-search-path) before using Lightning.
 
 Lightning will then need to be built by running:
 
