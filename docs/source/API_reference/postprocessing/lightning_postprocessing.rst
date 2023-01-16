@@ -61,4 +61,5 @@ Modification History
 - 2022/09/26: Added ``DOF`` to MPFIT output (Keith Doore)
 - 2022/10/24: Updated stranded walker search to use configuration input value (Keith Doore)
 - 2022/10/25: Renamed SPS to SSP (Keith Doore)
+- 2023/01/16: Fixed issue if ``lnprob`` of MPFIT is same for multiple solvers (Keith Doore)
 

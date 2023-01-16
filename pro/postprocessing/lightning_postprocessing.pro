@@ -60,6 +60,7 @@ pro lightning_postprocessing, input_dir, config, sed_id
 ;   - 2022/09/26: Added ``DOF`` to MPFIT output (Keith Doore)
 ;   - 2022/10/24: Updated stranded walker search to use configuration input value (Keith Doore)
 ;   - 2022/10/25: Renamed SPS to SSP (Keith Doore)
+;   - 2023/01/16: Fixed issue if ``lnprob`` of MPFIT is same for multiple solvers (Keith Doore)
 ;-
  On_error, 2
  compile_opt idl2
@@ -383,7 +384,7 @@ pro lightning_postprocessing, input_dir, config, sed_id
            thinned_length = n_elements(thinning)
 
            ; Do not flatten adaptive chain, rather select the parallel chain with the best fit model
-           bestfit_chain = where(max(lnprob_chain, dim=1) eq max(lnprob_chain))
+           bestfit_chain = (where(max(lnprob_chain, dim=1) eq max(lnprob_chain)))[0]
            chain = chain[*, *, bestfit_chain]
            lnprob_chain = lnprob_chain[*, bestfit_chain]
            chi2_chain = chi2_chain[*, bestfit_chain]
@@ -410,7 +411,7 @@ pro lightning_postprocessing, input_dir, config, sed_id
 
    ; If the MPFIT algorithm, select best fit solver.
      'MPFIT': begin
-         bestfit_solver   = where(lnprob_mpfit eq max(lnprob_mpfit))
+         bestfit_solver   = (where(lnprob_mpfit eq max(lnprob_mpfit)))[0]
          parameters       = parameters_mpfit[*, bestfit_solver]
          parameters_error = parameters_error[*, bestfit_solver]
          covariance       = covariance[*, *, bestfit_solver]
