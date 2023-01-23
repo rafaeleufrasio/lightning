@@ -61,6 +61,7 @@ pro lightning_postprocessing, input_dir, config, sed_id
 ;   - 2022/10/24: Updated stranded walker search to use configuration input value (Keith Doore)
 ;   - 2022/10/25: Renamed SPS to SSP (Keith Doore)
 ;   - 2023/01/16: Fixed issue if ``lnprob`` of MPFIT is same for multiple solvers (Keith Doore)
+;   - 2023/01/23: Included all solvers parameter values is using MPFIT for user convergence testing (Keith Doore)
 ;-
  On_error, 2
  compile_opt idl2
@@ -278,7 +279,7 @@ pro lightning_postprocessing, input_dir, config, sed_id
    out_hash['ITER_FLAG']        = intarr(config.NSOLVERS)
    out_hash['STUCK_FRAC']       = !values.D_NaN
    out_hash['STUCK_FLAG']       = 0
-   out_hash['SIMILAR_FRAC']     = !values.D_NaN*dblarr(n_elements(priors.parameter_name))
+   out_hash['PARAMETER_VALUES'] = dblarr(n_elements(priors.parameter_name), config.NSOLVERS)
    out_hash['SIMILAR_FLAG']     = intarr(n_elements(priors.parameter_name))
    out_hash['NFUNC_EVALS']      = intarr(config.NSOLVERS)
    out_hash['CONVERGENCE_FLAG'] = 0
@@ -670,8 +671,8 @@ pro lightning_postprocessing, input_dir, config, sed_id
      out[i].ITER_FLAG        = convergence_metric.ITER_FLAG
      out[i].STUCK_FRAC       = convergence_metric.STUCK_FRAC
      out[i].STUCK_FLAG       = convergence_metric.STUCK_FLAG
-     out[i].SIMILAR_FRAC[0:(n_elements(parameter_name)-1)] = convergence_metric.SIMILAR_FRAC
-     out[i].SIMILAR_FLAG[0:(n_elements(parameter_name)-1)] = convergence_metric.SIMILAR_FLAG
+     out[i].PARAMETER_VALUES = parameters_mpfit
+     out[i].SIMILAR_FLAG     = convergence_metric.SIMILAR_FLAG
      out[i].NFUNC_EVALS      = convergence_metric.NFUNC_EVALS
      out[i].CONVERGENCE_FLAG = convergence_metric.CONVERGENCE_FLAG
      out[i].PVALUE           = convergence_metric.PVALUE

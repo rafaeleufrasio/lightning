@@ -62,4 +62,5 @@ Modification History
 - 2022/10/24: Updated stranded walker search to use configuration input value (Keith Doore)
 - 2022/10/25: Renamed SPS to SSP (Keith Doore)
 - 2023/01/16: Fixed issue if ``lnprob`` of MPFIT is same for multiple solvers (Keith Doore)
+- 2023/01/23: Included all solvers parameter values is using MPFIT for user convergence testing (Keith Doore)
 

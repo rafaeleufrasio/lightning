@@ -54,4 +54,6 @@ Modification History
 - 2022/01/01: Created (Rafael Eufrasio)
 - 2022/08/15: Major update to include new implementation (e.g., prior, config, etc.) (Keith Doore)
 - 2022/08/18: Added progress printing (Keith Doore)
+- 2023/01/23: Fixed bug where if ``status <= 0`` then the corresponding ``lnprob_mpfit = 0``.
+  Now have ``lnprob_mpfit = NaN`` if ``status <= 0`` (Keith Doore)
 

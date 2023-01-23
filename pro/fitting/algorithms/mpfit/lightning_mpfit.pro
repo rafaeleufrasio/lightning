@@ -53,6 +53,8 @@ pro lightning_mpfit, input_dir, sed_data, config_nopriors, models, priors
 ;   - 2022/01/01: Created (Rafael Eufrasio)
 ;   - 2022/08/15: Major update to include new implementation (e.g., prior, config, etc.) (Keith Doore)
 ;   - 2022/08/18: Added progress printing (Keith Doore)
+;   - 2023/01/23: Fixed bug where if ``status <= 0`` then the corresponding ``lnprob_mpfit = 0``.
+;     Now have ``lnprob_mpfit = NaN`` if ``status <= 0`` (Keith Doore)
 ;-
  On_error, 2
  compile_opt idl2
@@ -104,7 +106,7 @@ pro lightning_mpfit, input_dir, sed_data, config_nopriors, models, priors
  parameters_mpfit = dblarr(Nparam, config_nopriors.NSOLVERS)
  parameters_error = dblarr(Nparam, config_nopriors.NSOLVERS)
  covariance       = dblarr(Nparam, Nparam, config_nopriors.NSOLVERS)
- lnprob_mpfit     = dblarr(config_nopriors.NSOLVERS)
+ lnprob_mpfit     = replicate(!values.d_NaN, config_nopriors.NSOLVERS)
  Niterations      = lonarr(config_nopriors.NSOLVERS)
  Nfunc_evals      = lonarr(config_nopriors.NSOLVERS)
  DoF              = 0L

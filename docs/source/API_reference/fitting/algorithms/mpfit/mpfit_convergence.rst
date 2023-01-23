@@ -67,8 +67,7 @@ Output
     DOF                  int                  Degrees of freedom (same for each solver)
     STUCK_FRAC           double               Fraction of solvers with ``lnprob`` > 2 above best fit solver
     STUCK_FLAG           int                  Flag indicating if the majority of solvers had ``lnprob`` > 2 above best fit solver
-    SIMILAR_FRAC         double(Nparam)       Fraction of non-stuck solvers with parameter values within 1% of best fit solver's values
-    SIMILAR_FLAG         int(Nparam)          Flag indicating if > 10% of non-stuck solvers had different solutions (``SIMILAR_FRAC < 0.9``)
+    SIMILAR_FLAG         int(Nparam)          Flag indicating if any non-stuck solvers had different solutions (>1% difference)
     NFUNC_EVALS          int(Nsolvers)        Number of ``lightning_mpfit_function.pro`` evaluations performed by MPFIT
     CONVERGENCE_FLAG     int                  Flag indicating if any other flag was issued for a convergence metric
     ================     ================     ==========================================================================================
@@ -77,4 +76,6 @@ Modification History
 --------------------
 - 2022/08/16: Created (Keith Doore)
 - 2022/09/26: Added degrees of freedom to output structure (Keith Doore)
+- 2023/01/23: Adjusted ``pvalue`` calculation if ``lnprob = NaN`` (Keith Doore)
+- 2023/01/23: Removed ``similar_frac`` output (Keith Doore)
 

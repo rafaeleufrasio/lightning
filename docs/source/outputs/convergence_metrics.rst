@@ -113,12 +113,12 @@ MPFIT
 -----
 
 The MPFIT algorithm has four metrics to determine convergence, the status code (``STATUS``), the iteration
-fraction (``ITER_FRAC``), the stuck fraction (``STUCK_FRAC``), and the similarity fraction (``SIMILAR_FRAC``).
+fraction (``ITER_FRAC``), the stuck fraction (``STUCK_FRAC``), and the similarity.
 The status code is the success status of the MPFIT algorithm. If the code is greater than 0, then the algorithm
 executed successfully. This should always be the case when using the MPFIT algorithm in Lightning, since any
 errors that could occur in the input or configuration should be detected by Lightning before running. Therefore,
-the ``STATUS_FLAG`` should never occur, but if it does please submit an issue to the `Lightning GitHub
-<https://github.com/rafaeleufrasio/lightning/issues>`_ page so we can resolve the error.
+the ``STATUS_FLAG`` will rarely occur. The only time it will is if the random initialization occurs near an
+edge of the parameter bounds.
 
 The goal for running multiple solvers for the MPFIT algorithm is the expectation that at least
 a majority of them will converge to the same solution. Therefore, the
@@ -146,13 +146,12 @@ see how much worse each solver's fit was compared to the best-fit solver.
     IDL function ``CHISQR_CVF`` (i.e., ``chisqr = CHISQR_CVF(PVALUE, DOF)``).
 
 Finally, to check if the solvers reached the same solution in parameter space, the parameter values of the
-non-stuck solvers need to be compared with the best-fit solver. Parameter values that are within 1% difference
+non-stuck solvers need to be compared for similarity with the best-fit solver. Parameter values that are within 1% difference
 of best-fit solver’s parameter values are considered to have converged to the same solution. If parameters
 have a larger difference, this can indicate that a multi-modal solution may exist and convergence to a
-common solution may not be possible with MPFIT. The ``SIMILAR_FLAG`` is set if more than 10% of non-stuck solvers
-had different solutions compared to the best-fit solver. This 10% cutoff is arbitrary, and is mainly
-set for a situation where convergence can be assured. Therefore, if your ``SIMILAR_FRAC`` is less than 90%, you
-will need to decide on how low of a fraction you are willing to allow. The lower the fraction
-the less chance that you solutions converged to the same solution. Therefore, we recommend not settling for
-a fraction less than 75-80%. Below this fraction, you risk having a multi-modal solution, which MPFIT is
-not designed to evaluate.
+common solution may not be possible with MPFIT. The ``SIMILAR_FLAG`` is set if any of the non-stuck solvers
+had 1% differences in solutions compared to the best-fit solver. If your ``SIMILAR_FLAG`` is set, you
+will likely need to check the percent differences in parameter values using the ``PARAMETER_VALUES`` output.
+The higher the percent difference the less likely that your solutions converged to the same solution.
+Therefore, we recommend not settling for percent differences greater than 5%. Above this fraction, you risk
+having a multi-modal solution, which MPFIT is not designed to evaluate.

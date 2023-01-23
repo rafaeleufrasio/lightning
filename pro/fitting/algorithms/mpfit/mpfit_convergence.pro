@@ -67,8 +67,7 @@ function mpfit_convergence, parameters, lnprob, status, error_msg, Niterations, 
 ;       DOF                  int                  Degrees of freedom (same for each solver)
 ;       STUCK_FRAC           double               Fraction of solvers with ``lnprob`` > 2 above best fit solver
 ;       STUCK_FLAG           int                  Flag indicating if the majority of solvers had ``lnprob`` > 2 above best fit solver
-;       SIMILAR_FRAC         double(Nparam)       Fraction of non-stuck solvers with parameter values within 1% of best fit solver's values
-;       SIMILAR_FLAG         int(Nparam)          Flag indicating if > 10% of non-stuck solvers had different solutions (``SIMILAR_FRAC < 0.9``)
+;       SIMILAR_FLAG         int(Nparam)          Flag indicating if any non-stuck solvers had different solutions (>1% difference)
 ;       NFUNC_EVALS          int(Nsolvers)        Number of ``lightning_mpfit_function.pro`` evaluations performed by MPFIT
 ;       CONVERGENCE_FLAG     int                  Flag indicating if any other flag was issued for a convergence metric
 ;       ================     ================     ==========================================================================================
@@ -77,6 +76,8 @@ function mpfit_convergence, parameters, lnprob, status, error_msg, Niterations, 
 ; --------------------
 ;   - 2022/08/16: Created (Keith Doore)
 ;   - 2022/09/26: Added degrees of freedom to output structure (Keith Doore)
+;   - 2023/01/23: Adjusted ``pvalue`` calculation if ``lnprob = NaN`` (Keith Doore)
+;   - 2023/01/23: Removed ``similar_frac`` output (Keith Doore)
 ;-
  On_error, 2
  compile_opt idl2
@@ -146,22 +147,24 @@ function mpfit_convergence, parameters, lnprob, status, error_msg, Niterations, 
  iter_flag[where(iter_frac eq 1, /null)] = 1
 
 ; Check the quality of the fits based on chisqr test
- pvalue = 1 - chisqr_pdf(-2.d * lnprob, DoF)
+ pvalue = replicate(!values.d_NaN, Nsolvers)
+ if n_elements(where(finite(lnprob), /null)) gt 0 then $
+   pvalue[where(finite(lnprob), /null)] = 1 - chisqr_pdf(-2.d * lnprob[where(finite(lnprob), /null)], DoF)
  
 ; Check for convergence between solvers
  if Nsolvers gt 1 then begin
-   ; Find solvers whose lnprob is within 2 of the overall most likely solver.
-   ;   Solvers that did not get within 2 likely did not reach the global (or 
+   ; Find solvers whose chisqr is within 4 of the overall most likely solver.
+   ;   Solvers that did not get within 4 likely did not reach the global (or 
    ;   best local) minimum in chisqr space and got stuck in a local minimum.
-   ;   The value of 2 is arbitrarily chosen.
-   max_lnprob_diff = max(lnprob, max_loc) - lnprob
-   reached_min = where(max_lnprob_diff lt 2, Natmin)
+   ;   The value of 4 is arbitrarily chosen.
+   max_chi2_diff = min(-2.d * lnprob, max_loc) - (-2.d * lnprob)
+   reached_min = where(max_chi2_diff lt 4, Natmin)
 
    ; Check the fraction of solvers that were near max lnprob and set flag if less than half were not
    stuck_frac = 1 - Natmin/double(Nsolvers)
    if stuck_frac gt 0.5 then stuck_flag = 1 else stuck_flag = 0
 
-   ; Check for solvers that were near max lnprob, did they have similar solutions
+   ; Check for solvers that were near min chisqr, did they have similar solutions
    ;   We assume similar solutions are those with parameter differences less than 1%
    ;   from the best fit solver. It is possible that the best fit solver could have a 
    ;   parameter with a value of 0. If that occurs just use the difference instead.
@@ -173,16 +176,14 @@ function mpfit_convergence, parameters, lnprob, status, error_msg, Niterations, 
                                           rebin(parameters[nonzero_param, max_loc[0]], Nnonzero, Natmin)
      Nsimilar = fix(total(fix(param_per_diff lt 0.01d), 2))
    endif else Nsimilar = replicate(0, Nparam)
-   similar_frac = Nsimilar/double(Natmin)
    similar_flag = intarr(Nparam)
-   similar_flag[where(similar_frac lt 0.9, /null)] = 1
+   similar_flag[where(Nsimilar/double(Natmin) ne 1, /null)] = 1
 
  endif else begin
    ; Can't compute convergence between solvers if only using one solver
    ;   So, set values to NaN and flags to 0.
    stuck_frac = !values.D_NaN
    stuck_flag = 0
-   similar_frac = replicate(!values.D_NaN, Nparam)
    similar_flag = replicate(0, Nparam)
  endelse
 
@@ -201,7 +202,6 @@ function mpfit_convergence, parameters, lnprob, status, error_msg, Niterations, 
                        dof: DoF,                           $
                        stuck_frac: stuck_frac,             $
                        stuck_flag: stuck_flag,             $
-                       similar_frac: similar_frac,         $
                        similar_flag: similar_flag,         $
                        Nfunc_evals: Nfunc_evals,           $
                        convergence_flag: convergence_flag  $

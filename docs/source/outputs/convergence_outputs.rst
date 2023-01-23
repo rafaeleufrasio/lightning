@@ -161,21 +161,23 @@ MPFIT Outputs
 
 ``STUCK_FRAC`` : double
     The fraction of solvers that likely got stuck in local minima. Solvers are determined
-    to be stuck in local minima if their log probability is 2 less than the solver with the
-    overall maximum log probability (i.e., best-fit solver). The value of 2 is arbitrarily chosen.
+    to be stuck in local minima if their :math:`\chi^2` is 4 less than the solver with the
+    overall minimum :math:`\chi^2` (i.e., best-fit solver). The value of 4 is arbitrarily chosen.
 
 ``STUCK_FLAG`` : int
     A convergence flag indicating if the majority of solvers were considered stuck in local
     minima. Convergence may have failed if the majority of solvers got stuck (i.e., did not
-    reach a similar log probability as the best-fit solver).
+    reach a similar :math:`\chi^2` as the best-fit solver).
 
-``SIMILAR_FRAC`` : double array(Nparam)
-    The fraction of non-stuck solvers with parameter values within 1% difference of best-fit solver's
-    parameter values.
+``PARAMETER_VALUES`` : double array(Nparam, Nsolvers)
+    The parameter values for all solvers whose names are given in the ``PARAMETER_NAMES`` output. 
+    Useful for comparing with Lightning's default convergence metrics
+    (i.e., ``STUCK_FRAC`` and ``SIMILAR_FLAG``).
 
-``SIMILAR_FLAG`` : int array(Nparam)
-    A convergence flag indicating if > 10% of non-stuck solvers had different solutions (i.e., ``SIMILAR_FRAC < 0.9``).
-    Convergence may have failed if a reasonable portion of non-stuck solvers resulted in different solutions.
+``SIMILAR_FLAG`` : int
+    A convergence flag indicating if any non-stuck solvers had different solutions (i.e., >1% difference
+    from best-fit solver's parameter values). Convergence may have failed if a reasonable portion of
+    non-stuck solvers resulted in different solutions.
 
 ``NFUNC_EVALS`` : int array(Nsolvers)
     The number of ``lightning_mpfit_function.pro`` evaluations performed by MPFIT.
