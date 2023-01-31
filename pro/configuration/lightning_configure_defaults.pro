@@ -60,6 +60,16 @@ config = {                             $
 ;========================================    CORE    =========================================================
 ; Core options to Lightning
 
+
+          ; OUTPUT_FILENAME`` : string scalar
+          ;   The name (without the file extension suffix) to give to the FITS file containing
+          ;   the output post-processed data.
+          ; NOTE - A UTC timestamp can be automatically included in the filename so that you
+          ;        can have a unique filename for multiple repeat runs to prevent accidentally
+          ;        overwriting old runs. This is done by including a single ``%`` character in
+          ;        the filename where you want the timestamp to appear. 
+          OUTPUT_FILENAME: 'postprocessed_data_%'     ,$
+
           ; PRINT_PROGRESS : flag (0 or 1)
           ;   If set, the SED fitting progress and expected fitting time
           ;   remaining will be printed to the terminal.

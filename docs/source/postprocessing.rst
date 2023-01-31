@@ -12,7 +12,8 @@ Results and Post-Processing
 
 Lightning automatically post-processes the resulting intermediate SED fit data into more
 readily usable outputs. The final post-processed output is a single data table saved in the first
-extension of a FITS file as ``<input_dir>/lightning_output/postprocessed_data_<date_in_UTC>.fits.gz``.
+extension of a FITS file as ``<input_dir>/lightning_output/<OUTPUT_FILENAME>.fits.gz``, where
+``<OUTPUT_FILENAME>`` is the value set in the :ref:`configure-setting-label`.
 This data table contains the resulting outputs for all SEDs included in the input. 
 The data within the table contains a variety of outputs depending on your chosen configuration.
 This always includes the modified input data, such as the luminosities to which the model was fit

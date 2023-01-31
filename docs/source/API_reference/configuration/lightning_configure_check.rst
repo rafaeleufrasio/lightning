@@ -48,4 +48,5 @@ Modification History
 - 2022/10/24: Added option to choose stranded walker deviation value for affine MCMC (Keith Doore)
 - 2022/10/25: Renamed SPS to SSP (Keith Doore)
 - 2022/12/13: Prevented ``XRAY_UNC`` from begin checked if ``XRAY_UNIT='FLUX'`` (Keith Doore)
+- 2023/01/31: Added check of added ``OUTPUT_FILENAME`` option (Keith Doore)
 

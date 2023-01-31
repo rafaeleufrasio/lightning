@@ -63,4 +63,6 @@ Modification History
 - 2022/10/25: Renamed SPS to SSP (Keith Doore)
 - 2023/01/16: Fixed issue if ``lnprob`` of MPFIT is same for multiple solvers (Keith Doore)
 - 2023/01/23: Included all solvers parameter values is using MPFIT for user convergence testing (Keith Doore)
+- 2023/01/31: Updated to use ``config.OUTPUT_FILENAME`` to set the filename (Keith Doore)
+- 2023/01/31: Replaced ``STEPS_MSTAR_COEFF`` output with ``MSTAR`` and ``STEPS_MSTAR`` (Keith Doore)
 

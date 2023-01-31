@@ -44,6 +44,7 @@ function lightning_configure_interactive, config_edit=config_edit
 ;   - 2022/10/24: Added option to choose stranded walker deviation value for affine MCMC (Keith Doore)
 ;   - 2022/10/25: Renamed SPS to SSP (Keith Doore)
 ;   - 2022/12/13: Prevented ``XRAY_UNC`` from begin set if ``XRAY_UNIT='FLUX'`` (Keith Doore)
+;   - 2023/01/31: Added ``OUTPUT_FILENAME`` option to allow for setting of post-processed filename (Keith Doore)
 ;-
  On_error, 2
  Compile_opt idl2
@@ -93,6 +94,31 @@ function lightning_configure_interactive, config_edit=config_edit
  prior_options = ['fixed', 'uniform', 'normal', 'tabulated']
 ;========================================    CORE    =========================================================
 ; Core options to Lightning
+ ;============ Output Filename ============
+ error = 1
+ default_val = 'postprocessed_data_%'
+ default = '(Default: '+default_val+')'
+ if edit then begin
+   default_val = config_edit.OUTPUT_FILENAME
+   default = '(Previous configuration: '+default_val+')'
+ endif
+ filename_message = 'What name (without the file extension suffix) would you like to give '+$
+                    'to the FITS file containing the output post-processed data. NOTE: A UTC '+$
+                    'timestamp can be automatically included in the filename so that you '+$
+                    'can have a unique filename for multiple repeat runs to prevent accidentally '+$
+                    'overwriting old runs. This is done by including a single % character in '+$
+                    'the filename where you want the timestamp to appear. '+default
+ print_to_width, '======================='
+ print_to_width, ''
+ print_to_width, filename_message
+
+ temp = ''
+ read,temp, prompt='OUTPUT_FILENAME: ',form='(A0)'
+ temp = temp
+ if temp eq '' then temp = default_val
+ config['OUTPUT_FILENAME'] = temp
+
+
  ;============ Print Progress ============
  error = 1
  default_val = 'YES'

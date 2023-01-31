@@ -28,12 +28,15 @@ Stellar Population Outputs
 ``STEPS_BOUNDS`` : double array(Nsteps + 1)
     The bounds on the age bins of the star formation history :math:`[{\rm yr}]`.
 
-``STEPS_MSTAR_COEFF`` : double array(Nsteps)
-    The surviving stellar mass :math:`m_{\star,i}` in :math:`\rm M_\odot` produced by SFR of :math:`1\ \rm M_\odot\ yr^{-1}` in
-    each age bin of the star formation history. The total stellar mass :math:`M_{\star}` is then
+``MSTAR`` : double array(Nmodels)
+    The total surviving stellar mass :math:`M_{\star}` in :math:`\rm M_\odot` produced by the resulting
+    SFH.
+
+``STEPS_MSTAR`` : double array(Nsteps, Nmodels)
+    The surviving stellar mass components :math:`M_{\star,i}` in :math:`\rm M_\odot` produced by each
+    age bin :math:`i` of the star formation history.
+    The total stellar mass :math:`M_{\star}` is then
 
     .. math::
 
-        M_{\star} = \sum_i m_{\star,i} \psi_i
-
-    where :math:`\psi_i` are the SFH coefficients.
+        M_{\star} = \sum_i M_{\star,i}.

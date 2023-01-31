@@ -47,6 +47,7 @@ function lightning_configure_check, config
 ;   - 2022/10/24: Added option to choose stranded walker deviation value for affine MCMC (Keith Doore)
 ;   - 2022/10/25: Renamed SPS to SSP (Keith Doore)
 ;   - 2022/12/13: Prevented ``XRAY_UNC`` from begin checked if ``XRAY_UNIT='FLUX'`` (Keith Doore)
+;   - 2023/01/31: Added check of added ``OUTPUT_FILENAME`` option (Keith Doore)
 ;-
  On_error, 2
  Compile_opt idl2
@@ -81,6 +82,13 @@ function lightning_configure_check, config
 
 
 ; ===================    Core Parameter Check    =============================================
+ if n_elements(where(strupcase(tags) eq 'OUTPUT_FILENAME', /null)) eq 0 then $
+   message, base_err+'OUTPUT_FILENAME tag is missing.'
+ if size(config.OUTPUT_FILENAME, /type) ne 7 then $
+   message, base_err+'OUTPUT_FILENAME tag must be of type string.'
+ if size(config.OUTPUT_FILENAME, /n_dim) ne 0 then $
+   message, base_err+'OUTPUT_FILENAME tag must be a scalar.'
+
  if n_elements(where(strupcase(tags) eq 'PRINT_PROGRESS', /null)) eq 0 then $
    message, base_err+'PRINT_PROGRESS tag is missing.'
  if size(config.PRINT_PROGRESS, /type) lt 2 or size(config.PRINT_PROGRESS, /type) gt 3 then $

@@ -29,7 +29,8 @@ pro lightning_postprocessing, input_dir, config, sed_id
 ; Output
 ; ------
 ;   A data table saved to the first extension of a FITS file with a file name (and path) of
-;   ``<input_dir>/lightning_output/postprocessed_data_<date_in_UTC>.fits.gz``. The table contains the
+;   ``<input_dir>/lightning_output/<OUTPUT_FILENAME>.fits.gz``, where ``<OUTPUT_FILENAME>`` 
+;   is the value set in the :ref:`configure-setting-label`. The table contains the
 ;   post-processed data for all SEDs.
 ;   See :ref:`postprocessing-label` for full details and possible contents.
 ;
@@ -62,6 +63,8 @@ pro lightning_postprocessing, input_dir, config, sed_id
 ;   - 2022/10/25: Renamed SPS to SSP (Keith Doore)
 ;   - 2023/01/16: Fixed issue if ``lnprob`` of MPFIT is same for multiple solvers (Keith Doore)
 ;   - 2023/01/23: Included all solvers parameter values is using MPFIT for user convergence testing (Keith Doore)
+;   - 2023/01/31: Updated to use ``config.OUTPUT_FILENAME`` to set the filename (Keith Doore)
+;   - 2023/01/31: Replaced ``STEPS_MSTAR_COEFF`` output with ``MSTAR`` and ``STEPS_MSTAR`` (Keith Doore)
 ;-
  On_error, 2
  compile_opt idl2
@@ -187,7 +190,8 @@ pro lightning_postprocessing, input_dir, config, sed_id
                out_hash['LNU_STARMOD_HIRES']       = !values.D_NaN*dblarr(Nwave, Nhighres_models)
                out_hash['LNU_STARMOD_UNRED_HIRES'] = !values.D_NaN*dblarr(Nwave, Nhighres_models)
                out_hash['STEPS_BOUNDS']            = !values.D_NaN*dblarr(Nsteps + 1)
-               out_hash['STEPS_MSTAR_COEFF']       = !values.D_NaN*dblarr(Nsteps)
+               out_hash['MSTAR']                   = !values.D_NaN*dblarr(Nmodels)
+               out_hash['STEPS_MSTAR']             = !values.D_NaN*dblarr(Nsteps, Nmodels)
              end
           'PARAMETRIC':
         endcase
@@ -579,7 +583,11 @@ pro lightning_postprocessing, input_dir, config, sed_id
                  ; Need to recalculate as true steps may have been truncated from input due to redshift
                  Nsteps_new = n_elements(models.stellar_models.BOUNDS) - 1
                  out[i].STEPS_BOUNDS[0:(Nsteps_new)]        = models.stellar_models.BOUNDS
-                 out[i].STEPS_MSTAR_COEFF[0:(Nsteps_new-1)] = models.stellar_models.MSTAR
+
+                 steps_mstar = (out[i].psi)[0:(Nsteps_new-1), *] * rebin(models.stellar_models.MSTAR, Nsteps_new, Nmodels)
+
+                 out[i].MSTAR                               = total(steps_mstar, 1, /NaN)
+                 out[i].STEPS_MSTAR[0:(Nsteps_new-1), *]    = steps_mstar
                end
             'PARAMETRIC':
           endcase
@@ -685,8 +693,13 @@ pro lightning_postprocessing, input_dir, config, sed_id
  endfor
 
  date = (strmid(timestamp(/utc), 0, 19) + 'Z').replace(':','-')
- mwrfits, out, input_dir+'lightning_output/postprocessed_data_'+date+'.fits', /create
- file_gzip, input_dir+'lightning_output/postprocessed_data_'+date+'.fits', /delete
+
+ outname = config.OUTPUT_FILENAME
+ idx =  strpos(outname, '%')
+ if idx ne -1 then outname = outname.substring(0, idx-1) + date + outname.substring(idx+1, -1)
+
+ mwrfits, out, input_dir+'lightning_output/'+outname+'.fits', /create
+ file_gzip, input_dir+'lightning_output/'+outname+'.fits', /delete
 
  if ~(config.KEEP_INTERMEDIATE_OUTPUT) then file_delete, input_dir+'lightning_output/output_sav_files', /recursive
 
