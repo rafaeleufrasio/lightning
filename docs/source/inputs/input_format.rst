@@ -4,122 +4,6 @@
 Input Formats
 =============
 
-.. _data-input-label:
-
-Data Format
------------
-
-Below, we give a general description of the allowed data columns that can be within the input files.
-
-
-SED IDs
-^^^^^^^
-
-An identifier (ID) assigned to each SED. An ID is a single string that can contain any character,
-excluding spaces, tabs, and commas. Including the SED ID column is **optional** and excluding it
-will result in sequential integers being used as the IDs instead. When including this column in
-either of the :ref:`table-format-label`, the column name must be ``SED_ID``.
-
-
-Fluxes and Filter Labels (UV-to-IR)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-A set of fluxes (in terms of :math:`F_\nu`), which must be within the UV-to-IR wavelength range, are
-**required** inputs for each SED. Additionally, the :math:`1\sigma` uncertainty on the fluxes and the corresponding
-names (labels) of the filters are **required** for each SED. Both the fluxes and the uncertainties are
-the calibrated observed values in units of :math:`\rm Jy`. The filter labels are strings indicating which
-instrument and filter corresponds to each observation. (A list of filter labels understood by Lightning can
-be found :ref:`here <filter_table>`.) The names and format of the fluxes and filter label columns are unique
-to each of the :ref:`table-format-label` and are described in the respective sections below.
-
-.. note::
-
-    - If multiple SEDs are included in the input file and some of these SEDs do not have an observation in a
-      given filter, setting the corresponding uncertainty to ``0`` will result in that filter being ignored during
-      fitting.
-    - For upper limits on fluxes, we recommend setting the flux to ``0`` and the corresponding uncertainty to 
-      the :math:`1\sigma` flux upper limit. This is not the proper way to account for upper limits, which 
-      requires a complex adjustment to the computation of :math:`\chi^2` (see Appendix A of `Sawicki 2012
-      <https://ui.adsabs.harvard.edu/abs/2012PASP..124.1208S/abstract>`_ for details). However, it is a
-      reasonable approximation.
-
-
-.. _distance-input-label:
-
-Distance Indicators
-^^^^^^^^^^^^^^^^^^^
-
-A distance indicator is a **required** input for each SED. This indicator can either be a luminosity distance
-in :math:`{\rm Mpc}` or a redshift, from which a luminosity distance can be inferred. The column names in
-both of the :ref:`table-format-label` are ``lumin_dist`` and ``redshift`` for the luminosity distance and
-redshift, respectively. Only one of the columns is required. If both columns are included, the
-luminosity distance takes precedence over the redshift column unless its value is equal to ``0``, in which
-case the redshift will be used as the distance indicator instead.
-
-
-.. _xray-input-label:
-
-X-ray Data
-^^^^^^^^^^
-
-X-ray data for a set of SEDs can take one of two forms when input into Lightning. The first is in terms
-of net counts (i.e., background subtracted). The second is in terms of flux (in units of
-:math:`{\rm erg\ cm^{-2}\ s^{-1}}`). Each type has a different input format, and the format must match the ``XRAY_UNIT``
-:ref:`configuration setting <configure-setting-label>`. Below, we describe the format for both X-ray data
-forms and the corresponding input file columns. Additionally, both types of input **require** the
-column ``galactic_nh``, which gives the value of the Galactic (i.e., Milky Way) HI column density
-along the line of sight in :math:`10^{20}\ \rm{cm}^{-2}`.
-
-Counts
-""""""
-
-For X-ray data in units of counts, the columns ``xray_spec_file`` and ``xray_arf_file``
-are **required** inputs for each SED when using either of the :ref:`table-format-label`.
-These columns must be a string containing the file name (including path) to the FITS-formatted X-ray
-spectrum (e.g., the outputs of ACISExtract) and a string containing the file name (including path) to
-the FITS-formatted X-ray `Auxiliary Response Function (ARF) <https://cxc.cfa.harvard.edu/ciao/dictionary/arf.html>`_,
-respectively. The contents of the spectral and ARF files are given in the tables below.
-
-**X-ray spectral file contents**:
-
-==============     ===================     ==============================================================
-TAG                TYPE                    DESCRIPTION
-==============     ===================     ==============================================================
-ENERG_LO           float/double(Nxray)     Lower energy bound of each observation band :math:`[\rm{keV}]`
-ENERG_HI           float/double(Nxray)     Upper energy bound of each observation band :math:`[\rm{keV}]`
-NET_COUNTS         float/double(Nxray)     Net counts in each band :math:`[\rm{counts}]`
-NET_COUNTS_UNC     float/double(Nxray)     Optional, uncertainty on net counts :math:`[\rm{counts}]`
-EXPOSURE           float/double(Nxray)     Exposure time of each band :math:`[\rm{s}]`
-==============     ===================     ==============================================================
-
-.. note::
-
-    The ``NET_COUNTS_UNC`` tag is optional. It only needs to be provided if using user input
-    count uncertainties (i.e., :ref:`configuration setting <configure-setting-label>` ``XRAY_UNC = 'USER'``)
-
-**ARF file contents**:
-
-========     =======================     ======================================================
-TAG          TYPE                        DESCRIPTION
-========     =======================     ======================================================
-ENERG_LO     float/double(Nchannels)     Lower energy bounds of each channel :math:`[\rm{keV}]`
-ENERG_HI     float/double(Nchannels)     Upper energy bounds of each channel :math:`[\rm{keV}]`
-SPECRESP     float/double(Nchannels)     Spectral response at each channel :math:`[\rm{cm}^2]`
-========     =======================     ======================================================
-
-
-Flux
-""""
-
-For X-ray data in units of flux, they are input in a similar style as the UV-to-IR fluxes.
-The **required** inputs for each SED are the flux(es) (in terms of :math:`F`, the integrated flux over the bandpass),
-the :math:`1\sigma` uncertainty on the flux(es), and the corresponding X-ray bandpass(es).
-Both the fluxes and the uncertainties are in units of :math:`{\rm erg\ cm^{-2}\ s^{-1}}`.
-The X-ray bandpasses are the lower and upper energy of each observation band in :math:`\rm keV`.
-The names and format of the fluxes and bandpass columns are unique
-to each of the :ref:`table-format-label` and are described in the respective sections below.
-
-
 
 .. _table-format-label:
 
@@ -161,14 +45,16 @@ Here is an example of what an ASCII table for use with Lightning could look like
     J123624.82+620719.2  0           0.1141    3.0747e-05  1.08e-07     1.3232e-4  1.57e-07     ...
 
 The first three columns are the SED IDs, the luminosity distances, and redshifts, respectively.
-The contents and format of these columns are described :ref:`above <data-input-label>`. The
+The contents and format of these columns are described in more detail :ref:`below <data-input-label>`. The
 remaining columns are the UV-to-IR fluxes and :math:`1\sigma` uncertainties.
 The names of these columns indicate the associated filter label. For example, if your
 first filter was ``SDSS_u``, you would replace the column names ``filterA`` and ``filterA_unc``
-with ``SDSS_u`` and ``SDSS_u_unc``, respectively.
+with ``SDSS_u`` and ``SDSS_u_unc``, respectively. The name of each flux column must match a filter label,
+and each flux column must have an associated uncertainty column. A list of filter labels understood by Lightning can
+be found :ref:`here <filter_table>`
 
-To give an example of each type of X-ray input, we will expand on the example above. For the
-X-ray counts input method, the ASCII table should look like::
+To give an example of the possible types of X-ray input, we will expand on the table above. To provide
+X-ray data as counts, the ASCII table should look as follows::
 
     # This is an example of the ASCII table format for X-ray data input into Lightning.
     # sed_id             lumin_dist  redshift  filterA     filterA_unc  filterB    filterB_unc  galactic_nh  xray_spec_file                                     xray_arf_file
@@ -176,10 +62,10 @@ X-ray counts input method, the ASCII table should look like::
     J123624.82+620719.2  0           0.1141    3.0747e-05  1.08e-07     1.3232e-4  1.57e-07     1.48         <path_to_file>/J123624.82+620719.2_xray_spec.fits  <path_to_file>/J123624.82+620719.2.arf
 
 The three newly added columns give the Galactic HI column density, the X-ray spectral file, and the
-X-ray ARF file as described :ref:`above <xray-input-label>`.
+X-ray ARF file as described :ref:`below <xray-input-label>`.
 
-For the X-ray flux input method, the ``xray_spec_file`` and ``xray_arf_file`` columns will need to be
-replaced with the X-ray bandpass, flux, and flux uncertainty columns. These columns are formatted
+To provide X-ray data as fluxes, the ``xray_spec_file`` and ``xray_arf_file`` columns should be
+replaced with the X-ray energy bandpass, flux, and flux uncertainty columns. These columns are formatted
 similarly to the UV-to-IR flux columns, where the ending of the column name relates the bandpass to the
 corresponding flux. Updating our example to include these flux and bandpass columns, our ASCII table
 should look like::
@@ -191,9 +77,10 @@ should look like::
 
 Notice that each bandpass and flux are related to each other with the ending of each column name (i.e.,
 ``xray_bandpass_l_1``, ``xray_bandpass_u_1``, ``xray_flux_1``, and ``xray_flux_unc_1`` are the first
-X-ray bandpass indicated by the ``_1`` ending). This numbering can be increased arbitrarily for any
-number of desired bandpasses, which allows for multiple bandpasses to be input for each SED.
-Also, values describing a single X-ray bandpass are contained within the ``xray_bandpass_l_*``
+X-ray bandpass indicated by the ``_1`` ending). The labels for each set of X-ray columns can be arbitrary,
+provided they are unique and consistent (e.g., in the example above ``_1`` could be replaced with ``_S`` or ``_soft``),
+allowing multiple bandpasses to be input for each SED.
+Also, energy values describing a single X-ray bandpass are contained within the ``xray_bandpass_l_*``
 and ``xray_bandpass_u_*`` columns, which give the lower and upper bounds of the bandpass in
 :math:`{\rm keV}`, respectively. This allows for each bandpass to be unique to each SED. Finally,
 if an SED has more bandpasses than another in the input catalogue, the one with less bandpasses should
@@ -223,7 +110,7 @@ if using an X-ray emission model.
 
     - ``Nfilters`` : the number of unique filters included in the input.
     - ``Nsed``: the number of SEDs included in the input
-    - ``Nxray``: the maximum number of X-ray bandpasses for an SED included in the input
+    - ``Nxray``: the *maximum* number of X-ray bandpasses for an SED included in the input
 
 
 **Basic Columns**:
@@ -245,8 +132,8 @@ LUMIN_DIST [2]_           int/float/double(Nsed)           Luminosity distance o
 Column Names                Type (Shape)                     Description
 =======================     ============================     ========================================================================================================================================================================
 GALACTIC_NH                 int/float/double(Nsed)           Galactic (i.e., Milky Way) HI column density along the line of sight :math:`[10^{20}\ \rm{cm}^{-2}]`
-XRAY_SPEC_FILE [3]_         string(Nsed)                     File name (including path) containing the FITS-formatted Xray spectrum
-XRAY_ARF_FILE [3]_          string(Nsed)                     File name (including path) containing the Xray Auxiliary Response Function (ARF)
+XRAY_SPEC_FILE [3]_         string(Nsed)                     File name (including path) containing the FITS-formatted X-ray spectrum
+XRAY_ARF_FILE [3]_          string(Nsed)                     File name (including path) containing the X-ray Auxiliary Response Function (ARF)
 XRAY_BANDPASS [4]_ [5]_     float/double(2, Nxray, Nsed)     Bandpasses of X-ray observations: first index of first dimension contains the lower energy bound, second index of first dimension contains the upper. :math:`[\rm{keV}]`
 XRAY_FLUX [4]_              float/double(Nxray, Nsed)        X-ray fluxes of each SED for each set of bandpasses :math:`[{\rm erg\ cm^{-2}\ s^{-1}}]`
 XRAY_FLUX_UNC  [4]_         float/double(Nxray, Nsed)        Uncertainties associated with the X-ray fluxes :math:`[{\rm erg\ cm^{-2}\ s^{-1}}]`
@@ -256,8 +143,124 @@ XRAY_FLUX_UNC  [4]_         float/double(Nxray, Nsed)        Uncertainties assoc
 
 .. [1] ``FILTER_LABELS`` must be a 2-D array, where the first dimension holds each unique filter label and the second dimension is
    the first dimension repeated ``Nsed`` times.
-.. [2] Only one of the columns is required as described :ref:`above <distance-input-label>`.
+.. [2] Only one of the columns is required as described :ref:`below <distance-input-label>`.
 .. [3] Only used if inputting X-ray data in units of counts (i.e., :ref:`configuration setting <configure-setting-label>` ``XRAY_UNIT = 'COUNTS'``
 .. [4] Only used if inputting X-ray data in units of flux (i.e., :ref:`configuration setting <configure-setting-label>` ``XRAY_UNIT = 'FLUX'``
 .. [5] The X-ray bandpasses for each SED can be unique. If an SED has more bandpasses than another in the input catalogue, the one with
    less bandpasses should have the value of the unused bandpasses set to ``NaN``.
+
+
+.. _data-input-label:
+
+Column Descriptions
+-------------------
+
+Below, we give descriptions of the columns that can appear in the input files.
+
+
+SED IDs
+^^^^^^^
+
+An identifier (ID) assigned to each SED. An ID is a single string that can contain any character,
+excluding spaces, tabs, and commas. Including the SED ID column is **optional** and excluding it
+will result in sequential integers being used as the IDs instead. When including this column in
+either of the :ref:`table-format-label`, the column name must be ``SED_ID``.
+
+
+Fluxes and Filter Labels (UV-to-IR)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A set of fluxes (in terms of :math:`F_\nu`), which must be within the UV-to-IR wavelength range, are
+**required** inputs for each SED. Additionally, the :math:`1\sigma` uncertainty on the fluxes and the corresponding
+names (labels) of the filters are **required** for each SED. Both the fluxes and the uncertainties are
+the calibrated observed values in units of :math:`\rm Jy`. The filter labels are strings indicating which
+instrument and filter corresponds to each observation. (A list of filter labels understood by Lightning can
+be found :ref:`here <filter_table>`.) The names and format of the fluxes and filter label columns are unique
+to each of the :ref:`table-format-label` and are described in the respective sections below.
+
+.. note::
+
+    - If multiple SEDs are included in the input file and some of these SEDs do not have an observation in a
+      given filter, setting the corresponding uncertainty to ``0`` will result in that filter being ignored during
+      fitting.
+    - For upper limits on fluxes, we recommend setting the flux to ``0`` and the corresponding uncertainty to
+      the :math:`1\sigma` flux upper limit. This is not the proper way to account for upper limits, which
+      requires a complex adjustment to the computation of :math:`\chi^2` (see Appendix A of `Sawicki 2012
+      <https://ui.adsabs.harvard.edu/abs/2012PASP..124.1208S/abstract>`_ for details). However, it is a
+      reasonable approximation, producing fits consistent with the upper limits.
+
+
+.. _distance-input-label:
+
+Distance Indicators
+^^^^^^^^^^^^^^^^^^^
+
+A distance indicator is a **required** input for each SED. This indicator can either be a luminosity distance
+in :math:`{\rm Mpc}` or a redshift, from which a luminosity distance can be inferred. The column names in
+both of the :ref:`table-format-label` are ``lumin_dist`` and ``redshift`` for the luminosity distance and
+redshift, respectively. Only one of the columns is required. If both columns are included, the
+luminosity distance takes precedence over the redshift column unless its value is equal to ``0``, in which
+case the redshift will be used as the distance indicator instead.
+
+
+.. _xray-input-label:
+
+X-ray Data
+^^^^^^^^^^
+
+X-ray data for a set of SEDs can take one of two forms when input into Lightning. The first is in terms
+of net counts (i.e., background subtracted). The second is in terms of flux (in units of
+:math:`{\rm erg\ cm^{-2}\ s^{-1}}`). Each type has a different input format, and the format must match the ``XRAY_UNIT``
+:ref:`configuration setting <configure-setting-label>`. Below, we describe the format for both X-ray data
+forms and the corresponding input file columns. Additionally, both types of input **require** the
+column ``galactic_nh``, which gives the value of the Galactic (i.e., Milky Way) HI column density
+along the line of sight in :math:`10^{20}\ \rm{cm}^{-2}`.
+
+Counts
+""""""
+
+For X-ray data in units of counts, the columns ``xray_spec_file`` and ``xray_arf_file``
+are **required** inputs for each SED when using either of the :ref:`table-format-label`.
+These columns must be a string containing the file name (including path) to the FITS-formatted X-ray
+spectrum and a string containing the file name (including path) to
+the FITS-formatted X-ray `Auxiliary Response Function (ARF) <https://cxc.cfa.harvard.edu/ciao/dictionary/arf.html>`_,
+respectively. The contents of the spectral and ARF files are given in the tables below.
+
+**X-ray spectral file contents**:
+
+==============     ===================     ==============================================================
+TAG                TYPE                    DESCRIPTION
+==============     ===================     ==============================================================
+ENERG_LO           float/double(Nxray)     Lower energy bound of each observation band :math:`[\rm{keV}]`
+ENERG_HI           float/double(Nxray)     Upper energy bound of each observation band :math:`[\rm{keV}]`
+NET_COUNTS         float/double(Nxray)     Net counts in each band :math:`[\rm{counts}]`
+NET_COUNTS_UNC     float/double(Nxray)     Optional, uncertainty on net counts :math:`[\rm{counts}]`
+EXPOSURE           float/double(Nxray)     Exposure time of each band :math:`[\rm{s}]`
+==============     ===================     ==============================================================
+
+.. note::
+
+    The ``NET_COUNTS_UNC`` tag is optional. It only needs to be provided if using user input
+    count uncertainties (i.e., :ref:`configuration setting <configure-setting-label>` ``XRAY_UNC = 'USER'``)
+
+**ARF file contents**:
+
+========     =======================     ======================================================
+TAG          TYPE                        DESCRIPTION
+========     =======================     ======================================================
+ENERG_LO     float/double(Nchannels)     Lower energy bounds of each channel :math:`[\rm{keV}]`
+ENERG_HI     float/double(Nchannels)     Upper energy bounds of each channel :math:`[\rm{keV}]`
+SPECRESP     float/double(Nchannels)     Spectral response at each channel :math:`[\rm{cm}^2]`
+========     =======================     ======================================================
+
+
+Flux
+""""
+
+For X-ray data in units of flux, they are input in a similar style as the UV-to-IR fluxes.
+The **required** inputs for each SED are the flux(es) (in terms of :math:`F`, the integrated flux over the bandpass),
+the :math:`1\sigma` uncertainty on the flux(es), and the corresponding X-ray bandpass(es).
+Both the fluxes and the uncertainties should be in units of :math:`{\rm erg\ cm^{-2}\ s^{-1}}`.
+The X-ray bandpasses are the lower and upper energy of each observation band in :math:`\rm keV`.
+The names and formats of the flux and bandpass columns are unique
+to each of the :ref:`table-format-label` and are described in the respective sections above.

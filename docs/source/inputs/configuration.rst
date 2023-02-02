@@ -3,9 +3,17 @@
 Configuration Settings
 ======================
 
-The configuration has eight sections: :ref:`core-config-label`, :ref:`stellar-config-label`,
-:ref:`dust-atten-config-label`, :ref:`dust-config-label`, :ref:`xray-config-label`,
-:ref:`agn-config-label`, :ref:`fit-algor-config-label`, and :ref:`postpro-config-label`.
+The configuration has eight sections:
+
+- :ref:`core-config-label`
+- :ref:`stellar-config-label`
+- :ref:`dust-atten-config-label`
+- :ref:`dust-config-label`
+- :ref:`xray-config-label`
+- :ref:`agn-config-label`
+- :ref:`fit-algor-config-label`
+- :ref:`postpro-config-label`
+
 Of these sections, :ref:`core-config-label` gives the basic settings and core assumptions
 within Lightning (e.g., cosmology). The next five, :ref:`stellar-config-label`,
 :ref:`dust-atten-config-label`, :ref:`dust-config-label`, :ref:`xray-config-label`,
@@ -158,7 +166,13 @@ Stellar Emission
     A flag indicating if nebular emission lines should be included in the SSP models.
 
 ``NEBULAR_EXTINCTION`` : flag
-    A flag indicating if nebular extinction should be included in the SSP models.
+    A flag indicating if nebular extinction should be applied to the SSP models.
+
+    .. note::
+
+        Detail on the analytical modeling for nebular extinction and emission in the
+        ``PEGASE`` models can be found in Section 2.4 of
+        `Fioc & Rocca-Volmerange (1997) <https://ui.adsabs.harvard.edu/abs/1997A%26A...326..950F/abstract>`_
 
 ``SFH`` : string scalar
     The type of star formation history (SFH) to assume when fitting the SEDs. The only
@@ -437,7 +451,7 @@ X-ray Emission
 
         1 + \sqrt{0.75 + n^{\rm obs}_i}.
 
-    This is most appropriate for data in the low-count regime.
+    This is more appropriate for data in the low-count regime.
     Finally, for the user input uncertainties, Lightning searches each X-ray spectral file
     for a column labeled ``NET_COUNTS_UNC`` and adopts this as the
     uncertainty on the net counts.
@@ -475,8 +489,8 @@ X-ray Emission
     The AGN X-ray emission model to use. There are two AGN X-ray emission models currently available
     in Lightning, the `qsosed <https://heasarc.gsfc.nasa.gov/xanadu/xspec/manual/node132.html>`_
     models from `Kubota & Done (2018) <https://ui.adsabs.harvard.edu/abs/2018MNRAS.480.1247K/abstract>`_ and a power law model
-    with and exponential cut off. The power law model has a photon index of :math:`\Gamma = 1.8` and an exponential
-    cut off at 300 :math:`{\rm keV}`. This power law model is tied to the 2500 Angstrom emission using the
+    with a high-energy exponential cut-off. The power law model has a fixed photon index of :math:`\Gamma = 1.8` and an exponential
+    cut-off at 300 :math:`{\rm keV}`. This power law model is tied to the 2500 Angstrom emission using the
     relationship from `Lusso & Risaliti (2017) <https://ui.adsabs.harvard.edu/abs/2017A%26A...602A..79L/abstract>`_.
     These models are selected by setting ``XRAY_AGN_MODEL`` to ``'QSOSED'`` and ``'PLAW'``, respectively.
     To fit the SEDs without any AGN X-ray emission models, set ``XRAY_AGN_MODEL`` to ``'NONE'``.
@@ -587,7 +601,7 @@ MCMC
 
     .. note::
 
-        If using the affine-invariant algorithm, ``NPARALLEL`` must be greater than
+        If using the affine-invariant algorithm, ``NPARALLEL`` *must* be greater than
         the number of free parameters plus one and ideally at least twice the number
         of free parameters for optimal sampling.
 
