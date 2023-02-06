@@ -48,10 +48,10 @@ However, it does indicate that the algorithm is not sampling efficiently. Theref
 rerunning Lightning using a slightly smaller value for ``AFFINE_A``, which should improve sampling
 and increase the acceptance fraction into the expected range.
 
-As for the autocorrelation time, it is a measure of how many steps it takes for a walker to forget
+As for the autocorrelation time, it is a measure of how many steps it takes for a walker to "forget"
 where it started. We recommend the `emcee Autocorrelation Analysis & Convergence
 documentation <https://emcee.readthedocs.io/en/stable/tutorials/autocorr/#autocorr>`_ for more details.
-To summarize that documentation, the MCMC algorithm needs to run for a number of iterations equal to some factor
+To summarize, the MCMC algorithm needs to run for a number of iterations equal to some factor
 (e.g., they recommend ~50) times the autocorrelation time
 in order for us to trust that the autocorrelation time estimate is accurate. A factor fewer than ~50 can
 cause the autocorrelation time to be underestimated, which could result in a post-processed

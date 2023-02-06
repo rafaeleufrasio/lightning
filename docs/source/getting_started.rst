@@ -59,7 +59,7 @@ File Configuration
 
 To use the default file method, you will first need to copy the ``lightning_configure.pro`` file
 within the top level of the Lightning installation into your input data directory without changing
-its name (i.e., in unix do: ``cp <install_dir>/lightning/lightning_configure.pro <input_dir>``). You can then open 
+its name (i.e., in unix do: ``cp <install_dir>/lightning/lightning_configure.pro <input_dir>``). You can then open
 the copied file and edit the values associated with each structure
 tag to your desired configuration. The values already given for each tag indicate the default
 Lightning configuration. Guiding comments are given in the notes of the header and
@@ -138,3 +138,10 @@ You can run Lightning in interactive mode by passing the ``/interactive`` flag t
 
 In interactive mode, Lightning prints a series of prompts to the screen, allowing you to select a configuration without
 any pre-existing configuration script.
+
+.. note::
+
+    In interactive mode, Lightning will still generate the saved configuration structure
+    (``<input_dir>/lightning_output/lightning_configure.sav``), which records the choices
+    made at the interactive prompts. This structure can be accessed at the IDL prompt with the
+    ``RESTORE`` command as usual.
