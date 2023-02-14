@@ -5,7 +5,7 @@ Installation
 The latest Lightning release can be installed as source from our `GitHub <https://github.com/rafaeleufrasio/lightning>`_ page via ``git``::
 
     cd <install_dir>
-    git clone https://github.com/rafaeleufrasio/lightning
+    git clone --depth 1 https://github.com/rafaeleufrasio/lightning
 
 .. note::
 

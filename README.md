@@ -10,11 +10,11 @@ Now, Lightning employs a variety of methods, including an adaptive Markov-Chain 
 
 ## Installation
 
-To install the Lightning package, you can use `git` as follows:
+To install the most recent version of the Lightning package, you can use `git` as follows:
 
 ```
 cd <install_dir>
-git clone https://github.com/rafaeleufrasio/lightning
+git clone --depth 1 https://github.com/rafaeleufrasio/lightning
 ```
 
 > NOTE: Lightning is written in the Interactive Data Language (IDL) and requires IDL version 8.3 or later. It additionally requires the [IDL Astronomy User's Library](https://idlastro.gsfc.nasa.gov), [IDL Coyote](http://www.idlcoyote.com), and

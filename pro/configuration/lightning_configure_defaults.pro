@@ -576,7 +576,7 @@ config = {                             $
               ; NSOLVERS : int, float, or double scalar
               ;   The number of times to solve for the best fit SED using different
               ;   starting locations in parameters space.
-              NSOLVERS: 100                           ,$
+              NSOLVERS: 25                            ,$
 
               ; FTOL : float or double scalar
               ;   The relative error desired in the sum of squares. Termination

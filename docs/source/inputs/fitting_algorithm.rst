@@ -205,6 +205,8 @@ the adaptive MCMC algorithm as it more consistently reaches the best solution an
 less cost function evaluations to get the needed posterior distribution.
 
 
+.. _mpfit-algorithm-label:
+
 MPFIT
 -----
 
