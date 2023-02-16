@@ -16,8 +16,10 @@ The following will provide examples of both basic and advanced use-cases for Lig
 
 
 .. toctree::
-   :maxdepth: 1
+    :maxdepth: 1
 
-   NGC_337_example
-   J033226_example
-
+    NGC_337_example
+    NGC_3031_example
+    J033226_example
+    NGC_4631_example
+    NGC_628_example
