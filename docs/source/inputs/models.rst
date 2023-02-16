@@ -21,6 +21,8 @@ you would or would not want to include a certain component.
     3) when energy balance is set and a dust emission component is used, a stellar or AGN component is required.
 
 
+.. _stellar-emission-model:
+
 Stellar Emission
 ----------------
 
@@ -57,6 +59,8 @@ bin's uncertainty. Therefore, **as a rule of thumb we recommend using 5-7 log sp
 bins for your stellar models.**
 
 
+.. _dust-attenuation-model:
+
 Dust Attenuation
 ----------------
 
@@ -69,6 +73,8 @@ SED fitting codes. Unless your research needs involve you wanting to use the Doo
 curve, we highly recommend using the modified Calzetti curve with a UV bump, variable slope,
 and no birth cloud attenuation.
 
+
+.. _dust-emission-model:
 
 Dust Emission
 -------------
@@ -92,6 +98,8 @@ the uncertainty on the attenuation parameters and younger SFH coefficients by a 
 energy balance.
 
 
+.. _xray-emission-model:
+
 X-ray Emission
 --------------
 
@@ -112,6 +120,8 @@ or you wish to adjust the weighting of the X-ray data relative to the UV-IR data
 data and select ``'USER'`` uncertainties. As for the X-ray absorption model, we recommend using the
 ``'TBABS-WILM'`` model for most cases.
 
+
+.. _agn-emission-model:
 
 AGN Emission (UV-to-IR)
 -----------------------

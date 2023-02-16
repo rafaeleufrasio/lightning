@@ -2270,7 +2270,7 @@ function lightning_configure_interactive, config_edit=config_edit
    'MPFIT': begin
    ;============ Number of solvers ============
        error = 1
-       default_val = '100'
+       default_val = '25'
        default = '(Default: '+default_val+')'
        if edit then begin
          if strupcase(config_edit.METHOD) eq 'MPFIT' then begin

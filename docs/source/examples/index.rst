@@ -16,6 +16,8 @@ The following will provide examples of both basic and advanced use-cases for Lig
 
 
 .. toctree::
-	:maxdepth: 1
+   :maxdepth: 1
 
-	AGN_example
+   NGC_337_example
+   J033226_example
+

@@ -65,6 +65,7 @@ pro lightning_postprocessing, input_dir, config, sed_id
 ;   - 2023/01/23: Included all solvers parameter values is using MPFIT for user convergence testing (Keith Doore)
 ;   - 2023/01/31: Updated to use ``config.OUTPUT_FILENAME`` to set the filename (Keith Doore)
 ;   - 2023/01/31: Replaced ``STEPS_MSTAR_COEFF`` output with ``MSTAR`` and ``STEPS_MSTAR`` (Keith Doore)
+;   - 2023/02/06: Added propagated uncertainty for ``MSTAR`` when using MPFIT (Keith Doore)
 ;-
  On_error, 2
  compile_opt idl2
@@ -185,13 +186,17 @@ pro lightning_postprocessing, input_dir, config, sed_id
         case strupcase(config.SFH) of
           'NON-PARAMETRIC': begin
                Nsteps = n_elements(config.STEPS_BOUNDS) - 1
-               out_hash['LNU_STARMOD']             = !values.D_NaN*dblarr(Nfilters, Nmodels)
-               out_hash['LNU_STARMOD_UNRED']       = !values.D_NaN*dblarr(Nfilters, Nmodels)
-               out_hash['LNU_STARMOD_HIRES']       = !values.D_NaN*dblarr(Nwave, Nhighres_models)
-               out_hash['LNU_STARMOD_UNRED_HIRES'] = !values.D_NaN*dblarr(Nwave, Nhighres_models)
-               out_hash['STEPS_BOUNDS']            = !values.D_NaN*dblarr(Nsteps + 1)
-               out_hash['MSTAR']                   = !values.D_NaN*dblarr(Nmodels)
-               out_hash['STEPS_MSTAR']             = !values.D_NaN*dblarr(Nsteps, Nmodels)
+               out_hash['LNU_STARMOD']             = !values.D_NaN * dblarr(Nfilters, Nmodels)
+               out_hash['LNU_STARMOD_UNRED']       = !values.D_NaN * dblarr(Nfilters, Nmodels)
+               out_hash['LNU_STARMOD_HIRES']       = !values.D_NaN * dblarr(Nwave, Nhighres_models)
+               out_hash['LNU_STARMOD_UNRED_HIRES'] = !values.D_NaN * dblarr(Nwave, Nhighres_models)
+               out_hash['STEPS_BOUNDS']            = !values.D_NaN * dblarr(Nsteps + 1)
+               out_hash['MSTAR']                   = !values.D_NaN * Nmodels_array
+               out_hash['STEPS_MSTAR']             = !values.D_NaN * dblarr(Nsteps, Nmodels)
+               if strupcase(config.METHOD) eq 'MPFIT' then begin
+                 out_hash['MSTAR_UNC']       = !values.D_NaN * Nmodels_array
+                 out_hash['STEPS_MSTAR_UNC'] = !values.D_NaN * dblarr(Nsteps, Nmodels)
+               endif
              end
           'PARAMETRIC':
         endcase
@@ -584,10 +589,19 @@ pro lightning_postprocessing, input_dir, config, sed_id
                  Nsteps_new = n_elements(models.stellar_models.BOUNDS) - 1
                  out[i].STEPS_BOUNDS[0:(Nsteps_new)]        = models.stellar_models.BOUNDS
 
-                 steps_mstar = (out[i].psi)[0:(Nsteps_new-1), *] * rebin(models.stellar_models.MSTAR, Nsteps_new, Nmodels)
+                 steps_mstar_coeff = rebin(models.stellar_models.MSTAR, Nsteps_new, Nmodels)
+                 steps_mstar = (out[i].psi)[0:(Nsteps_new-1), *] * steps_mstar_coeff
 
                  out[i].MSTAR                               = total(steps_mstar, 1, /NaN)
                  out[i].STEPS_MSTAR[0:(Nsteps_new-1), *]    = steps_mstar
+
+                 if strupcase(config.METHOD) eq 'MPFIT' then begin
+                   psi_idc = stregex(parameter_name, 'PSI(_[0-9]*)?', /bool)
+                   psi_covar = (covariance[where(psi_idc), *])[*, where(psi_idc)]
+
+                   out[i].MSTAR_UNC                            = sqrt(transpose(steps_mstar_coeff) # psi_covar # steps_mstar_coeff)  
+                   out[i].STEPS_MSTAR_UNC[0:(Nsteps_new-1), *] = (out[i].psi_unc)[0:(Nsteps_new-1), *] * steps_mstar_coeff
+                 endif
                end
             'PARAMETRIC':
           endcase

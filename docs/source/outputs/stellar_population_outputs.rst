@@ -32,6 +32,13 @@ Stellar Population Outputs
     The total surviving stellar mass :math:`M_{\star}` in :math:`\rm M_\odot` produced by the resulting
     SFH.
 
+``MSTAR_UNC`` : double array(Nmodels)
+    The estimated :math:`1\sigma` uncertainty for the total stellar mass in :math:`\rm M_\odot`.
+
+    .. note::
+   
+        Only appears in the output if using the MPFIT algorithm.
+
 ``STEPS_MSTAR`` : double array(Nsteps, Nmodels)
     The surviving stellar mass components :math:`M_{\star,i}` in :math:`\rm M_\odot` produced by each
     age bin :math:`i` of the star formation history.
@@ -40,3 +47,11 @@ Stellar Population Outputs
     .. math::
 
         M_{\star} = \sum_i M_{\star,i}.
+
+``STEPS_MSTAR_UNC`` : double array(Nsteps, Nmodels)
+    The estimated :math:`1\sigma` uncertainty for the surviving stellar mass components in :math:`\rm M_\odot`.
+
+    .. note::
+   
+        Only appears in the output if using the MPFIT algorithm.
+

@@ -174,8 +174,8 @@ MPFIT Outputs
     Useful for comparing with Lightning's default convergence metrics
     (i.e., ``STUCK_FRAC`` and ``SIMILAR_FLAG``).
 
-``SIMILAR_FLAG`` : int
-    A convergence flag indicating if any non-stuck solvers had different solutions (i.e., >1% difference
+``SIMILAR_FLAG`` : int array(Nparam)
+    A convergence flag indicating if any parameters of non-stuck solvers had different solutions (i.e., >1% difference
     from best-fit solver's parameter values). Convergence may have failed if a reasonable portion of
     non-stuck solvers resulted in different solutions.
 

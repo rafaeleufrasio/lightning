@@ -157,8 +157,8 @@ function mpfit_convergence, parameters, lnprob, status, error_msg, Niterations, 
    ;   Solvers that did not get within 4 likely did not reach the global (or 
    ;   best local) minimum in chisqr space and got stuck in a local minimum.
    ;   The value of 4 is arbitrarily chosen.
-   max_chi2_diff = min(-2.d * lnprob, max_loc) - (-2.d * lnprob)
-   reached_min = where(max_chi2_diff lt 4, Natmin)
+   chi2_diff = (-2.d * lnprob) - min(-2.d * lnprob, min_loc)
+   reached_min = where(chi2_diff lt 4, Natmin)
 
    ; Check the fraction of solvers that were near max lnprob and set flag if less than half were not
    stuck_frac = 1 - Natmin/double(Nsolvers)
@@ -169,11 +169,11 @@ function mpfit_convergence, parameters, lnprob, status, error_msg, Niterations, 
    ;   from the best fit solver. It is possible that the best fit solver could have a 
    ;   parameter with a value of 0. If that occurs just use the difference instead.
    if Natmin gt 1 then begin
-     zero_param = where(parameters[*, max_loc] eq 0, comp=nonzero_param, ncomp=Nnonzero, /null)
-     param_per_diff = parameters[*, reached_min] - rebin(parameters[*, max_loc], Nparam, Natmin)
+     zero_param = where(parameters[*, min_loc] eq 0, comp=nonzero_param, ncomp=Nnonzero, /null)
+     param_per_diff = parameters[*, reached_min] - rebin(parameters[*, min_loc], Nparam, Natmin)
      if Nnonzero gt 0 then $
        param_per_diff[nonzero_param, *] = param_per_diff[nonzero_param, *] / $
-                                          rebin(parameters[nonzero_param, max_loc[0]], Nnonzero, Natmin)
+                                          rebin(parameters[nonzero_param, min_loc[0]], Nnonzero, Natmin)
      Nsimilar = fix(total(fix(param_per_diff lt 0.01d), 2))
    endif else Nsimilar = replicate(0, Nparam)
    similar_flag = intarr(Nparam)

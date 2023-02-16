@@ -67,8 +67,8 @@ config = {                             $
           ; NOTE - A UTC timestamp can be automatically included in the filename so that you
           ;        can have a unique filename for multiple repeat runs to prevent accidentally
           ;        overwriting old runs. This is done by including a single ``%`` character in
-          ;        the filename where you want the timestamp to appear. 
-          OUTPUT_FILENAME: 'postprocessed_data_%'     ,$
+          ;        the filename where you want the timestamp to appear.
+          OUTPUT_FILENAME: 'ngc337_lightning_output'     ,$
 
           ; PRINT_PROGRESS : flag (0 or 1)
           ;   If set, the SED fitting progress and expected fitting time
@@ -88,7 +88,7 @@ config = {                             $
 
           ; MODEL_UNC : int, float, or double scalar
           ;   The fractional model uncertainty to use in all bands.
-          MODEL_UNC: 0.d0                             ,$
+          MODEL_UNC: 0.05d0                             ,$
 
           ; COSMOLOGY : H0 :      int, float, or double scalar
           ;             OMEGA_M : int, float, or double scalar
@@ -208,7 +208,7 @@ config = {                             $
           ; NOTE - Attenuation of AGN can only use the 'CALZETTI00' or 'CALZETTI_MOD'
           ;        attenuation curves. Compatibility with the 'DOORE21' curve is
           ;        currently not supported.
-          ATTEN_CURVE: 'CALZETTI00'                   ,$
+          ATTEN_CURVE: 'CALZETTI_MOD'                   ,$
 
 
           ;=============== CALZETTI00 PARAMETERS ===========================
@@ -576,7 +576,7 @@ config = {                             $
               ; NSOLVERS : int, float, or double scalar
               ;   The number of times to solve for the best fit SED using different
               ;   starting locations in parameters space.
-              NSOLVERS: 25                            ,$
+              NSOLVERS: 100                           ,$
 
               ; FTOL : float or double scalar
               ;   The relative error desired in the sum of squares. Termination
