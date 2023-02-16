@@ -76,7 +76,7 @@ We first load the results and check that the MCMC sampler converged and reached 
 .. literalinclude:: ../../../examples/basic_NGC_337/NGC337_batch.pro
     :language: idl
     :dedent:
-    :lines: 9-17
+    :lines: 11-17
 
 .. code-block:: text
 
@@ -95,7 +95,7 @@ best fit to see how it looks. The function ``NGC337_sed_plot.pro`` has been prov
 .. literalinclude:: ../../../examples/basic_NGC_337/NGC337_batch.pro
     :language: idl
     :dedent:
-    :lines: 22
+    :lines: 21
 
 The plot looks like so:
 
@@ -110,7 +110,7 @@ these quantities (the stellar mass is actually already calculated in post-proces
 .. literalinclude:: ../../../examples/basic_NGC_337/NGC337_batch.pro
     :language: idl
     :dedent:
-    :lines: 28-30
+    :lines: 27-29
 
 where we're looking specifically at the star formation rate average over the last 100 Myr (i.e., the first two steps
 of our SFH). Then we can print them out
@@ -118,7 +118,7 @@ of our SFH). Then we can print them out
 .. literalinclude:: ../../../examples/basic_NGC_337/NGC337_batch.pro
     :language: idl
     :dedent:
-    :lines: 32-41
+    :lines: 31-40
 
 and see
 
@@ -134,7 +134,7 @@ We can visualize the posteriors on these two quantities and the SFH with the ``N
 .. literalinclude:: ../../../examples/basic_NGC_337/NGC337_batch.pro
     :language: idl
     :dedent:
-    :lines: 43
+    :lines: 42
 
 which produces the following graphic:
 
