@@ -68,7 +68,7 @@ config = {                             $
           ;        can have a unique filename for multiple repeat runs to prevent accidentally
           ;        overwriting old runs. This is done by including a single ``%`` character in
           ;        the filename where you want the timestamp to appear.
-          OUTPUT_FILENAME: 'GOODSN_normal_galaxies'     ,$
+          OUTPUT_FILENAME: 'ngc337_lightning_output'     ,$
 
           ; PRINT_PROGRESS : flag (0 or 1)
           ;   If set, the SED fitting progress and expected fitting time
@@ -536,7 +536,7 @@ config = {                             $
           ;===========  MCMC ===================================================
               ; NTRIALS : int, float, or double scalar
               ;   The number of MCMC trials to run.
-              NTRIALS: 3e4                            ,$
+              NTRIALS: 2e4                            ,$
 
               ; NPARALLEL : int, float, or double scalar
               ;   The number of parallel walkers/chains to run for each SED.
