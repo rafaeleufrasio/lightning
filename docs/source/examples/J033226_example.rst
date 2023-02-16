@@ -33,22 +33,25 @@ We retrieved optical-IR photometry from the `Guo et al. (2013)`_ CANDELS photome
 from the `Barro et al. (2019)`_ catalogs. We added calibration uncertainties (typically :math:`<5\%`) to
 each band as specified in Table 1 of `Doore et al. (2022)`_.
 
-The relevant data files can be found in ``examples/AGN/``.
+The relevant data files can be found in ``examples/AGN_J033226/`` as ``J033226_photometry.fits``,
+``J033226_xray_photometry.fits``, ``J033226_summed.arf`` for the UV-to-IR photometry, X-ray data,
+and ARF, respectively.
 
 Configuration
 ^^^^^^^^^^^^^
 
-For this example we'll configure Lightning to use the SKIRTOR AGN templates and fit both with and without
-an X-ray model to see how adding X-ray data to the fits affects the results.
+For this example we'll configure Lightning to use the SKIRTOR :ref:`agn-emission-model` templates
+and fit both with and without an AGN :ref:`xray-emission-model` model to see how adding X-ray data
+to the fits affects the results.
 
 Common Settings
 """""""""""""""
-For both runs, we change the below lines of the configuration files in ``examples/AGN/noxray/``
-and ``examples/AGN/xray/`` from the defaults.
+For both runs, we change the below lines of the configuration files in ``examples/AGN_J033226/noxray/``
+and ``examples/AGN_J033226/xray/`` from the defaults.
 
 First we change the output filename:
 
-.. literalinclude:: ../../../examples/AGN/noxray/lightning_configure.pro
+.. literalinclude:: ../../../examples/AGN_J033226/noxray/lightning_configure.pro
     :language: idl
     :dedent:
     :lines: 71
@@ -59,50 +62,50 @@ We add :math:`10\%` model uncertainty:
 
 .. It is actually possible to include files from above the
 .. top level directory of the documentation source.
-.. literalinclude:: ../../../examples/AGN/noxray/lightning_configure.pro
+.. literalinclude:: ../../../examples/AGN_J033226/noxray/lightning_configure.pro
     :language: idl
     :dedent:
     :lines: 91
     :lineno-match:
     :emphasize-lines: 1
 
-Widen the default initializations on the SFH, as we expect this :math:`z \sim 1` AGN host
+The default initializations on the SFH are then widened,  as we expect this :math:`z \sim 1` AGN host
 to have a large SFR:
 
-.. literalinclude:: ../../../examples/AGN/noxray/lightning_configure.pro
+.. literalinclude:: ../../../examples/AGN_J033226/noxray/lightning_configure.pro
     :language: idl
     :dedent:
     :lines: 189-194
     :lineno-match:
     :emphasize-lines: 4-5
 
-Use the more complex modified Calzetti attenuation curve, since we have high-quality optical and IR
-data which may require a more flexible attenuation curve:
+Since we have high-quality optical and IR data which may require a more flexible attenuation curve,
+we use the more complex modified Calzetti attenuation curve.
 
-.. literalinclude:: ../../../examples/AGN/noxray/lightning_configure.pro
+.. literalinclude:: ../../../examples/AGN_J033226/noxray/lightning_configure.pro
     :language: idl
     :dedent:
     :lines: 211
     :lineno-match:
     :emphasize-lines: 1
 
-.. literalinclude:: ../../../examples/AGN/noxray/lightning_configure.pro
+.. literalinclude:: ../../../examples/AGN_J033226/noxray/lightning_configure.pro
     :language: idl
     :dedent:
     :lines: 232-235
     :lineno-match:
     :emphasize-lines: 2-3
 
-.. literalinclude:: ../../../examples/AGN/noxray/lightning_configure.pro
+.. literalinclude:: ../../../examples/AGN_J033226/noxray/lightning_configure.pro
     :language: idl
     :dedent:
     :lines: 242-245
     :lineno-match:
     :emphasize-lines: 2-3
 
-Limit the mass abundance of PAHs in the dust model:
+We then limit the mass abundance of PAHs in the dust model
 
-.. literalinclude:: ../../../examples/AGN/noxray/lightning_configure.pro
+.. literalinclude:: ../../../examples/AGN_J033226/noxray/lightning_configure.pro
     :language: idl
     :dedent:
     :lines: 385-388
@@ -111,18 +114,18 @@ Limit the mass abundance of PAHs in the dust model:
 
 And turn on the UV-IR AGN model:
 
-.. literalinclude:: ../../../examples/AGN/noxray/lightning_configure.pro
+.. literalinclude:: ../../../examples/AGN_J033226/noxray/lightning_configure.pro
     :language: idl
     :dedent:
     :lines: 486
     :lineno-match:
     :emphasize-lines: 1
 
-setting the prior on the AGN normalization to log-uniform on :math:`10^{11}-10^{13}\ \rm L_{\odot}` and
-initializing in a narrow range of luminosities, as initializing the AGN component far from the
-solution has a negative effect on convergence:
+We also set the prior on the AGN normalization to log-uniform on :math:`10^{11}-10^{13}\ \rm L_{\odot}` and
+initialize in a narrow range of luminosities, as initializing the AGN component far from the
+solution has a negative effect on convergence.
 
-.. literalinclude:: ../../../examples/AGN/noxray/lightning_configure.pro
+.. literalinclude:: ../../../examples/AGN_J033226/noxray/lightning_configure.pro
     :language: idl
     :dedent:
     :lines: 496-499
@@ -130,16 +133,16 @@ solution has a negative effect on convergence:
 
 Finally, we increase the number of MCMC trials per walker by :math:`10^4`:
 
-.. literalinclude:: ../../../examples/AGN/noxray/lightning_configure.pro
+.. literalinclude:: ../../../examples/AGN_J033226/noxray/lightning_configure.pro
     :language: idl
     :dedent:
     :lines: 539
     :lineno-match:
     :emphasize-lines: 1
 
-and change the proposal width parameter to :math:`a = 1.8`:
+and change the proposal width parameter to :math:`a = 1.8` to increase the MCMC acceptance rate:
 
-.. literalinclude:: ../../../examples/AGN/noxray/lightning_configure.pro
+.. literalinclude:: ../../../examples/AGN_J033226/noxray/lightning_configure.pro
     :language: idl
     :dedent:
     :lines: 572
@@ -149,37 +152,38 @@ and change the proposal width parameter to :math:`a = 1.8`:
 X-ray Fit
 """""""""
 
-For the fit with the X-ray model, we additionally modify the following settings in ``examples/AGN/xray/``.
-We turn on the X-ray emission module:
+For the fit with the X-ray model, we additionally modify the following settings in
+``examples/AGN_J033226/xray/lightning_configure.pro``.
+We turn on the X-ray emission module,
 
-.. literalinclude:: ../../../examples/AGN/xray/lightning_configure.pro
+.. literalinclude:: ../../../examples/AGN_J033226/xray/lightning_configure.pro
     :language: idl
     :dedent:
     :lines: 415
     :lineno-match:
     :emphasize-lines: 1
 
-Setting the module to use the errors we calculated on the net counts:
+set the module to use the errors we calculated on the net counts,
 
-.. literalinclude:: ../../../examples/AGN/xray/lightning_configure.pro
+.. literalinclude:: ../../../examples/AGN_J033226/xray/lightning_configure.pro
     :language: idl
     :dedent:
     :lines: 427
     :lineno-match:
     :emphasize-lines: 1
 
-Modifying the default initialization range for the column density:
+modify the default initialization range for the column density,
 
-.. literalinclude:: ../../../examples/AGN/xray/lightning_configure.pro
+.. literalinclude:: ../../../examples/AGN_J033226/xray/lightning_configure.pro
     :language: idl
     :dedent:
     :lines: 439-442
     :lineno-match:
     :emphasize-lines: 3
 
-And narrowing the initialization range for the SMBH mass:
+and narrow the initialization range for the SMBH mass:
 
-.. literalinclude:: ../../../examples/AGN/xray/lightning_configure.pro
+.. literalinclude:: ../../../examples/AGN_J033226/xray/lightning_configure.pro
     :language: idl
     :dedent:
     :lines: 459-462
@@ -188,58 +192,39 @@ And narrowing the initialization range for the SMBH mass:
 
 Running Lightning
 ^^^^^^^^^^^^^^^^^
-At this point we need only run Lightning with each configuration. If we start an IDL session, we can then:
+.. note::
 
-.. code-block:: idl
+	The IDL code snippets below are also available in batch file format, as ``examples/J033226/J033226_batch.pro``.
 
-    cd, !lightning_dir + 'examples/AGN/noxray'
-    restore, !lightning_dir + 'lightning.sav'
-    lightning, 'J033226.49-274035.5_lightning_input_noxray.fits'
+At this point, we are ready to run Lightning with each configuration. We can do this with:
 
-With the MCMC configuration we've selected (since we're aiming for a comprehensive sampling of the posterior),
-this may take around 30-45 minutes on a moderately powerful laptop CPU (we ran it on a ca. 2015 2.9 GHz Intel Core i5).
+.. literalinclude:: ../../../examples/AGN_J033226/J033226_batch.pro
+    :language: idl
+    :lines: 7-10
 
-We can then run the fit with the X-ray model:
-
-.. code-block:: idl
-
-    cd, '../xray'
-    lightning, 'J033226.49-274035.5_lightning_input_xray.fits'
-
-Which will take about an hour, though it can be run simultaneously with the first fit in a separate
-IDL session. Note that the run time has increased with the added complexity of the X-ray model and the additional
-photometry; we are nearly doubling the number of integrations per likelihood evaluation.
+    With the MCMC configuration we've selected for the fit with no X-ray model (since we're aiming for a comprehensive sampling of the posterior),
+    this may take around 30-45 minutes on a moderately powerful laptop CPU (we ran it on a ca. 2015 2.9 GHz Intel Core i5).
+    For the fit with the X-ray data, this will take about an hour, due to the added complexity of the X-ray model and the additional
+    photometry. We note that the fits could also be run simultaneously in separate IDL sessions.
 
 Analysis
 ^^^^^^^^
 
-.. note::
-
-	The IDL code snippets below are also available in batch file format, as ``examples/AGN/analysis.pro``.
-
 Once the fits finish, Lightning will automatically create post-processed files for us containing the models and
-the sampled posterior distributions. First, we'll ``cd`` back to the top level directory for the AGN example. Then,
+the sampled posterior distributions.
 
-.. literalinclude:: ../../../examples/AGN/analysis.pro
+.. literalinclude:: ../../../examples/AGN_J033226/J033226_batch.pro
     :language: idl
-    :lines: 7-8
+    :lines: 13-14
 
 Convergence
 """""""""""
 
 With the results loaded, our first step should be to check on the status of our fits:
 
-.. literalinclude:: ../../../examples/AGN/analysis.pro
+.. literalinclude:: ../../../examples/AGN_J033226/J033226_batch.pro
     :language: idl
-    :lines: 11-15
-
-.. .. code-block:: idl
-..
-..     IDL> print, '//Convergence for the fit with the X-ray model//'
-..     IDL> print, 'Mean acceptance fraction: ', strtrim(mean(xray_res.ACCEPTANCE_FRAC), 2)
-..     IDL> print, 'Convergence flag: ', strtrim(xray_res.CONVERGENCE_FLAG, 2)
-..     IDL> print, 'Short chain flag: ', strtrim(xray_res.SHORT_CHAIN_FLAG, 2)
-..     IDL> print, 'Number of "stranded" walkers: ', strtrim(total(xray_res.STRANDED_FLAG), 2)
+    :lines: 17-21
 
 which outputs
 
@@ -259,17 +244,9 @@ leave it.
 
 Now we check the other fit:
 
-.. literalinclude:: ../../../examples/AGN/analysis.pro
+.. literalinclude:: ../../../examples/AGN_J033226/J033226_batch.pro
     :language: idl
-    :lines: 19-23
-
-.. .. code-block:: IDL
-..
-..     IDL> print, '//Convergence for the fit without the X-ray model//'
-..     IDL> print, 'Mean acceptance fraction: ', strtrim(mean(noxray_res.ACCEPTANCE_FRAC), 2)
-..     IDL> print, 'Convergence flag: ', strtrim(noxray_res.CONVERGENCE_FLAG, 2)
-..     IDL> print, 'Short chain flag: ', strtrim(noxray_res.SHORT_CHAIN_FLAG, 2)
-..     IDL> print, 'Number of "stranded" walkers: ', strtrim(total(noxray_res.STRANDED_FLAG), 2)
+    :lines: 25-29
 
 .. code-block:: text
 
@@ -281,14 +258,9 @@ Now we check the other fit:
 
 We can see that Lightning is concerned about whether the MCMC chains converged. If we do
 
-.. literalinclude:: ../../../examples/AGN/analysis.pro
+.. literalinclude:: ../../../examples/AGN_J033226/J033226_batch.pro
     :language: idl
-    :lines: 25-26
-
-.. .. code-block:: IDL
-..
-..     IDL> print, 'Number of walkers with low acceptance fractions: ', strtrim(total(noxray_res.ACCEPTANCE_FLAG), 2)
-..     IDL> print, "Number of walkers with low acceptance fractions that /weren't/ flagged as stranged: ", strtrim(total((noxray_res.ACCEPTANCE_FLAG - noxray_res.STRANDED_FLAG) > 0), 2)
+    :lines: 31-32
 
 we see
 
@@ -308,17 +280,13 @@ Now, we might want to look at the SED fit. We'll plot the UV-IR SED component in
 but since we've got so much X-ray photometry we'll plot the X-ray component in the way you might expect
 from ``XSpec`` or ``Sherpa``, just for fun. We have prepared a function for this: ``J033226_spectrum_plots.pro``.
 
-.. literalinclude:: ../../../examples/AGN/analysis.pro
+.. literalinclude:: ../../../examples/AGN_J033226/J033226_batch.pro
     :language: idl
-    :lines: 31
-
-.. .. code-block:: idl
-..
-..     IDL> p = J033226_spectrum_plots(xray_res)
+    :lines: 37
 
 The plot of the best-fitting models looks like so:
 
-.. image:: ../../../examples/AGN/J033226_SED.png
+.. image:: ../../../examples/AGN_J033226/images/J033226_SED.png
 
 We can see that the joint X-ray-IR fit works quite well in this case. Remember that though we've plotted the
 X-ray and optical-IR components on separate axes, they are fit jointly: the likelihood in the MCMC is the
@@ -326,20 +294,12 @@ combined likelihood of both components.
 
 Now, let's compare the posteriors. However, since the two fits have different parameters, we'll do some additional
 postprocessing to generate the posterior on the UV-IR AGN luminosity for the fit with the X-ray model. The
-script ``calc_integrated_AGN_luminosity.pro`` in the ``lightning/examples/AGN/xray/`` directory
+script ``calc_integrated_AGN_luminosity.pro`` in the ``lightning/examples/AGN_J033226/xray/`` directory
 generates this posterior and saves it in an IDL ``SAVE`` file called ``AGN_model_results.sav``.
 
-.. literalinclude:: ../../../examples/AGN/analysis.pro
+.. literalinclude:: ../../../examples/AGN_J033226/J033226_batch.pro
     :language: idl
-    :lines: 40-45
-
-.. .. code-block:: idl
-..
-..     IDL> restore, 'xray/lightning_output/lightning_configure.sav'
-..     ; The ARF is not strictly necessary, but LIGHTNING_MODELS expects it
-..     IDL> arf = mrdfits('xray/J033226_summed.arf', 1)
-..     IDL> agn_model_lum = calc_integrated_AGN_luminosity(xray_res, config, arf)
-..     IDL> help, agn_model_lum
+    :lines: 46-51
 
 which shows the following:
 
@@ -359,17 +319,13 @@ The ``agn_model_lum.LBOL_AGN_MODEL`` is the posterior on the integrated optical-
 With this in hand we can compare the posterior distributions of the AGN model parameters. Again, we have a plotting
 function for this, in ``posterior_comparison.pro``:
 
-.. literalinclude:: ../../../examples/AGN/analysis.pro
+.. literalinclude:: ../../../examples/J033226/J033226_batch.pro
     :language: idl
-    :lines: 50
-
-.. .. code-block:: IDL
-..
-..     IDL> p = posterior_comparison(xray_res, noxray_res, AGN_model_lum)
+    :lines: 56
 
 Which generates the following plot:
 
-.. image:: ../../../examples/AGN/J033226_corner_params.png
+.. image:: ../../../examples/AGN_J033226/images/J033226_corner_params.png
 
 We can see that the AGN luminosity is better constrained in the case where we add X-ray data, and notably has less
 covariance with the viewing angle of the AGN, :math:`\cos i`.

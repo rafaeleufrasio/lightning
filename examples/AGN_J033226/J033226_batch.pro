@@ -3,6 +3,12 @@
 ; pasted into the IDL command line, or the batch file
 ; can be run as a whole with the @ syntax.
 
+; Run Lightning
+cd, !lightning_dir + 'examples/J033226/'
+restore, !lightning_dir + 'lightning.sav'
+lightning, 'noxray/J033226_lightning_input.fits'
+lightning, 'xray/J033226_lightning_input.fits'
+
 ; Load the result tables
 xray_res = mrdfits('xray/lightning_output/J033226_xray_output.fits.gz', 1)
 noxray_res = mrdfits('noxray/lightning_output/J033226_noxray_output.fits.gz', 1)
@@ -30,9 +36,9 @@ print, ''
 ; model. Of course we could plot the other fit too, but it's qualitatively similar.
 p = J033226_spectrum_plots(xray_res)
 
-p.save, 'figure_J033226_SED.eps' ; for the paper
-p.save, 'J033226_SED.png', dpi=400 ; for RTD
-p.close
+; p.save, 'images/figure_J033226_SED.eps' ; for the paper
+; p.save, 'images/J033226_SED.png', dpi=400 ; for RTD
+; p.close
 
 ; To compare the posteriors on equal footing, it'd be nice
 ; to have the integrate optical-IR luminosity of the AGN model
@@ -49,6 +55,6 @@ help, AGN_model_lum
 ; Now we'll make a cornerplot of all the AGN parameters
 p = posterior_comparison(xray_res, noxray_res, AGN_model_lum)
 
-p.save, 'figure_J033226_corner_params.eps' ; for the paper
-p.save, 'J033226_corner_params.png', dpi=400 ; for RTD
-p.close
+; p.save, 'images/figure_J033226_corner_params.eps' ; for the paper
+; p.save, 'images/J033226_corner_params.png', dpi=400 ; for RTD
+; p.close

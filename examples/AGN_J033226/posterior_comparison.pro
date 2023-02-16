@@ -12,32 +12,27 @@ function posterior_comparison, xray_res, noxray_res, agn_model_lum
 ;
 ; Input
 ; -----
-;   N/A
+;   xray_res : structure
+;       An IDL structure containing the fit to J033226 with
+;       the X-ray model
+;   noxray_res : structure
+;       An IDL structure containing the fit to J033226 with
+;       the X-ray model
+;   agn_model_lum : structure
+;       An IDL structure containing the integrated UV-IR AGN
+;       luminosity for the fit with the X-ray model
 ;
 ; Output
 ; ------
-;   Saves the figure to an EPS file.
+;   Returns an IDL graphics object containing the plot
 ;
 ; Dependencies
 ; ------------
-;   IDL AstroLib & Keith's corner plot routine
+;   Keith's corner plot routine from lightning-visualization
 ;
 ;-
 
     compile_opt IDL2
-
-    ; xray_res_dir = 'xray/lightning_output/'
-    ; noxray_res_dir = 'noxray/lightning_output/'
-    ;
-    ; xray_res_fname = (file_search(xray_res_dir + 'postprocessed_data_*.fits.gz'))[-1]
-    ; noxray_res_fname = (file_search(noxray_res_dir + 'postprocessed_data_*.fits.gz'))[-1]
-    ;
-    ; xray_res = mrdfits(xray_res_fname, 1)
-    ; noxray_res = mrdfits(noxray_res_fname, 1)
-
-    ; Since the AGN model luminosity is not an output when we use the qsosed model,
-    ; we've computed it manually ahead of time, and loading it now. Like a TV chef.
-    ; restore, 'xray/AGN_model_results.sav' ; defines AGN_MODEL_RESULTS
 
     log_L_AGN_x = alog10(agn_model_lum.LBOL_AGN_MODEL)
 
@@ -90,10 +85,6 @@ function posterior_comparison, xray_res, noxray_res, agn_model_lum
     x[1] = plot([0, 0], [0, 0], color='orange', thick=2, name='without X-ray data', position=[2, 2, 3, 3], /current)
     lgnd = legend(target=x, transparency=30, position=[0.75, 0.80], $
                   vertical_alignment=1, horizontal_alignment=0.5, font_size=14)
-
-    ;p.save, 'figure_J033226_corner_params.eps'
-
-    ;p.close
 
     return, p
 

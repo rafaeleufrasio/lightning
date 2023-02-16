@@ -1,14 +1,35 @@
 function calc_integrated_AGN_luminosity, results, config, arf
+;+
+; Name
+; ----
+;   CALC_INTEGRATED_AGN_LUMINOSITY
+;
+; Purpose
+; -------
+;   Turn the X-ray model parameters into the integrated
+;   luminosity of the UV-IR component of the AGN model.
+;
+; Input
+; -----
+;   results : structure
+;       An IDL structure containing the fit to J033226
+;   config : structure
+;       An IDL structure containing the Lightning configuration
+;       for the X-ray model fit to J033226
+;   arf : structure
+;       An IDL structure containing the auxiliary response function
+;       (ARF)
+;
+; Output
+; ------
+;   Returns an IDL structure containing the parameters and luminosity
+;
+;-
+
+    compile_opt IDL2
 
     ; Make sure our constants are in memory
     lightning_constants
-
-    ; Load the relevant configuration
-    ;restore, 'lightning_output/lightning_configure.sav'
-
-    ; Load the relevant results
-    ; result_fname = (file_search('lightning_output/postprocessed_data_*.fits.gz'))[-1]
-    ; results = mrdfits(result_fname, 1)
 
     ; Construct an array for the parameters
     parameters = [[results.TAUV_DIFF],$

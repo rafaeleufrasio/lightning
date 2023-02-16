@@ -12,30 +12,19 @@ function J033226_spectrum_plots, xray_res
 ;
 ; Input
 ; -----
-;   N/A
+;   xray_res : structure
+;       An IDL structure containing the fit to J033226 with
+;       the X-ray model
 ;
 ; Output
 ; ------
-;   Saves the figure to an EPS file.
-;
-; Dependencies
-; ------------
-;   IDL AstroLib
+;   Returns a IDL graphics object containing the plots
 ;
 ;-
 
     compile_opt IDL2
 
     lightning_constants
-
-    ; xray_res_dir = 'xray/lightning_output/'
-    ; ;noxray_res_dir = 'noxray/lightning_output/'
-    ;
-    ; xray_res_fname = (file_search(xray_res_dir + 'postprocessed_data_*.fits.gz'))[-1]
-    ;noxray_res_fname = (file_search(noxray_res_dir + 'postprocessed_data_*.fits.gz'))[-1]
-
-    ;xray_res = mrdfits(xray_res_fname, 1)
-    ;noxray_res = mrdfits(noxray_res_fname, 1)
 
     ;--------------------------
     ; Construct UV-IR Models
@@ -218,9 +207,6 @@ function J033226_spectrum_plots, xray_res
                    /sym_filled)
 
     p4.xtitle = 'Observed-Frame Energy [keV]'
-
-    ; p1.save, 'figure_J033226_sed.eps'
-    ; p1.close
 
     return, p1
 
