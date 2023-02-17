@@ -132,7 +132,7 @@ config = {                             $
 
           ; ZMETAL : float or double scalar
           ;   The metallicity to use in the SSP models in terms of Z [Zsun = 0.02].
-          ;   Current options: 0.001, 0.004, 0.008, 0.02, 0.05, 0.1
+          ;   Current options: 0.001, 0.004, 0.008, 0.01, 0.02, 0.05, 0.1
           ZMETAL: 0.02                                ,$
 
           ; EMISSION_LINES : flag (0 or 1)

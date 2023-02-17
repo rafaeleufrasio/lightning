@@ -151,7 +151,7 @@ Stellar Emission
 ``ZMETAL`` : float or double scalar
     The metallicity to use in the SSP models
     in terms of Z, normalized to the solar metallicity.
-    The current available metallicities in Lightning are 0.001, 0.004, 0.008, 0.02, 0.05, and 0.1
+    The current available metallicities in Lightning are 0.001, 0.004, 0.008, 0.01, 0.02, 0.05, and 0.1
     in terms of :math:`Z`.
 
     .. note::

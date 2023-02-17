@@ -48,6 +48,7 @@ function lightning_configure_check, config
 ;   - 2022/10/25: Renamed SPS to SSP (Keith Doore)
 ;   - 2022/12/13: Prevented ``XRAY_UNC`` from begin checked if ``XRAY_UNIT='FLUX'`` (Keith Doore)
 ;   - 2023/01/31: Added check of added ``OUTPUT_FILENAME`` option (Keith Doore)
+;   - 2023/02/17: Added metallicity of Z=0.01 (Keith Doore)
 ;-
  On_error, 2
  Compile_opt idl2
@@ -65,7 +66,7 @@ function lightning_configure_check, config
  prior_options_narg = [1, 2, 4, 1]
  ssp_options = ['PEGASE', 'none']
  imf_options = ['Kroupa01']
- zmetal_options = [0.001, 0.004, 0.008, 0.02, 0.05, 0.1]
+ zmetal_options = [0.001, 0.004, 0.008, 0.01, 0.02, 0.05, 0.1]
  sfh_options = ['NON-PARAMETRIC']
  atten_curve_options = ['CALZETTI00', 'CALZETTI_MOD', 'DOORE21']
  dust_emission_options = ['DL07', 'none']

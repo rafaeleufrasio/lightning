@@ -45,6 +45,7 @@ function lightning_configure_interactive, config_edit=config_edit
 ;   - 2022/10/25: Renamed SPS to SSP (Keith Doore)
 ;   - 2022/12/13: Prevented ``XRAY_UNC`` from begin set if ``XRAY_UNIT='FLUX'`` (Keith Doore)
 ;   - 2023/01/31: Added ``OUTPUT_FILENAME`` option to allow for setting of post-processed filename (Keith Doore)
+;   - 2023/02/17: Added metallicity of Z=0.01 (Keith Doore)
 ;-
  On_error, 2
  Compile_opt idl2
@@ -425,7 +426,7 @@ function lightning_configure_interactive, config_edit=config_edit
 
 
       ;============ ZMETAL ============
-      zmetal_options = [0.001d, 0.004d, 0.008d, 0.02d, 0.05d, 0.1d]
+      zmetal_options = [0.001d, 0.004d, 0.008d, 0.01d, 0.02d, 0.05d, 0.1d]
       error = 1
       default_val = '0.02'
       default = '(Default: '+default_val+')'
