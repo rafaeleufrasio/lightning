@@ -1,5 +1,5 @@
 ; Block 1 - Create B-band mask
-cd, !lightning_dir + 'examples/NGC_3031_map/'
+cd, !lightning_dir + 'examples/map_M81/'
 
 ; These are the original B-band ellipse values from HyperLeda.
 ra = [09, 55, 33.15]   ; units in Hour, minute, and seconds.
@@ -16,14 +16,14 @@ q = 10.d^(-1.d * logr25)   ; axis ratio is q = b/a, negative flips ratio from ma
 b = a * q                  ; semi-minor axis.
 
 ; Read in the image containing the SED_ID of each pixel and its header.
-ngc3031_map  = mrdfits('ngc3031_data.fits', 0, hd)
+m81_map  = mrdfits('m81_data.fits', 0, hd)
 ; Create the ellipse mask.
 bband_mask = ellipse_region(ra, dec, a, b, pa, hd)
 
 
 
 ; Block 2 - B-band mask image
-img_sed_id = image(ngc3031_map, $
+img_sed_id = image(m81_map, $
                    rgb_table=33, $
                    position=[0, 0, 0.8, 1])
 cb = colorbar(target=img_sed_id, $
@@ -42,36 +42,36 @@ img_mask   = image(bband_mask, $
 
 ; Block 3 - Create subset files
 ; Read in the data table containing the SEDs.
-ngc3031_seds  = mrdfits('ngc3031_data.fits', 1)
+m81_seds  = mrdfits('m81_data.fits', 1)
 
 ; We need the SED_IDs that correspond to the pixels within the mask.
-; Note that we exclude any pixels that lack an SED, which is given by a NaN in ngc3031_map.
-bband_ids = ngc3031_map[where(bband_mask eq 1 and finite(ngc3031_map))]
+; Note that we exclude any pixels that lack an SED, which is given by a NaN in m81_map.
+bband_ids = m81_map[where(bband_mask eq 1 and finite(m81_map))]
 
-; Since the SED_IDs in ngc3031_seds are in ascending order based on value, we can just
+; Since the SED_IDs in m81_seds are in ascending order based on value, we can just
 ;   index the table using the selected IDs.
-fitting_data = ngc3031_seds[bband_ids]
+fitting_data = m81_seds[bband_ids]
 
 ; Let's create individual files for the MCMC and MPFIT fittings.
-mwrfits, fitting_data, 'MCMC/ngc3031_input.fits', /create
-mwrfits, fitting_data, 'MPFIT/ngc3031_input.fits', /create
+mwrfits, fitting_data, 'MCMC/m81_input.fits', /create
+mwrfits, fitting_data, 'MPFIT/m81_input.fits', /create
 
 
 
 ; Block 4 - Fit MCMC
 ;restore, !lightning_dir + 'lightning.sav'
-;lightning, 'MCMC/ngc3031_input.fits'
+;lightning, 'MCMC/m81_input.fits'
 
 
 
 ; Block 5 - Fit MPFIT
-;lightning, 'MPFIT/ngc3031_input.fits'
+;lightning, 'MPFIT/m81_input.fits'
 
 
 
 ; Block 6 - Initial convergence check
 ; Read in the post-processed data table.
-results = mrdfits('MCMC/lightning_output/ngc_3031_map_mcmc.fits.gz', 1)
+results = mrdfits('MCMC/lightning_output/m81_map_mcmc.fits.gz', 1)
 
 ; Let's check how many fits, if any, did not reach convergence by all our metrics.
 print, '//Convergence Checks//'
@@ -119,7 +119,7 @@ plt = plot(plt.xrange, $
 
 ; Block 10 - MPFIT convergence check
 ; Read in the MPFIT post-processed data table.
-results_mpfit = mrdfits('MCMC/lightning_output/ngc_3031_map_mpfit.fits.gz', 1)
+results_mpfit = mrdfits('MCMC/lightning_output/m81_map_mpfit.fits.gz', 1)
 
 ; Let's check how many fits, if any, did not reach convergence by all our metrics.
 print, '//Convergence Checks//'
@@ -206,11 +206,11 @@ forprint, results_mpfit[0].parameter_names, solver_frac[0,*], solver_frac[1,*], 
 ; Block 15 - MCMC property maps
 nsed = n_elements(results)
 ; Get the dimensions of the map so we can make blank ones to place our parameter values.
-map_size = size(ngc3031_map, /dim)
+map_size = size(m81_map, /dim)
 
 ; We need to match each SED_ID from the result back to the map.
 map_idc = lonarr(nsed)
-for i=0, nsed-1 do map_idc[i] = where(ngc3031_map eq float(strtrim(results[i].sed_id, 2)))
+for i=0, nsed-1 do map_idc[i] = where(m81_map eq float(strtrim(results[i].sed_id, 2)))
 
 ; Make a blank map to fill in with the results values.
 sfr_map = replicate(!values.f_NaN, map_size)
@@ -256,7 +256,7 @@ pvalue_map = pvalue_map[*, mask_bounds_idc[0, 1]:mask_bounds_idc[1, 1]]
 
 ; Block 17 - Plot maps
 ; Plotting is simple with our figure script
-fig = ngc3031_maps(sfr_map, mass_map, sfr_map/mass_map, tauv_diff_map, ltir_map, pvalue_map)
+fig = m81_maps(sfr_map, mass_map, sfr_map/mass_map, tauv_diff_map, ltir_map, pvalue_map)
 
 
 
@@ -281,7 +281,7 @@ ksband_mask = ellipse_region(ra, dec, a, b, pa, hd)
 
 
 ; Block 19 - Ks-band mask image
-img_sed_id = image(ngc3031_map, $
+img_sed_id = image(m81_map, $
                    rgb_table=33, $
                    position=[0, 0, 0.8, 1])
 cb = colorbar(target=img_sed_id, $
@@ -300,14 +300,14 @@ img_mask   = image(ksband_mask, $
 
 ; Block 20 - Plot regions
 ; Plotting is simple with our figure script
-fig = ngc3031_regions(ngc3031_map, hd, ngc3031_seds, results, bband_mask, ksband_mask)
+fig = m81_regions(m81_map, hd, m81_seds, results, bband_mask, ksband_mask)
 
 
 
 ; Block 21 - MPFIT property maps
 ; We need to match each SED_ID from the result back to the map.
 map_idc = lonarr(nsed)
-for i=0, nsed-1 do map_idc[i] = where(ngc3031_map eq float(strtrim(results_mpfit[i].sed_id, 2)))
+for i=0, nsed-1 do map_idc[i] = where(m81_map eq float(strtrim(results_mpfit[i].sed_id, 2)))
 
 ; Make a blank map to fill in with the results values.
 sfr_map_mpfit = replicate(!values.f_NaN, map_size)
@@ -373,4 +373,4 @@ ltir_map_mpfit[keep_nan]   = !values.D_NaN
 
 ; Block 24 - Plot maps
 ; Plotting is simple with our figure script
-fig = ngc3031_maps(sfr_map_mpfit, mass_map_mpfit, ssfr_map_mpfit, tauv_diff_map_mpfit, ltir_map_mpfit, pvalue_map_mpfit)
+fig = m81_maps(sfr_map_mpfit, mass_map_mpfit, ssfr_map_mpfit, tauv_diff_map_mpfit, ltir_map_mpfit, pvalue_map_mpfit)

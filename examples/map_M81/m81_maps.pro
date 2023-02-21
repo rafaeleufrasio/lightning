@@ -1,19 +1,19 @@
-function ngc3031_maps, sfr_map, mass_map, ssfr_map, tauv_diff_map, ltir_map, pvalue_map
+function m81_maps, sfr_map, mass_map, ssfr_map, tauv_diff_map, ltir_map, pvalue_map
 ;+
 ; Name
 ; ----
-;   NGC3031_MAPS
+;   M81_MAPS
 ;
 ; Purpose
 ; -------
-;   Generates property maps of NGC 3031. Input maps must
+;   Generates property maps of M81. Input maps must
 ;   be formatted and cropped as show in Lightning's online documentation.
 ;
 ; Calling Sequence
 ; ----------------
 ;   ::
 ;
-;       fig = ngc3031_maps(sfr_map, mass_map, ssfr_map, tauv_diff_map, ltir_map, pvalue_map)
+;       fig = m81_maps(sfr_map, mass_map, ssfr_map, tauv_diff_map, ltir_map, pvalue_map)
 ;
 ; Input
 ; -----

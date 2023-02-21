@@ -19,7 +19,7 @@ The following will provide examples of both basic and advanced use-cases for Lig
     :maxdepth: 1
 
     NGC_337_example
-    NGC_3031_example
+    M81_example
     J033226_example
     NGC_4631_example
     NGC_628_example

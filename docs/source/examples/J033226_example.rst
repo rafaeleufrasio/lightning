@@ -194,7 +194,7 @@ Running Lightning
 ^^^^^^^^^^^^^^^^^
 .. note::
 
-	The IDL code snippets below are also available in batch file format, as ``examples/J033226/J033226_batch.pro``.
+	The IDL code snippets below are also available in batch file format, as ``examples/AGN_J033226/J033226_batch.pro``.
 
 At this point, we are ready to run Lightning with each configuration. We can do this with:
 
@@ -202,10 +202,11 @@ At this point, we are ready to run Lightning with each configuration. We can do 
     :language: idl
     :lines: 7-10
 
-    With the MCMC configuration we've selected for the fit with no X-ray model (since we're aiming for a comprehensive sampling of the posterior),
-    this may take around 30-45 minutes on a moderately powerful laptop CPU (we ran it on a ca. 2015 2.9 GHz Intel Core i5).
-    For the fit with the X-ray data, this will take about an hour, due to the added complexity of the X-ray model and the additional
-    photometry. We note that the fits could also be run simultaneously in separate IDL sessions.
+With the MCMC configuration we've selected for the fit with no X-ray model (since we're aiming for a comprehensive sampling of the posterior),
+this may take around 30-45 minutes on a moderately powerful laptop CPU (we ran it on a ca. 2015 2.9 GHz Intel Core i5).
+For the fit with the X-ray data, this will take about an hour, due to the added complexity of the X-ray model and the additional
+photometry. We note that the fits could also be run simultaneously in separate IDL sessions.
+
 
 Analysis
 ^^^^^^^^
@@ -319,7 +320,7 @@ The ``agn_model_lum.LBOL_AGN_MODEL`` is the posterior on the integrated optical-
 With this in hand we can compare the posterior distributions of the AGN model parameters. Again, we have a plotting
 function for this, in ``posterior_comparison.pro``:
 
-.. literalinclude:: ../../../examples/J033226/J033226_batch.pro
+.. literalinclude:: ../../../examples/AGN_J033226/J033226_batch.pro
     :language: idl
     :lines: 56
 

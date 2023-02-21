@@ -1,27 +1,27 @@
-function ngc3031_regions, ngc3031_map, hd, ngc3031_seds, results, bband_mask, ksband_mask
+function m81_regions, m81_map, hd, m81_seds, results, bband_mask, ksband_mask
 ;+
 ; Name
 ; ----
-;   NGC3031_REGIONS
+;   M81_REGIONS
 ;
 ; Purpose
 ; -------
-;   Generates a figure showing the inner and outer regions of NGC 3031. Input must
+;   Generates a figure showing the inner and outer regions of M81. Input must
 ;   be formatted and generated as show in Lightning's online documentation.
 ;
 ; Calling Sequence
 ; ----------------
 ;   ::
 ;
-;       fig = ngc3031_regions(ngc3031_map, hd, ngc3031_seds, results, bband_mask, ksband_mask)
+;       fig = m81_regions(m81_map, hd, m81_seds, results, bband_mask, ksband_mask)
 ;
 ; Input
 ; -----
-;   ``ngc3031_map`` : float or double array(N, M)
+;   ``m81_map`` : float or double array(N, M)
 ;       The map containing the ``SED_ID`` of each pixel.
 ;   ``hd`` : string array(I)
-;       The FITS header associated with ``ngc3031_map``.
-;   ``ngc3031_seds`` : structure
+;       The FITS header associated with ``m81_map``.
+;   ``m81_seds`` : structure
 ;       The original input data structure.
 ;   ``results`` : structure
 ;       The post-processed MCMC results structure.
@@ -43,25 +43,25 @@ function ngc3031_regions, ngc3031_map, hd, ngc3031_seds, results, bband_mask, ks
  compile_opt IDL2
 
 ; First let's map our original SDSS SED data back to the map so we can make a g, r, i composite
- map_size = size(ngc3031_map, /dimension)
- map_idc = lonarr(n_elements(ngc3031_seds))
- for i=0, n_elements(ngc3031_seds)-1 do map_idc[i] = where(ngc3031_map eq float(strtrim(ngc3031_seds[i].sed_id, 2)))
+ map_size = size(m81_map, /dimension)
+ map_idc = lonarr(n_elements(m81_seds))
+ for i=0, n_elements(m81_seds)-1 do map_idc[i] = where(m81_map eq float(strtrim(m81_seds[i].sed_id, 2)))
 
 ; IDL does not like mapping 2 dimensions with one index while fixing the other.
 ;   So, we use a temporary variable to do this.
  sdss_map = replicate(!values.f_NaN, [map_size, 3])
  temp = replicate(!values.f_NaN, map_size)
- temp[map_idc] = reform((ngc3031_seds.fnu_obs)[where(strtrim(ngc3031_seds[0].filter_labels, 2) eq 'SDSS_i'), *])
+ temp[map_idc] = reform((m81_seds.fnu_obs)[where(strtrim(m81_seds[0].filter_labels, 2) eq 'SDSS_i'), *])
  sdss_map[*, *, 0] = temp
- temp[map_idc] = reform((ngc3031_seds.fnu_obs)[where(strtrim(ngc3031_seds[0].filter_labels, 2) eq 'SDSS_r'), *])
+ temp[map_idc] = reform((m81_seds.fnu_obs)[where(strtrim(m81_seds[0].filter_labels, 2) eq 'SDSS_r'), *])
  sdss_map[*, *, 1] = temp
- temp[map_idc] = reform((ngc3031_seds.fnu_obs)[where(strtrim(ngc3031_seds[0].filter_labels, 2) eq 'SDSS_g'), *])
+ temp[map_idc] = reform((m81_seds.fnu_obs)[where(strtrim(m81_seds[0].filter_labels, 2) eq 'SDSS_g'), *])
  sdss_map[*, *, 2] = temp
 
 
 ; Next, we need to match our results to the pixels within the associated region and sum the properties for all pixels
- bband_loc = ngc3031_map[where(bband_mask eq 1 and finite(ngc3031_map) and ksband_mask ne 1)]
- kband_loc = ngc3031_map[where(ksband_mask eq 1 and finite(ngc3031_map))]
+ bband_loc = m81_map[where(bband_mask eq 1 and finite(m81_map) and ksband_mask ne 1)]
+ kband_loc = m81_map[where(ksband_mask eq 1 and finite(m81_map))]
 
  bband_idc = lonarr(n_elements(bband_loc))
  kband_idc = lonarr(n_elements(kband_loc))

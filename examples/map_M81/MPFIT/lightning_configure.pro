@@ -68,7 +68,7 @@ config = {                             $
           ;        can have a unique filename for multiple repeat runs to prevent accidentally
           ;        overwriting old runs. This is done by including a single ``%`` character in
           ;        the filename where you want the timestamp to appear. 
-          OUTPUT_FILENAME: 'ngc_3031_map_mcmc'             ,$
+          OUTPUT_FILENAME: 'm81_map_mpfit'             ,$
 
           ; PRINT_PROGRESS : flag (0 or 1)
           ;   If set, the SED fitting progress and expected fitting time
@@ -530,7 +530,7 @@ config = {                             $
           ; NOTE - Only configurations of the chosen fitting algorithm should be
           ;        updated from the default. Changes to the configurations
           ;        of the other fitting algorithms will be ignored.
-          METHOD: 'MCMC-AFFINE'                       ,$
+          METHOD: 'MPFIT'                       ,$
 
 
           ;===========  MCMC ===================================================
@@ -576,7 +576,7 @@ config = {                             $
               ; NSOLVERS : int, float, or double scalar
               ;   The number of times to solve for the best fit SED using different
               ;   starting locations in parameters space.
-              NSOLVERS: 100                           ,$
+              NSOLVERS: 20                            ,$
 
               ; FTOL : float or double scalar
               ;   The relative error desired in the sum of squares. Termination
