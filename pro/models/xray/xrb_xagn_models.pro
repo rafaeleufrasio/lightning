@@ -53,7 +53,7 @@ function xrb_xagn_models, xray_bandpass, xray_exposure=xray_exposure,$
 ;       :math:`[10^{20}\ {\rm cm}^{-2}]`. (Default = ``0``)
 ;   ``xray_abs_model`` : string scalar
 ;       The name of the X-ray absorption model to apply to the X-ray emission. Current options
-;       are: ``'TBABS-WILM'``, ``'TBABS-ANGR'``, ``'ATTEN'``, and ``'NONE'``.
+;       are: ``'TBABS-WILM'``, ``'ATTEN'``, and ``'NONE'``.
 ;       (Default = ``'TBABS-WILM'``)
 ;   ``xray_agn_model`` : string scalar
 ;       The X-ray AGN emission model to use. Current options are: ``'PLAW'``, ``'QSOSED'``, ``'NONE'``.
@@ -199,7 +199,7 @@ function xrb_xagn_models, xray_bandpass, xray_exposure=xray_exposure,$
    if n_elements(xray_abs_model) ne 0 then begin
      if size(xray_abs_model, /type) ne 7 then message, 'XRAY_ABS_MODEL must be of type string.'
      if size(xray_abs_model, /n_dim) ne 0 then message, 'XRAY_ABS_MODEL must be a scalar.'
-     if total(strupcase(xray_abs_model) eq ['TBABS-WILM', 'TBABS-ANGR', 'ATTEN', 'NONE']) ne 1 then $
+     if total(strupcase(xray_abs_model) eq ['TBABS-WILM', 'ATTEN', 'NONE']) ne 1 then $
        message, "XRAY_ABS_MODEL must be set to either 'TBABS-WILM', 'TBABS-ANGR', 'ATTEN', or 'NONE'."
    endif
 

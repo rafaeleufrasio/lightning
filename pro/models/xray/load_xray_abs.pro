@@ -22,7 +22,7 @@ function load_xray_abs, wave, xray_abs_model
 ;       X-ray absorption model :math:`[\mu \rm m]`.
 ;   ``xray_abs_model`` : string scalar
 ;       The name of the X-ray absorption model to apply to the X-ray emission.
-;       Current options are ``'TBABS-WILM'``, ``'TBABS-ANGR'``, ``'ATTEN'``,
+;       Current options are ``'TBABS-WILM'``, ``'ATTEN'``,
 ;       and ``'NONE'``.
 ;
 ; Output
@@ -52,14 +52,14 @@ function load_xray_abs, wave, xray_abs_model
  if n_elements(xray_abs_model) eq 0 then message, 'Variable is undefined: XRAY_ABS_MODEL.'
  if size(xray_abs_model, /type) ne 7 then message, 'XRAY_ABS_MODEL must be of type string.'
  if size(xray_abs_model, /n_dim) ne 0 then message, 'XRAY_ABS_MODEL must be a scalar.'
- if total(strupcase(xray_abs_model) eq ['TBABS-WILM', 'TBABS-ANGR', 'ATTEN', 'NONE']) ne 1 then $
-   message, "XRAY_ABS_MODEL must be set to either 'TBABS-WILM', 'TBABS-ANGR', 'ATTEN', or 'NONE'."
+ if total(strupcase(xray_abs_model) eq ['TBABS-WILM', 'ATTEN', 'NONE']) ne 1 then $
+   message, "XRAY_ABS_MODEL must be set to either 'TBABS-WILM', 'ATTEN', or 'NONE'."
 
 
 ; Read in specified absorption file
  case strupcase(xray_abs_model) of
    'TBABS-WILM': curve_path = !lightning_dir + 'models/xray/absorption/tbabs_wilm.txt'
-   'TBABS-ANGR': curve_path = !lightning_dir + 'models/xray/absorption/tbabs_angr.txt'
+   ;'TBABS-ANGR': curve_path = !lightning_dir + 'models/xray/absorption/tbabs_angr.txt'
    'ATTEN':      curve_path = !lightning_dir + 'models/xray/absorption/atten.txt'
    'NONE':       return, replicate(1.d0, n_elements(wave))
  endcase

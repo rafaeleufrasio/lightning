@@ -1487,7 +1487,7 @@ function lightning_configure_interactive, config_edit=config_edit
    endif
 
   ;============ Xray Absorption ============
-   xray_abs_options = ['TBABS-WILM', 'TBABS-ANGR', 'ATTEN']
+   xray_abs_options = ['TBABS-WILM', 'ATTEN']
    error = 1
    default_val = 'TBABS-WILM'
    default = '(Default: '+default_val+')'

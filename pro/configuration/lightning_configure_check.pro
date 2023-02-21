@@ -73,7 +73,7 @@ function lightning_configure_check, config
  agn_emission_options = ['SKIRTOR', 'none']
  xray_unit_options = ['COUNTS', 'FLUX']
  xray_unc_options = ['SQRT', 'GEHRELS', 'USER']
- xray_abs_options = ['TBABS-WILM', 'TBABS-ANGR', 'ATTEN']
+ xray_abs_options = ['TBABS-WILM', 'ATTEN']
  xray_agn_options = ['QSOSED', 'PLAW', 'none']
  ;fit_algorithm_options = ['GRID', 'INVERSION', 'MCMC-ADAPTIVE', 'MCMC-AFFINE', 'MPFIT']
  fit_algorithm_options = ['MCMC-ADAPTIVE', 'MCMC-AFFINE', 'MPFIT']
