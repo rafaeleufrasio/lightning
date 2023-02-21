@@ -50,7 +50,7 @@ Optional Inputs
     :math:`[10^{20}\ {\rm cm}^{-2}]`. (Default = ``0``)
 ``xray_abs_model`` : string scalar
     The name of the X-ray absorption model to apply to the X-ray emission. Current options
-    are: ``'TBABS-WILM'``, ``'TBABS-ANGR'``, ``'ATTEN'``, and ``'NONE'``.
+    are: ``'TBABS-WILM'``, ``'ATTEN'``, and ``'NONE'``.
     (Default = ``'TBABS-WILM'``)
 ``xray_agn_model`` : string scalar
     The X-ray AGN emission model to use. Current options are: ``'PLAW'``, ``'QSOSED'``, ``'NONE'``.

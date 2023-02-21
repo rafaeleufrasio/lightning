@@ -428,7 +428,7 @@ config = {                             $
 
           ; XRAY_ABS_MODEL : string scalar
           ;   The X-ray absorption model to apply to the X-ray emission.
-          ;   Current options: 'TBABS-WILM', 'TBABS-ANGR', and 'ATTEN'
+          ;   Current options: 'TBABS-WILM' and 'ATTEN'
           XRAY_ABS_MODEL: 'TBABS-WILM'                ,$
 
           ; NH : Prior : string scalar

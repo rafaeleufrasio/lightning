@@ -23,7 +23,7 @@ Inputs
     X-ray absorption model :math:`[\mu \rm m]`.
 ``xray_abs_model`` : string scalar
     The name of the X-ray absorption model to apply to the X-ray emission.
-    Current options are ``'TBABS-WILM'``, ``'TBABS-ANGR'``, ``'ATTEN'``,
+    Current options are ``'TBABS-WILM'``, ``'ATTEN'``,
     and ``'NONE'``.
 
 Output

@@ -67,7 +67,7 @@ config = {                             $
           ; NOTE - A UTC timestamp can be automatically included in the filename so that you
           ;        can have a unique filename for multiple repeat runs to prevent accidentally
           ;        overwriting old runs. This is done by including a single ``%`` character in
-          ;        the filename where you want the timestamp to appear. 
+          ;        the filename where you want the timestamp to appear.
           OUTPUT_FILENAME: 'postprocessed_data_%'     ,$
 
           ; PRINT_PROGRESS : flag (0 or 1)
@@ -428,7 +428,7 @@ config = {                             $
 
           ; XRAY_ABS_MODEL : string scalar
           ;   The X-ray absorption model to apply to the X-ray emission.
-          ;   Current options: 'TBABS-WILM', 'TBABS-ANGR', and 'ATTEN'
+          ;   Current options: 'TBABS-WILM' and 'ATTEN'
           XRAY_ABS_MODEL: 'TBABS-WILM'                ,$
 
           ; NH : Prior : string scalar
