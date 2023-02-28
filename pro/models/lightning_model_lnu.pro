@@ -202,6 +202,26 @@ function lightning_model_lnu, parameters, parameter_name, models, ssp=ssp, sfh=s
                                                 mean_Lnu_unred_stellar=Lnu_unred_stellar, _extra=_extra)
              end
   
+          'INSTANTANEOUS': begin
+               psi = transpose(parameters_transposed[*, where(strmatch(parameter_name, 'PSI_*'), /null)])
+  
+               tauv_diff = parameters_transposed[*, where(parameter_name eq 'TAUV' or $
+                                               parameter_name eq 'TAUV_DIFF', /null)]
+               delta     = parameters_transposed[*, where(parameter_name eq 'DELTA', /null)]
+               tauv_bc   = parameters_transposed[*, where(parameter_name eq 'TAUV_BC', /null)]
+  
+               taub_f  = parameters_transposed[*, where(parameter_name eq 'TAUB_F', /null), *]
+               f_clump = parameters_transposed[*, where(parameter_name eq 'F_CLUMP', /null), *]
+               cosi    = parameters_transposed[*, where(parameter_name eq 'COSI', /null), *]
+               b_to_d  = parameters_transposed[*, where(parameter_name eq 'B_TO_D', /null), *]
+  
+               Lnu_stellar = instantaneous_stellar_sed(models.stellar_models, psi, $
+                                                tauV_DIFF=tauV_DIFF, delta=delta, tauV_BC=tauV_BC, $
+                                                tauB_f=tauB_f, F_clump=F_clump, cosi=cosi, b_to_d=b_to_d, $
+                                                atten_models=models.atten_models, Lbol_abs_stellar=Lbol_abs_stellar, $
+                                                mean_Lnu_unred_stellar=Lnu_unred_stellar, _extra=_extra)
+             end
+
           'PARAMETRIC': begin
               Lnu_stellar = dblarr(Nfilters, Nmodels)
               Lnu_unred_stellar = dblarr(Nfilters, Nmodels)

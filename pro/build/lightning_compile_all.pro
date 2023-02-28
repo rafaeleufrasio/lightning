@@ -74,10 +74,15 @@
  .r pro/models/agn/stalevski2016/skirtor_sed.pro
  .r pro/models/agn/stalevski2016/skirtor_spectrum.pro
 
-; Stellar emission
+; Non-parametric Stellar emission
  .r pro/models/stellar/nonparametric_sfh/binned_stellar_models.pro
  .r pro/models/stellar/nonparametric_sfh/binned_stellar_sed.pro
  .r pro/models/stellar/nonparametric_sfh/binned_stellar_spectrum.pro
+
+; Instantaneous Stellar emission
+ .r pro/models/stellar/instantaneous/instantaneous_stellar_models.pro
+ .r pro/models/stellar/instantaneous/instantaneous_stellar_sed.pro
+ .r pro/models/stellar/instantaneous/instantaneous_stellar_spectrum.pro
 
 ; Xray emission
  .r pro/models/xray/L2keV_J07.pro

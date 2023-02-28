@@ -1,7 +1,7 @@
-function unbinned_stellar_models, ages, filter_labels=filter_labels, redshift=redshift, $
-                                dtime_SF=dtime_SF, Zmetal=Zmetal, IMF=IMF, $
-                                cosmology=cosmology, no_emission_lines=no_emission_lines, $
-                                no_nebular_extinction=no_nebular_extinction, error_check=error_check
+function instantaneous_stellar_models, ages=ages, filter_labels=filter_labels, redshift=redshift, $
+                                       dtime_SF=dtime_SF, Zmetal=Zmetal, IMF=IMF, $
+                                       cosmology=cosmology, no_emission_lines=no_emission_lines, $
+                                       no_nebular_extinction=no_nebular_extinction, error_check=error_check
 ;+
 ; Name
 ; ----
@@ -159,7 +159,7 @@ function unbinned_stellar_models, ages, filter_labels=filter_labels, redshift=re
    filter_labels=['GALEX_FUV', 'GALEX_NUV', 'SDSS_u', 'SDSS_g', 'SDSS_r', 'SDSS_i', 'SDSS_z', $
                   '2MASS_J', '2MASS_H', '2MASS_Ks', 'IRAC_CH1', 'IRAC_CH2', 'IRAC_CH3', $
                   'IRAC_CH4', 'MIPS_CH1', 'PACS_green', 'PACS_red', 'SPIRE_250', 'SPIRE_350', 'SPIRE_500']
- if n_elements(steps_bounds) eq 0 then steps_bounds = [0.d0, 1.d7, 1.d8, 1.d9, 5.d9, 13.6d9]
+ if n_elements(ages) eq 0 then ages = [1.d7, 1.d9]
  if n_elements(redshift) eq 0 then redshift = 0.0
  if n_elements(dtime_SF) eq 0 then dtime_SF = 5.d5
  if n_elements(Zmetal) eq 0 then Zmetal = 0.02

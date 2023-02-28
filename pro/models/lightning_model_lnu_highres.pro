@@ -245,6 +245,36 @@ function lightning_model_lnu_highres, parameters, parameter_name, models, ssp=ss
                Lnu_unred_stellar_highres[where(Lnu_unred_stellar_highres lt 0, /null)] = 0.d0
              end
 
+          'INSTANTANEOUS': begin
+               psi = transpose(parameters_transposed[*, where(strmatch(parameter_name, 'PSI_*'), /null)])
+
+               tauv_diff = parameters_transposed[*, where(parameter_name eq 'TAUV' or $
+                                               parameter_name eq 'TAUV_DIFF', /null)]
+               delta     = parameters_transposed[*, where(parameter_name eq 'DELTA', /null)]
+               tauv_bc   = parameters_transposed[*, where(parameter_name eq 'TAUV_BC', /null)]
+
+               taub_f  = parameters_transposed[*, where(parameter_name eq 'TAUB_F', /null), *]
+               f_clump = parameters_transposed[*, where(parameter_name eq 'F_CLUMP', /null), *]
+               cosi    = parameters_transposed[*, where(parameter_name eq 'COSI', /null), *]
+               b_to_d  = parameters_transposed[*, where(parameter_name eq 'B_TO_D', /null), *]
+
+               Lnu_stellar = instantaneous_stellar_spectrum(models.stellar_models, psi, $
+                                                     tauV_DIFF=tauV_DIFF, delta=delta, tauV_BC=tauV_BC, $
+                                                     tauB_f=tauB_f, F_clump=F_clump, cosi=cosi, b_to_d=b_to_d, $
+                                                     atten_models=models.atten_models, Lbol_abs_stellar=Lbol_abs_stellar, $
+                                                     Lnu_spec_unred_stellar=Lnu_unred_stellar, _extra=_extra)
+
+               ; Interpolate stellar spectrum to common wavelength grid
+               Lnu_stellar_highres = dblarr(Nwave, Nmodels)
+               Lnu_unred_stellar_highres = dblarr(Nwave, Nmodels)
+               for i=0, Nmodels-1 do begin
+                   Lnu_stellar_highres[*, i] = interpol(Lnu_stellar[*, i], models.stellar_models.WAVE_OBS, wave)
+                   Lnu_unred_stellar_highres[*, i] = interpol(Lnu_unred_stellar[*, i], models.stellar_models.WAVE_OBS, wave)
+               endfor
+               Lnu_stellar_highres[where(Lnu_stellar_highres lt 0, /null)] = 0.d0
+               Lnu_unred_stellar_highres[where(Lnu_unred_stellar_highres lt 0, /null)] = 0.d0
+             end
+
           'PARAMETRIC': begin
               Lnu_stellar_highres = dblarr(Nwave, Nmodels)
               Lnu_unred_stellar_highres = dblarr(Nwave, Nmodels)
