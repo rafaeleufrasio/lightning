@@ -45,7 +45,7 @@ function posterior_comparison, xray_res, noxray_res, agn_model_lum
 
     nox_arr = transpose([[randomn(seed, n_elements(xray_res.AGN_MASS))/1000],$
                          [randomn(seed, n_elements(xray_res.AGN_MASS))/1000],$
-                         [randomn(seed, n_elements(xray_res.AGN_MASS))/1000],$
+                         [-1 + randomn(seed, n_elements(xray_res.AGN_MASS))/1000],$
                          [reform(noxray_res.LOG_L_AGN)],$
                          [reform(noxray_res.AGN_COSI)]])
 
@@ -57,11 +57,11 @@ function posterior_comparison, xray_res, noxray_res, agn_model_lum
               '$log_{10}(L_{\rm AGN}$ $[L_{\odot}]$)',$
               'cos $i_{AGN}$']
 
-    range_arr = [[1.2, 1.5],$
-                 [-0.55, -0.1],$
-                 [0.1, 0.75],$
-                 [11.9, 12.6],$
-                 [0.53, 0.99]]
+    range_arr = [[9, 13],$
+                 [-1.5, -1.38],$
+                 [0.0, 0.25],$
+                 [11.9, 12.25],$
+                 [0.75, 0.99]]
 
     p = window(dimension=[860, 800])
     p = corner_plot(full_arr, labels,$
@@ -70,7 +70,7 @@ function posterior_comparison, xray_res, noxray_res, agn_model_lum
                     /SHOW_MEDIAN,$
                     CONTOUR_LEVELS=[0.68, 0.95],$
                     CONTOUR_SMOOTH=3,$
-                    TICKINTERVAL=[0.1, 0.2, 0.25, 0.3, 0.1],$
+                    TICKINTERVAL=[2, 0.05, 0.1, 0.2, 0.1],$
                     DISTRIBUTION_COLOR=['orange', 'blue'],$
                     DISTRIBUTION_THICK=2,$
                     CONTOUR_THICK=2,$
@@ -81,8 +81,8 @@ function posterior_comparison, xray_res, noxray_res, agn_model_lum
     t1 = text(0.75, 0.82, 'J033226.49-274035.5', /CURRENT, /NORMAL, font_size=14, alignment=0.5)
 
     x = objarr(2)
-    x[0] = plot([0, 0], [0, 0], color='blue', thick=2, name='with X-ray data', position=[2, 2, 3, 3], /current)
-    x[1] = plot([0, 0], [0, 0], color='orange', thick=2, name='without X-ray data', position=[2, 2, 3, 3], /current)
+    x[0] = plot([0, 0], [0, 0], color='blue', thick=2, name='with qsosed X-ray model', position=[2, 2, 3, 3], /current)
+    x[1] = plot([0, 0], [0, 0], color='orange', thick=2, name='without X-ray model', position=[2, 2, 3, 3], /current)
     lgnd = legend(target=x, transparency=30, position=[0.75, 0.80], $
                   vertical_alignment=1, horizontal_alignment=0.5, font_size=14)
 

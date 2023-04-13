@@ -4,33 +4,42 @@
 ; can be run as a whole with the @ syntax.
 
 ; Run Lightning
-cd, !lightning_dir + 'examples/J033226/'
+cd, !lightning_dir + 'examples/AGN_J033226/'
 restore, !lightning_dir + 'lightning.sav'
 lightning, 'noxray/J033226_lightning_input.fits'
 lightning, 'xray/J033226_lightning_input.fits'
 
 ; Load the result tables
-xray_res = mrdfits('xray/lightning_output/J033226_xray_output.fits.gz', 1)
 noxray_res = mrdfits('noxray/lightning_output/J033226_noxray_output.fits.gz', 1)
+xray_res = mrdfits('xray/lightning_output/J033226_xray_output.fits.gz', 1)
 
 ; First we check for reasonable acceptance fractions and convergence in the MCMC chains
-print, '//Convergence for the fit with the X-ray model//'
-print, 'Mean acceptance fraction: ', strtrim(mean(xray_res.ACCEPTANCE_FRAC), 2)
-print, 'Convergence flag: ', strtrim(xray_res.CONVERGENCE_FLAG, 2)
-print, 'Short chain flag: ', strtrim(xray_res.SHORT_CHAIN_FLAG, 2)
-print, 'Number of "stranded" walkers: ', strtrim(total(xray_res.STRANDED_FLAG), 2)
-
-print,''
-
 print, '//Convergence for the fit without the X-ray model//'
 print, 'Mean acceptance fraction: ', strtrim(mean(noxray_res.ACCEPTANCE_FRAC), 2)
 print, 'Convergence flag: ', strtrim(noxray_res.CONVERGENCE_FLAG, 2)
 print, 'Short chain flag: ', strtrim(noxray_res.SHORT_CHAIN_FLAG, 2)
 print, 'Number of "stranded" walkers: ', strtrim(total(noxray_res.STRANDED_FLAG), 2)
+
+print,''
+
+print, '//Convergence for the fit with the X-ray model//'
+print, 'Mean acceptance fraction: ', strtrim(mean(xray_res.ACCEPTANCE_FRAC), 2)
+print, 'Convergence flag: ', strtrim(xray_res.CONVERGENCE_FLAG, 2)
+print, 'Short chain flag: ', strtrim(xray_res.SHORT_CHAIN_FLAG, 2)
+print, 'Number of "stranded" walkers: ', strtrim(total(xray_res.STRANDED_FLAG), 2)
 print, ''
-print, 'Number of walkers with low acceptance fractions: ', strtrim(total(noxray_res.ACCEPTANCE_FLAG), 2)
-print, "Number of walkers with low acceptance fractions that /weren't/ flagged as stranded: ", strtrim(total((noxray_res.ACCEPTANCE_FLAG - noxray_res.STRANDED_FLAG) > 0), 2)
+print, 'Number of walkers with low acceptance fractions: ', strtrim(total(xray_res.ACCEPTANCE_FLAG), 2)
+print, "Number of parameters with high autocorrelation times: ", strtrim(total(xray_res.AUTOCORR_FLAG), 2)
+
 print, ''
+
+print, '//Autocorrelation Time Checks//'
+print, 'Parameter with high autocorrelation time: ', $
+       strtrim((xray_res.parameter_names)[where(xray_res.autocorr_flag eq 1, /null)], 2)
+print, 'Ratio of Ntrials to autocorr_time: ', $
+       strtrim(4e4/((xray_res.autocorr_time)[where(xray_res.autocorr_flag eq 1, /null)]), 2)
+print, ''
+
 
 ; Now we'll plot the SED and folded X-ray spectral fit for the fit with the X-ray
 ; model. Of course we could plot the other fit too, but it's qualitatively similar.

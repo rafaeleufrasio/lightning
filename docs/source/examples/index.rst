@@ -23,3 +23,4 @@ The following will provide examples of both basic and advanced use-cases for Lig
     J033226_example
     NGC_4631_example
     NGC_628_example
+    J033226_CIGALE_example

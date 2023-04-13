@@ -208,7 +208,7 @@ config = {                             $
           ; NOTE - Attenuation of AGN can only use the 'CALZETTI00' or 'CALZETTI_MOD'
           ;        attenuation curves. Compatibility with the 'DOORE21' curve is
           ;        currently not supported.
-          ATTEN_CURVE: 'CALZETTI_MOD'                   ,$
+          ATTEN_CURVE: 'CALZETTI00'                   ,$
 
 
           ;=============== CALZETTI00 PARAMETERS ===========================
@@ -514,8 +514,8 @@ config = {                             $
               ;   The inclination of the AGN disk in terms of cos(i).
               ;   Allowed parameter range: 0 to 1.
               AGN_COSI:  {Prior: 'uniform'                          ,$
-                          Prior_arg: [0.0d, 1.0d]                   ,$
-                          Initialization_range: [0.0d, 1.0d]         $
+                          Prior_arg: [0.75d, 1.0d]                   ,$
+                          Initialization_range: [0.75d, 1.0d]         $
                           }                                         ,$
 
 
@@ -536,7 +536,7 @@ config = {                             $
           ;===========  MCMC ===================================================
               ; NTRIALS : int, float, or double scalar
               ;   The number of MCMC trials to run.
-              NTRIALS: 3e4                            ,$
+              NTRIALS: 4e4                            ,$
 
               ; NPARALLEL : int, float, or double scalar
               ;   The number of parallel walkers/chains to run for each SED.
@@ -651,7 +651,7 @@ config = {                             $
               ;        so will increase the post-processed file size by
               ;        FINAL_CHAIN_LENGTH * HIGH_RES_MODEL_FRACTION * 1e3 * 8 bytes per SED per
               ;        model component.
-              HIGH_RES_MODEL_FRACTION: 0.0              ,$
+              HIGH_RES_MODEL_FRACTION: 1.0              ,$
 
               ;======== AFFINE =================================================
                   ; AFFINE_STRANDED_DEVIATION : int, float, or double scalar

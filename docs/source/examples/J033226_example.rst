@@ -1,5 +1,7 @@
-X-ray AGN
-=========
+.. _xray-agn-example-label:
+
+X-ray AGN Emission of J033226
+=============================
 
 The following example shows how we can use Lightning to fit the
 X-ray to IR SED of a bright AGN, J033226.49-274035.5, in the Chandra Deep Field South.
@@ -10,11 +12,11 @@ Data
 
 Typically it will only be necessary to fit with 2-4 band X-ray photometry (or even one band, e.g. if we
 assume negligible intrinsic absorption). Here, to show what's possible in principle with the Lightning X-ray
-implementation, we're going to fit 15-band X-ray photometry. To do so, we downloaded the level 3
-spectral files and responses from the Chandra Source Catalog, and summed them with
-the ``combine_spectra`` script in ``CIAO``. [#f1]_ We then subtracted the background and
-grouped the net counts from the spectrum into 15 log-spaced bins from :math:`5.0-7.0~\rm keV` using ``Sherpa``. [#f2]_
-We calculated the uncertainty :math:`\sigma N` on the net counts :math:`N` as
+implementation, we're going to fit 15-band X-ray photometry. To do so, we downloaded the level 3 spectral file
+and response from the Chandra Source Catalog for the single deepest (:math:`\approx` 163 ks) observation of
+the source (ObsID 5019). We then subtracted the background and grouped the net counts from the spectrum into
+15 log-spaced bins from :math:`0.5-6.0~\rm keV` using ``Sherpa``. [#f2]_ We calculated the uncertainty
+:math:`\sigma N` on the net counts :math:`N` as
 
 .. math:: \sigma N^2 = \sigma S^2 + {\tt BKG\_SCALE}^2 \sigma B^2
 
@@ -33,8 +35,8 @@ We retrieved optical-IR photometry from the `Guo et al. (2013)`_ CANDELS photome
 from the `Barro et al. (2019)`_ catalogs. We added calibration uncertainties (typically :math:`<5\%`) to
 each band as specified in Table 1 of `Doore et al. (2022)`_.
 
-The relevant data files can be found in ``examples/AGN_J033226/`` as ``J033226_photometry.fits``,
-``J033226_xray_photometry.fits``, ``J033226_summed.arf`` for the UV-to-IR photometry, X-ray data,
+The relevant data files can be found in ``examples/AGN_J033226/`` as ``xray/J033226_photometry.fits``,
+``xray/J033226_xray_photometry.fits``, ``xray/J033226_summed.arf`` for the UV-to-IR photometry, X-ray data,
 and ARF, respectively.
 
 Configuration
@@ -69,7 +71,7 @@ We add :math:`10\%` model uncertainty:
     :lineno-match:
     :emphasize-lines: 1
 
-The default initializations on the SFH are then widened,  as we expect this :math:`z \sim 1` AGN host
+The default initializations on the SFH are then widened, as we expect this :math:`z \sim 1` AGN host
 to have a large SFR:
 
 .. literalinclude:: ../../../examples/AGN_J033226/noxray/lightning_configure.pro
@@ -78,30 +80,6 @@ to have a large SFR:
     :lines: 189-194
     :lineno-match:
     :emphasize-lines: 4-5
-
-Since we have high-quality optical and IR data which may require a more flexible attenuation curve,
-we use the more complex modified Calzetti attenuation curve.
-
-.. literalinclude:: ../../../examples/AGN_J033226/noxray/lightning_configure.pro
-    :language: idl
-    :dedent:
-    :lines: 211
-    :lineno-match:
-    :emphasize-lines: 1
-
-.. literalinclude:: ../../../examples/AGN_J033226/noxray/lightning_configure.pro
-    :language: idl
-    :dedent:
-    :lines: 232-235
-    :lineno-match:
-    :emphasize-lines: 2-3
-
-.. literalinclude:: ../../../examples/AGN_J033226/noxray/lightning_configure.pro
-    :language: idl
-    :dedent:
-    :lines: 242-245
-    :lineno-match:
-    :emphasize-lines: 2-3
 
 We then limit the mass abundance of PAHs in the dust model
 
@@ -121,6 +99,16 @@ And turn on the UV-IR AGN model:
     :lineno-match:
     :emphasize-lines: 1
 
+Since J033226 is classified as a type 1 AGN from optical spectra, we limit the inclination
+of the models to type 1 AGN accordingly:
+
+.. literalinclude:: ../../../examples/AGN_J033226/noxray/lightning_configure.pro
+    :language: idl
+    :dedent:
+    :lines: 516-519
+    :lineno-match:
+    :emphasize-lines: 2-3
+
 We also set the prior on the AGN normalization to log-uniform on :math:`10^{11}-10^{13}\ \rm L_{\odot}` and
 initialize in a narrow range of luminosities, as initializing the AGN component far from the
 solution has a negative effect on convergence.
@@ -131,7 +119,7 @@ solution has a negative effect on convergence.
     :lines: 496-499
     :emphasize-lines: 2-3
 
-Finally, we increase the number of MCMC trials per walker by :math:`10^4`:
+Finally, we increase the number of MCMC trials per walker to :math:`4 \times 10^4`:
 
 .. literalinclude:: ../../../examples/AGN_J033226/noxray/lightning_configure.pro
     :language: idl
@@ -190,6 +178,17 @@ and narrow the initialization range for the SMBH mass:
     :lineno-match:
     :emphasize-lines: 3
 
+Finally, we generate high resolution models for all final MCMC chain elements so
+that we can use them to calculate other properties later.
+
+.. literalinclude:: ../../../examples/AGN_J033226/xray/lightning_configure.pro
+    :language: idl
+    :dedent:
+    :lines: 654
+    :lineno-match:
+    :emphasize-lines: 1
+
+
 Running Lightning
 ^^^^^^^^^^^^^^^^^
 .. note::
@@ -203,7 +202,7 @@ At this point, we are ready to run Lightning with each configuration. We can do 
     :lines: 7-10
 
 With the MCMC configuration we've selected for the fit with no X-ray model (since we're aiming for a comprehensive sampling of the posterior),
-this may take around 30-45 minutes on a moderately powerful laptop CPU (we ran it on a ca. 2015 2.9 GHz Intel Core i5).
+this may take around 40-50 minutes on a moderately powerful laptop CPU (we ran it on a ca. 2015 2.9 GHz Intel Core i5).
 For the fit with the X-ray data, this will take about an hour, due to the added complexity of the X-ray model and the additional
 photometry. We note that the fits could also be run simultaneously in separate IDL sessions.
 
@@ -231,19 +230,19 @@ which outputs
 
 .. code-block:: text
 
-    //Convergence for the fit with the X-ray model//
-    Mean acceptance fraction: 0.31231111
+    //Convergence for the fit without the X-ray model//
+    Mean acceptance fraction: 0.25888400
     Convergence flag: 0
     Short chain flag: 0
     Number of "stranded" walkers: 2.00000
 
 It seems that we have a reasonable acceptance fraction (i.e., :math:`>20 \%`), and that we can be confident
-in the solution and the number of samples in the posterior. We see however that 2/75 of the walkers in the ensemble
-didn't reach the same solution as the others; this tends to happen when they're initialized too close to the boundary
-set by the priors. We could adjust the settings and retry, but we have enough samples in the posterior as-is, so we'll
-leave it.
+in the solution and the number of samples in the posterior, since the convergence flag is 0. We see however
+that 2/75 of the walkers in the ensemble didn't reach the same solution as the others; this tends to happen
+when they're initialized too close to the boundary set by the priors. We could adjust the settings and retry,
+but we have enough samples in the posterior as-is, so we'll leave it.
 
-Now we check the other fit:
+Now we check the X-ray fit:
 
 .. literalinclude:: ../../../examples/AGN_J033226/J033226_batch.pro
     :language: idl
@@ -251,11 +250,11 @@ Now we check the other fit:
 
 .. code-block:: text
 
-    //Convergence for the fit without the X-ray model//
-    Mean acceptance fraction: 0.24518489
+    //Convergence for the fit with the X-ray model//
+    Mean acceptance fraction: 0.22930733
     Convergence flag: 1
     Short chain flag: 0
-    Number of "stranded" walkers: 6.00000
+    Number of "stranded" walkers: 2.00000
 
 We can see that Lightning is concerned about whether the MCMC chains converged. If we do
 
@@ -267,23 +266,44 @@ we see
 
 .. code-block:: text
 
-    Number of walkers with low acceptance fractions: 3.00000
-    Number of walkers with low acceptance fractions that /weren't/ flagged as stranded: 0.00000
+    Number of walkers with low acceptance fractions: 0.00000
+    Number of parameters with high autocorrelation times: 3.00000
 
-The convergence flag is set because a number of the walkers had acceptance fractions :math:`< 20 \%`, but we can also
-see that these same walkers were flagged as stranded and removed from the solution. Thus, given that we also still have
-the requested number of samples in the posterior, we can be confident in the estimate of the posterior that we have.
+The convergence flag is set because a three parameters had high autocorrelation times.
+Let's check what parameter this is and how it compares to our factor of 50 threshold for
+considering convergence (i.e., ``NTRIALS/AUTOCORR_TIME`` should be ~50). 
+
+.. literalinclude:: ../../../examples/AGN_J033226/J033226_batch.pro
+    :language: idl
+    :dedent:
+    :lines: 36-40
+
+.. code-block:: text
+
+    //Autocorrelation Time Checks//
+    Parameter with high autocorrelation time:  TAUV AGN_LOGMDOT AGN_COSI
+    Ratio of Ntrials to autocorr_time:  44.566111 47.838389 38.319755
+
+So as we can see, the "problem" parameters are the optical depth, accretion rate, and AGN inclination.
+Additionally, we can see that the optical depth and accretion rate are just barely below our default 
+threshold of 50, while the inclination is well below. Since we want a value of ~50, this is close enough
+for the optical depth and accretion rate. However, for the inclination, this is likely due to
+the strong prior we introduced, which is limiting the model to an inclination range it does not prefer.
+Therefore, we will still use this solution and note that our inclination estimates may not be the
+most independently sampled.
+
+
 
 Figures
 """""""
 
-Now, we might want to look at the SED fit. We'll plot the UV-IR SED component in the "traditional" way,
+Now, we want to look at the SED fit. We'll plot the UV-IR SED component in the "traditional" way,
 but since we've got so much X-ray photometry we'll plot the X-ray component in the way you might expect
 from ``XSpec`` or ``Sherpa``, just for fun. We have prepared a function for this: ``J033226_spectrum_plots.pro``.
 
 .. literalinclude:: ../../../examples/AGN_J033226/J033226_batch.pro
     :language: idl
-    :lines: 37
+    :lines: 46
 
 The plot of the best-fitting models looks like so:
 
@@ -295,18 +315,18 @@ combined likelihood of both components.
 
 Now, let's compare the posteriors. However, since the two fits have different parameters, we'll do some additional
 postprocessing to generate the posterior on the UV-IR AGN luminosity for the fit with the X-ray model. The
-script ``calc_integrated_AGN_luminosity.pro`` in the ``lightning/examples/AGN_J033226/xray/`` directory
-generates this posterior and saves it in an IDL ``SAVE`` file called ``AGN_model_results.sav``.
+script ``calc_integrated_AGN_luminosity.pro`` in the ``lightning/examples/AGN_J033226/`` directory
+generates this posterior.
 
 .. literalinclude:: ../../../examples/AGN_J033226/J033226_batch.pro
     :language: idl
-    :lines: 46-51
+    :lines: 55-60
 
 which shows the following:
 
 .. code-block:: text
 
-    ** Structure <77c90208>, 8 tags, length=48024, data length=48024, refs=1:
+    ** Structure <62b85a08>, 9 tags, length=56024, data length=56024, refs=1:
     SED_ID          STRING    'J033226.49-274035.5'
     REDSHIFT        DOUBLE           1.0310000
     NH              DOUBLE    Array[1000]
@@ -314,6 +334,7 @@ which shows the following:
     AGN_LOGMDOT     DOUBLE    Array[1000]
     TAU97           DOUBLE    Array[1000]
     AGN_COSI        DOUBLE    Array[1000]
+    L2500           DOUBLE    Array[1000]
     LBOL_AGN_MODEL  DOUBLE    Array[1000]
 
 The ``agn_model_lum.LBOL_AGN_MODEL`` is the posterior on the integrated optical-IR luminosity for the X-ray fit.
@@ -322,14 +343,12 @@ function for this, in ``posterior_comparison.pro``:
 
 .. literalinclude:: ../../../examples/AGN_J033226/J033226_batch.pro
     :language: idl
-    :lines: 56
+    :lines: 65
 
 Which generates the following plot:
 
 .. image:: ../../../examples/AGN_J033226/images/J033226_corner_params.png
 
-We can see that the AGN luminosity is better constrained in the case where we add X-ray data, and notably has less
-covariance with the viewing angle of the AGN, :math:`\cos i`.
 
 .. rubric:: Footnotes
 

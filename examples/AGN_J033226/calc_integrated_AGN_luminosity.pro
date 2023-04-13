@@ -32,9 +32,7 @@ function calc_integrated_AGN_luminosity, results, config, arf
     lightning_constants
 
     ; Construct an array for the parameters
-    parameters = [[results.TAUV_DIFF],$
-                  [results.DELTA],$
-                  [replicate(results.TAUV_BC, 1000)],$
+    parameters = [[results.TAUV],$
                   [results.UMIN],$
                   [replicate(results.UMAX, 1000)],$
                   [replicate(results.ALPHA, 1000)],$
@@ -64,6 +62,7 @@ function calc_integrated_AGN_luminosity, results, config, arf
                          results.AGN_MASS,$
                          results.AGN_LOGMDOT)
 
+    priors = generate_prior_struct(config, '', config_nopriors=config_nopriors)
 
     ; We call SKIRTOR_SED to get the integrated luminosity and
     ; L2500 of each template, which differ slightly with cos i
@@ -71,8 +70,7 @@ function calc_integrated_AGN_luminosity, results, config, arf
     mean_Lnu_AGN = skirtor_sed(models.AGN_MODELS,$
                                tau97=replicate(results.TAU97, 1000),$
                                i_agn=i_AGN,$
-                               tauV_diff=results.TAUV_DIFF,$
-                               delta=results.DELTA,$
+                               tauV_diff=results.TAUV,$
                                Lbol_abs_AGN=Lbol_abs_SKIRTOR,$
                                Lbol_AGN=Lbol_SKIRTOR,$
                                L2500=L2500_SKIRTOR,$
@@ -90,6 +88,7 @@ function calc_integrated_AGN_luminosity, results, config, arf
                      AGN_LOGMDOT: results.AGN_LOGMDOT,$
                      TAU97: replicate(results.TAU97, 1000),$
                      AGN_COSI: results.AGN_COSI,$
+                     L2500: L2500,$
                      LBOL_AGN_MODEL: Lbol_AGN_model}
 
     return, AGN_model_lum
